@@ -1,0 +1,162 @@
+{
+  "policy_version": "2026-05-15-v7.1-auditada-corregida",
+  "purpose": "Aproximar una experiencia tipo chat dentro de un expediente local, sin perder trazabilidad ni mezclar casos.",
+  "model_selection": {
+    "mode": "auto",
+    "priority_list": [
+      "gpt-5.5-pro",
+      "gpt-5.5",
+      "gpt-5.4-pro",
+      "gpt-5.4",
+      "gpt-5.4-mini"
+    ],
+    "fallback": "gpt-5.5"
+  },
+  "core_features": [
+    "OCR local",
+    "PDF texto nativo antes de OCR",
+    "RAG local con citas por documento/página/fragmento",
+    "almacenamiento local visible",
+    "análisis beneficio/perjuicio/impacto",
+    "auditoría de modelo y documentos enviados",
+    "backup/import completo",
+    "bandeja de pendientes documentales",
+    "borradores versionados",
+    "carga de carpetas",
+    "chat persistente por caso",
+    "cifrado local opcional de campos sensibles",
+    "clasificación obligatoria",
+    "control de tamaño y limpieza de almacenamiento",
+    "control de vencimientos y acciones por documento",
+    "controles de tamaño de paquete",
+    "corrección de fallos runtime detectados",
+    "diagnóstico de funciones frontend",
+    "diagnóstico/doctor del entorno",
+    "evaluación brutalmente honesta con niveles de certeza",
+    "exportaciones con límites de seguridad",
+    "exportación TXT/HTML/PDF básico/DOCX básico desde backend",
+    "fallback RAG automático",
+    "flujo guiado de expediente",
+    "gobierno documental enviado completo al backend",
+    "gobierno documental por caso",
+    "modo anti-alucinación",
+    "modo bajo ruido institucional",
+    "modo opinión estratégicamente honesta",
+    "modo paquete profesional",
+    "ocr pdf nativo + fallback OCR",
+    "offline-first con vendor local",
+    "opción controlada de web search para normativa pública",
+    "panel de privacidad y respaldo",
+    "recomendación de qué haría y qué no haría",
+    "respaldo cifrado restaurable",
+    "semáforo de madurez documental",
+    "validador local de citas",
+    "visor documental PDF/imagen",
+    "índice maestro/carátula del caso"
+  ],
+  "case_isolation": "Nunca mezclar casos. La app solo empaqueta documentos y chat del caso activo.",
+  "anti_hallucination": [
+    "Diferenciar hechos probados, OCR no cotejado, datos por verificar, hipótesis internas y argumentos jurídicos.",
+    "Toda conclusión debe citar fuentes internas si existen.",
+    "Si no consta en el paquete del caso seleccionado, decirlo expresamente.",
+    "El OCR no revisado no debe usarse como hecho fuerte."
+  ],
+  "noise_control": [
+    "Evitar acusaciones personales sin soporte documental directo.",
+    "Preferir solicitudes de estado, acceso, preservación, acuse y aclaración.",
+    "Evitar copias masivas y lenguaje emocional."
+  ],
+  "strategic_opinion_mode": {
+    "purpose": "Permitir respuestas francas sobre cómo un escrito/documento beneficia, perjudica o cambia la estrategia del denunciado.",
+    "required_labels": [
+      "Hecho soportado",
+      "Inferencia razonable",
+      "Hipótesis interna",
+      "Riesgo no probado",
+      "Opinión estratégica"
+    ],
+    "required_sections": [
+      "Opinión brutalmente honesta",
+      "Cómo te beneficia",
+      "Cómo te perjudica",
+      "Qué riesgos ocultos veo",
+      "Cómo se relaciona con tu caso",
+      "Qué haría yo en tu lugar",
+      "Qué NO haría",
+      "Nivel de certeza",
+      "Citas internas"
+    ],
+    "guardrails": [
+      "Ser franco sin volver acusaciones las sospechas.",
+      "No suavizar riesgos por complacencia.",
+      "No inflar beneficios si el soporte documental es débil.",
+      "No recomendar escalar o denunciar si primero conviene preservar pruebas, pedir acceso o esperar respuesta.",
+      "Separar intuición estratégica de hecho probado."
+    ]
+  },
+  "document_governance": {
+    "ux_principle": "La aplicación debe canalizar al usuario por un flujo disciplinado: caso → importación → clasificación → cotejo OCR → metadatos → índice → chat/RAG → borrador.",
+    "required_metadata": [
+      "docRole",
+      "stage",
+      "docStatus",
+      "priority",
+      "confidentiality",
+      "folio",
+      "authority",
+      "docDate",
+      "actionNeeded",
+      "dueDate",
+      "tags",
+      "notes"
+    ],
+    "case_health": [
+      "documentos sin clasificar",
+      "OCR no cotejado",
+      "documentos sin folio/autoridad/fecha",
+      "acciones pendientes",
+      "vencimientos próximos",
+      "duplicados por hash"
+    ],
+    "ai_behavior": [
+      "Antes de opinar, ubicar el documento dentro del caso.",
+      "Antes de redactar, verificar metadatos esenciales.",
+      "Si falta clasificación, sugerir organización documental antes de estrategia agresiva.",
+      "No permitir que el chat sustituya la administración del expediente."
+    ]
+  },
+  "offline_first": {
+    "principle": "La aplicación debe poder funcionar localmente después de instalación y preparación de assets.",
+    "requires": [
+      "npm install",
+      "npm run prepare:offline"
+    ],
+    "notes": [
+      "El ZIP no incluye node_modules ni modelos de OCR para evitar tamaño excesivo.",
+      "Después de preparar assets, PDF.js y Tesseract se sirven desde public/vendor.",
+      "El modelo de IA no se empaqueta; se usa API mediante clave del usuario."
+    ]
+  },
+  "security": {
+    "api_key": "Nunca poner API key en frontend.",
+    "local_encryption": "Cifrado opcional AES-GCM en navegador para exportaciones y campos sensibles.",
+    "web_search": "Desactivado por defecto; usar solo para normativa pública."
+  },
+  "v7_1_audit_findings": {
+    "fixed": [
+      "Faltaba función ocrPdf aunque ocrFile la llamaba.",
+      "Faltaban funciones utilitarias splitPages, normalize, tokens y downloadText.",
+      "Faltaban acciones deleteDoc y deleteCaseDocs.",
+      "Faltaba renderStorage, provocando error al arrancar.",
+      "importEncryptedBackup llamaba importBackupObject inexistente.",
+      "sanitizePacket del backend descartaba metadatos de gobierno documental.",
+      "createResponse duplicaba historial reciente dentro del prompt.",
+      "prepare_offline_assets no intentaba copiar worker/core de Tesseract para modo offline real."
+    ],
+    "remaining_limits": [
+      "No se ejecutaron pruebas de OCR real con documentos del usuario.",
+      "IndexedDB aún no está cifrada internamente; sí existe respaldo cifrado.",
+      "Exportación PDF/DOCX es funcional básica, no maquetación jurídica avanzada."
+    ]
+  }
+}

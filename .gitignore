@@ -1,0 +1,28 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno — NUNCA subir al repo (contiene API keys)
+.env
+.env.local
+.env.*.local
+
+# Assets de vendor generados por prepare:offline (se regeneran en CI)
+public/vendor/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/settings.json
+*.swp
+
+# Firebase debug
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log

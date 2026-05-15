@@ -1,0 +1,28 @@
+{
+  "name": "defensaipn-ai-v7-1-auditada-corregida",
+  "version": "7.1.0",
+  "description": "DefensaIPN.ai v7.1 auditada: corrige fallos runtime, OCR PDF, respaldo cifrado, storage, gobierno documental y robustez offline.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "prepare:offline": "node scripts/prepare_offline_assets.js",
+    "check": "node --check server.js && node scripts/check_frontend.js",
+    "doctor": "node scripts/doctor.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.18.3",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "pdfjs-dist": "^4.10.38",
+    "tesseract.js": "^5.1.1",
+    "docx": "^8.5.0",
+    "pdfkit": "^0.15.0"
+  },
+  "engines": {
+    "node": ">=18.18.0"
+  }
+}

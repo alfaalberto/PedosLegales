@@ -1,0 +1,1238 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DefensaIPN.ai v7.1 — Offline Profesional Auditada</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2306101f'/><text x='16' y='22' font-size='20' text-anchor='middle' fill='%2338bdf8'>⚖</text></svg>">
+<style>
+:root{
+  --bg:#06101f;--panel:#0f172a;--panel2:#1e293b;--ink:#e5e7eb;--muted:#9ca3af;
+  --line:rgba(255,255,255,.12);--accent:#38bdf8;--violet:#a78bfa;--green:#34d399;--yellow:#fbbf24;--red:#fb7185;
+  --paper:#f8fafc;--paperInk:#111827;--radius:18px;--shadow:0 18px 50px rgba(0,0,0,.38)
+}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 8% 0%,rgba(56,189,248,.22),transparent 31%),radial-gradient(circle at 90% 5%,rgba(167,139,250,.18),transparent 33%),var(--bg);min-height:100vh}
+header{position:sticky;top:0;background:rgba(6,16,31,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:18px 20px 12px;z-index:20}
+h1{margin:0;font-size:clamp(1.25rem,2.4vw,2.25rem);letter-spacing:-.045em}.subtitle{color:var(--muted);margin:7px 0 0;max-width:1180px}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.tab{cursor:pointer;border:1px solid var(--line);background:rgba(30,41,59,.72);color:var(--ink);border-radius:999px;padding:8px 12px;font-weight:850;font-size:.84rem}.tab.active{background:linear-gradient(135deg,var(--accent),var(--violet));color:#06101f;border-color:transparent}
+main{max-width:1580px;margin:auto;padding:20px}section{display:none}section.active{display:block}
+.grid{display:grid;gap:16px}.two{grid-template-columns:repeat(auto-fit,minmax(360px,1fr))}.three{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}.cards{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.card{background:linear-gradient(180deg,rgba(30,41,59,.95),rgba(15,23,42,.95));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:17px}
+h2,h3{letter-spacing:-.025em}h2{font-size:1.18rem;margin:0 0 12px}h3{font-size:1rem;margin:0 0 9px}
+label{display:block;margin:11px 0 6px;color:#dbeafe;font-size:.84rem;font-weight:850}
+input,select,textarea{width:100%;border:1px solid var(--line);background:#06101f;color:var(--ink);border-radius:12px;padding:10px 11px;font:inherit;outline:none}
+textarea{min-height:130px;resize:vertical;line-height:1.45}
+button,.btn{border:0;border-radius:12px;padding:10px 13px;font-weight:900;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--violet));color:#06101f;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+button.secondary,.btn.secondary{background:rgba(255,255,255,.08);color:var(--ink);border:1px solid var(--line)}button.danger{background:rgba(251,113,133,.14);color:#fecdd3;border:1px solid rgba(251,113,133,.35)}button.ok{background:rgba(52,211,153,.13);color:#bbf7d0;border:1px solid rgba(52,211,153,.35)}button.warn{background:rgba(251,191,36,.14);color:#fde68a;border:1px solid rgba(251,191,36,.35)}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:10px 0}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}.row>*{flex:1}.row .shrink{flex:0 0 auto}
+.box{border:1px solid var(--line);border-radius:15px;padding:12px;background:rgba(255,255,255,.045);margin:10px 0}
+.info{border-color:rgba(56,189,248,.32);background:rgba(56,189,248,.08);color:#e0f2fe}.success{border-color:rgba(52,211,153,.36);background:rgba(52,211,153,.09);color:#dcfce7}.notice{border-color:rgba(251,191,36,.36);background:rgba(251,191,36,.09);color:#fef3c7}.dangerbox{border-color:rgba(251,113,133,.36);background:rgba(251,113,133,.09);color:#ffe4e6}
+.tag{display:inline-block;border-radius:999px;padding:4px 8px;margin:2px;font-size:.74rem;font-weight:900;background:rgba(56,189,248,.12);color:#bae6fd;border:1px solid rgba(56,189,248,.24)}
+.tag.green{background:rgba(52,211,153,.12);color:#bbf7d0;border-color:rgba(52,211,153,.28)}.tag.yellow{background:rgba(251,191,36,.13);color:#fde68a;border-color:rgba(251,191,36,.32)}.tag.red{background:rgba(251,113,133,.13);color:#fecdd3;border-color:rgba(251,113,133,.32)}.tag.violet{background:rgba(167,139,250,.14);color:#ddd6fe;border-color:rgba(167,139,250,.35)}
+.metric{font-size:2rem;font-weight:950;letter-spacing:-.055em;margin-top:6px}.small{font-size:.86rem}.tiny{font-size:.76rem}.muted{color:var(--muted)}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.paper{background:var(--paper);color:var(--paperInk);border-radius:13px;padding:18px;white-space:pre-wrap;line-height:1.52;box-shadow:inset 0 0 0 1px rgba(17,24,39,.12);min-height:380px;max-height:76vh;overflow:auto;font-family:ui-serif,Georgia,Cambria,"Times New Roman",serif}
+table{width:100%;border-collapse:collapse;font-size:.86rem}th,td{border-bottom:1px solid rgba(255,255,255,.09);padding:9px;text-align:left;vertical-align:top}th{color:#bae6fd;background:rgba(8,47,73,.35)}
+progress{width:100%;height:14px;border-radius:999px;overflow:hidden}.drop{border:2px dashed rgba(56,189,248,.38);border-radius:18px;padding:18px;text-align:center;background:rgba(56,189,248,.06)}.drop.drag{background:rgba(52,211,153,.10);border-color:rgba(52,211,153,.6)}
+.casepill{cursor:pointer;display:block;text-align:left;width:100%;margin:7px 0}
+.chatbox{height:560px;overflow:auto;border:1px solid var(--line);border-radius:16px;padding:12px;background:rgba(0,0,0,.12)}
+.msg{max-width:92%;padding:12px;border-radius:16px;margin:10px 0;white-space:pre-wrap;line-height:1.48}
+.msg.user{margin-left:auto;background:rgba(56,189,248,.14);border:1px solid rgba(56,189,248,.28)}
+.msg.assistant{margin-right:auto;background:rgba(255,255,255,.07);border:1px solid var(--line)}
+.msgmeta{font-size:.72rem;color:var(--muted);margin-bottom:6px}
+.srcitem{cursor:pointer}.srcitem:hover{background:rgba(255,255,255,.06)}
+
+.step{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:16px;padding:12px;background:rgba(255,255,255,.045);margin:10px 0}
+.stepnum{flex:0 0 34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:950;background:linear-gradient(135deg,var(--accent),var(--violet));color:#06101f}
+.step.done .stepnum{background:rgba(52,211,153,.95)}
+.step.warn .stepnum{background:rgba(251,191,36,.95)}
+.step.bad .stepnum{background:rgba(251,113,133,.95)}
+.healthbar{height:13px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;border:1px solid var(--line)}
+.healthbar span{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--yellow),var(--green));width:0%}
+.docgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.badgeblock{border:1px solid var(--line);border-radius:13px;padding:10px;background:rgba(255,255,255,.035)}
+
+
+.viewerFrame{width:100%;min-height:460px;border:1px solid var(--line);border-radius:14px;background:#0b1220}
+.imgPreview{max-width:100%;max-height:620px;border-radius:12px;border:1px solid var(--line)}
+.locked{filter:blur(2px);opacity:.72}
+.exportBtns button{margin:3px}
+
+@media(max-width:900px){.two,.three,.cards{grid-template-columns:1fr}.chatbox{height:460px}}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" style="display:flex;position:fixed;inset:0;z-index:9999;background:var(--bg);align-items:center;justify-content:center">
+  <div class="card" style="width:100%;max-width:400px;padding:36px 28px">
+    <h2 style="margin:0 0 4px">DefensaIPN.ai <span class="muted" style="font-size:1rem;font-weight:400">v7.1</span></h2>
+    <p class="small muted" style="margin:0 0 22px">Acceso restringido &middot; Solo usuarios autorizados</p>
+    <div id="loginNotice" class="box dangerbox small" style="display:none;margin-bottom:14px"></div>
+    <label>Correo electrónico</label>
+    <input id="loginEmail" type="email" placeholder="tu@correo.com" autocomplete="email" onkeydown="if(event.key==='Enter')doLogin()">
+    <label>Contraseña</label>
+    <input id="loginPassword" type="password" placeholder="••••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button id="loginBtn" onclick="doLogin()" style="width:100%;margin-top:20px">Entrar</button>
+    <p id="loginConfigNotice" class="tiny muted" style="margin:14px 0 0;text-align:center;min-height:16px"></p>
+  </div>
+</div>
+
+<div id="main-app" style="display:none">
+<header>
+  <h1>DefensaIPN.ai v7.1 <span class="muted">— chat RAG auditado y robustecido</span></h1>
+  <p class="subtitle">Experiencia tipo chat sobre tus casos: OCR local, PDF texto/OCR, carpetas completas, RAG con fallback, citas internas, validador de fuentes, backups completos, borradores versionados y bajo ruido institucional.</p>
+  <nav id="tabs"></nav>
+  <div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap">
+    <span id="userBadge" class="tiny muted"></span>
+    <button class="secondary" onclick="doLogout()" style="padding:4px 12px;font-size:.75rem;border-radius:999px">Cerrar sesión</button>
+    <button class="secondary" onclick="configServerUrl()" style="padding:4px 12px;font-size:.75rem;border-radius:999px" title="URL del servidor Express para funciones IA">Servidor: <span id="serverUrlBadge">local</span></button>
+  </div>
+</header>
+
+<main>
+<section id="panel" class="active">
+  <div class="grid cards">
+    <div class="card"><h3>Caso activo</h3><div class="metric" id="mCase">—</div><p class="small muted">La IA solo recibe este caso.</p></div>
+    <div class="card"><h3>Casos</h3><div class="metric" id="mCases">0</div><p class="small muted">Expedientes separados.</p></div>
+    <div class="card"><h3>Documentos</h3><div class="metric" id="mDocs">0</div><p class="small muted">Del caso activo.</p></div>
+    <div class="card"><h3>Fragmentos RAG</h3><div class="metric" id="mChunks">0</div><p class="small muted">Citas recuperables.</p></div>
+    <div class="card"><h3>Mensajes chat</h3><div class="metric" id="mMsgs">0</div><p class="small muted">Historial del caso.</p></div><div class="card"><h3>Madurez documental</h3><div class="metric" id="mHealth">0%</div><p class="small muted">Orden, metadatos, OCR y pendientes.</p></div>
+  </div>
+  <div class="grid two" style="margin-top:16px">
+    <div class="card">
+      <h2>Estado IA / servidor</h2>
+      <div id="healthBox" class="box info">Sin verificar.</div>
+      <div id="modelBox" class="box info">Modelo sin resolver.</div>
+      <div class="toolbar"><button onclick="checkHealth()">Verificar servidor</button><button class="secondary" onclick="resolveModel()">Resolver modelo</button></div>
+    </div>
+    <div class="card">
+      <h2>Qué hace la v7</h2>
+      <div class="box success"><b>Chat por expediente:</b> conserva historial por caso y recupera fragmentos relevantes antes de responder.</div>
+      <div class="box info"><b>RAG local:</b> genera citas internas tipo <span class="mono">[src:doc:p2:c1]</span>.</div>
+      <div class="box notice"><b>Protección:</b> OCR no revisado se marca como débil; las hipótesis no se convierten en hechos.</div><div class="box success"><b>Nuevo v7:</b> paquete profesional offline-first: vendor local, visor documental, cifrado local opcional, exportaciones DOCX/PDF y diagnóstico del entorno.</div><div id="caseHealthBox" class="box info small">Semáforo documental pendiente.</div><div id="storageBox" class="box info small">Almacenamiento local: pendiente.</div><div id="doctorBox" class="box info small">Diagnóstico offline pendiente.</div><button class="secondary" onclick="runDoctor()">Diagnóstico v7</button>
+    </div>
+  </div>
+</section>
+
+<section id="workflow">
+  <div class="grid two">
+    <div class="card">
+      <h2>Flujo guiado del expediente</h2>
+      <p class="small muted">Usa este tablero como ruta obligada para no enredarte ni saltar directo a la IA sin control documental.</p>
+      <div id="workflowSteps"></div>
+    </div>
+    <div class="card">
+      <h2>Semáforo del caso activo</h2>
+      <div id="governanceDashboard"></div>
+      <div class="toolbar">
+        <button onclick="goTab('import')">Importar documentos</button>
+        <button class="secondary" onclick="goTab('inbox')">Clasificar pendientes</button>
+        <button class="secondary" onclick="goTab('index')">Generar índice</button>
+        <button class="secondary" onclick="goTab('chat')">Preguntar con RAG</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="inbox">
+  <div class="grid two">
+    <div class="card">
+      <h2>Bandeja de pendientes documentales</h2>
+      <p class="small muted">Aquí aparecen documentos que todavía no están listos para usarse estratégicamente: sin clasificar, sin folio, sin autoridad, sin fecha, OCR no cotejado o acción pendiente.</p>
+      <div id="pendingDocs"></div>
+    </div>
+    <div class="card">
+      <h2>Clasificación rápida</h2>
+      <div class="box notice small">Primero clasifica y llena metadatos. Después pregunta a la IA. Esta disciplina evita mezclar casos o basar estrategia en documentos débiles.</div>
+      <label>Aplicar a</label><select id="bulkScope"><option value="selected">Documento seleccionado</option><option value="unclassified">Sin clasificar del caso activo</option><option value="needsReview">OCR no cotejado del caso activo</option><option value="all">Todos los documentos del caso activo</option></select>
+      <div class="row">
+        <div><label>Rol documental</label><select id="bulkRole"><option>Sin clasificar</option><option>Citatorio</option><option>Acta administrativa</option><option>Notificación</option><option>Opinión jurídica / dictamen</option><option>Respuesta ARCO</option><option>Acuerdo</option><option>Queja / denuncia</option><option>Oficio</option><option>Correo</option><option>Acuse</option><option>Prueba / anexo</option><option>Borrador propio</option><option>Otro</option></select></div>
+        <div><label>Etapa</label><select id="bulkStage"><option>Ingreso</option><option>Revisión OCR</option><option>Cotejo</option><option>Clasificado</option><option>En análisis</option><option>Usable para escrito</option><option>Archivado</option></select></div>
+      </div>
+      <div class="row">
+        <div><label>Estado</label><select id="bulkStatus"><option>Pendiente de clasificación</option><option>Pendiente de cotejo</option><option>Metadatos incompletos</option><option>Listo para RAG</option><option>Listo para escrito</option><option>Solo referencia interna</option><option>No usar</option></select></div>
+        <div><label>Prioridad</label><select id="bulkPriority"><option>Baja</option><option>Media</option><option>Alta</option><option>Urgente</option></select></div>
+      </div>
+      <label>Confidencialidad</label><select id="bulkConf"><option>Interno</option><option>Sensible</option><option>Muy sensible</option><option>Público/normativo</option></select>
+      <label>Acción pendiente</label><input id="bulkAction" placeholder="Ej. cotejar OCR, capturar folio, pedir copia íntegra, anexar acuse...">
+      <label>Vencimiento</label><input id="bulkDue" type="date">
+      <label>Etiquetas</label><input id="bulkTags" placeholder="prescripción, ARCO, acta, testigos, anexos...">
+      <button onclick="applyBulkClassification()">Aplicar clasificación</button>
+    </div>
+  </div>
+</section>
+
+<section id="index">
+  <div class="grid two">
+    <div class="card">
+      <h2>Índice maestro / carátula del caso</h2>
+      <p class="small muted">Genera un índice ordenado por rol documental, etapa, fecha, folio, autoridad, OCR y acciones pendientes. Úsalo como mapa del expediente.</p>
+      <div class="toolbar">
+        <button onclick="generateCaseIndex()">Generar índice</button>
+        <button class="secondary" onclick="downloadCaseIndex()">Descargar índice TXT</button>
+        <button class="secondary" onclick="downloadGovernanceCsv()">Exportar gobierno CSV</button>
+      </div>
+      <div id="indexStats" class="box info small">Índice pendiente.</div>
+    </div>
+    <div class="card">
+      <h2>Índice generado</h2>
+      <div id="caseIndexOutput" class="paper"></div>
+    </div>
+  </div>
+</section>
+
+<section id="cases">
+  <div class="grid two">
+    <div class="card">
+      <h2>Crear / seleccionar caso</h2>
+      <label>Nombre del caso</label><input id="caseName" placeholder="Ej. Acta 05-mar-2026 / ARCO 340021800063226">
+      <label>Tipo</label><select id="caseType"><option>Acta administrativa</option><option>ARCO / datos personales</option><option>Queja</option><option>Denuncia</option><option>Defensoría</option><option>Espacios / laboratorio</option><option>Expediente maestro</option><option>Otro</option></select>
+      <label>Descripción</label><textarea id="caseDesc" placeholder="Objeto, autoridad, folios, riesgo principal, estrategia."></textarea>
+      <button onclick="createCase()">Crear caso</button>
+    </div>
+    <div class="card">
+      <h2>Casos existentes</h2>
+      <div id="caseList"></div>
+    </div>
+  </div>
+</section>
+
+<section id="import">
+  <div class="grid two">
+    <div class="card">
+      <h2>Importar carpeta completa / OCR</h2>
+      <div id="dropZone" class="drop">
+        <p><b>Arrastra archivos aquí</b> o usa los botones.</p>
+        <p class="small muted">Soporta PDF, imágenes y Word (.docx/.doc). Conserva rutas de carpetas.</p>
+      </div>
+      <div class="toolbar">
+        <label class="btn secondary" for="fileInput">Cargar archivos</label>
+        <input id="fileInput" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.webp,.tif,.tiff,.bmp,.docx,.doc,image/*,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword" style="display:none" onchange="handleFiles(this.files)">
+        <label class="btn secondary" for="folderInput">Cargar carpeta completa</label>
+        <input id="folderInput" type="file" multiple webkitdirectory directory style="display:none" onchange="handleFiles(this.files)">
+      </div>
+      <div class="row">
+        <div><label>Idioma OCR</label><select id="ocrLang"><option value="spa">Español</option><option value="eng">Inglés</option><option value="spa+eng">Español + Inglés</option></select></div>
+        <div><label>Máx. páginas PDF</label><input id="maxPdfPages" type="number" value="30" min="1" max="300"></div>
+      </div>
+      <div class="row">
+        <div><label>Escala PDF</label><select id="pdfScale"><option value="1.5">1.5x rápido</option><option value="2" selected>2x recomendado</option><option value="2.5">2.5x mejor OCR</option><option value="3">3x pesado</option></select></div>
+        <div><label>Guardar original local</label><select id="storeBlob"><option value="yes">Sí, para visor/visión</option><option value="no">No, solo texto/metadatos</option></select></div>
+      </div>
+      <button onclick="processQueue()">Iniciar OCR</button>
+      <div id="ocrProgress" class="box info">Cola vacía.</div>
+      <progress id="ocrBar" value="0" max="100"></progress>
+    </div>
+    <div class="card">
+      <h2>Cola de importación</h2>
+      <div id="queueList"></div>
+    </div>
+  </div>
+</section>
+
+<section id="documents">
+  <div class="card">
+    <h2>Documentos del caso activo</h2>
+    <div class="toolbar">
+      <button onclick="renderDocuments()">Actualizar</button>
+      <button class="secondary" onclick="exportCaseJson()">Exportar caso JSON</button>
+      <button class="secondary" onclick="downloadCSV()">Exportar índice CSV</button>
+      <button class="danger" onclick="deleteCaseDocs()">Eliminar docs del caso</button>
+    </div>
+    <div class="row"><div><label>Buscar</label><input id="docSearch" oninput="renderDocuments()" placeholder="folio, ruta, OCR, autoridad..."></div><div><label>Filtrar rol</label><select id="docRoleFilter" onchange="renderDocuments()"><option value="">Todos</option><option>Sin clasificar</option><option>Citatorio</option><option>Acta administrativa</option><option>Notificación</option><option>Respuesta ARCO</option><option>Acuse</option><option>Prueba / anexo</option><option>Borrador propio</option></select></div><div><label>Filtrar estado</label><select id="docStatusFilter" onchange="renderDocuments()"><option value="">Todos</option><option>Pendiente de clasificación</option><option>Pendiente de cotejo</option><option>Metadatos incompletos</option><option>Listo para RAG</option><option>Listo para escrito</option><option>Solo referencia interna</option><option>No usar</option></select></div></div>
+    <div style="overflow:auto"><table><thead><tr><th>Archivo</th><th>Ruta/caso</th><th>Tipo</th><th>OCR</th><th>Hash</th><th>Texto</th><th>Acciones</th></tr></thead><tbody id="docTable"></tbody></table></div>
+  </div>
+</section>
+
+<section id="viewer">
+  <div class="grid two">
+    <div class="card">
+      <h2>Documento seleccionado</h2>
+      <div id="selectedDocBox" class="box info">Ningún documento seleccionado.</div>
+      <label>Texto OCR / extraído</label>
+      <textarea id="selectedText" style="min-height:420px"></textarea>
+      <div class="toolbar">
+        <button onclick="saveSelectedText()">Guardar corrección OCR</button>
+        <button class="secondary" onclick="markReviewed()">Marcar cotejado</button>
+        <button class="warn" onclick="markNeedsReview()">Marcar requiere cotejo</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Metadatos y trazabilidad</h2>
+      <label>Folio/oficio visible</label><input id="selectedFolio">
+      <label>Autoridad/remitente</label><input id="selectedAuthority">
+      <label>Fecha visible del documento</label><input id="selectedDocDate" type="date">
+      <div class="row">
+        <div><label>Rol documental</label><select id="selectedRole"><option>Sin clasificar</option><option>Citatorio</option><option>Acta administrativa</option><option>Notificación</option><option>Opinión jurídica / dictamen</option><option>Respuesta ARCO</option><option>Acuerdo</option><option>Queja / denuncia</option><option>Oficio</option><option>Correo</option><option>Acuse</option><option>Prueba / anexo</option><option>Borrador propio</option><option>Otro</option></select></div>
+        <div><label>Etapa</label><select id="selectedStage"><option>Ingreso</option><option>Revisión OCR</option><option>Cotejo</option><option>Clasificado</option><option>En análisis</option><option>Usable para escrito</option><option>Archivado</option></select></div>
+      </div>
+      <div class="row">
+        <div><label>Estado</label><select id="selectedStatus"><option>Pendiente de clasificación</option><option>Pendiente de cotejo</option><option>Metadatos incompletos</option><option>Listo para RAG</option><option>Listo para escrito</option><option>Solo referencia interna</option><option>No usar</option></select></div>
+        <div><label>Prioridad</label><select id="selectedPriority"><option>Baja</option><option>Media</option><option>Alta</option><option>Urgente</option></select></div>
+      </div>
+      <label>Confidencialidad</label><select id="selectedConf"><option>Interno</option><option>Sensible</option><option>Muy sensible</option><option>Público/normativo</option></select>
+      <label>Acción pendiente</label><input id="selectedAction" placeholder="Qué falta hacer con este documento">
+      <label>Vencimiento</label><input id="selectedDue" type="date">
+      <label>Etiquetas</label><input id="selectedTags" placeholder="Separadas por coma">
+      <label>Notas</label><textarea id="selectedNotes"></textarea>
+      <button onclick="saveSelectedMeta()">Guardar metadatos y gobierno documental</button>
+      <div id="sourcePreview" class="box info small">Vista del original disponible solo si se guardó blob local.</div>
+    </div>
+  </div>
+</section>
+
+<section id="chat">
+  <div class="grid two">
+    <div class="card">
+      <h2>Chat del caso activo</h2>
+      <div id="chatBox" class="chatbox"></div>
+      <label>Pregunta / instrucción</label>
+      <textarea id="chatInput" placeholder="Ej. Analiza los documentos del caso y dime qué hechos sí constan, qué debe cotejarse y qué escrito conviene enviar sin generar ruido."></textarea>
+      <div class="box info small">
+        <b>Plantillas rápidas de opinión estratégica</b>
+        <div class="toolbar">
+          <button class="secondary" onclick="quickOpinion('opinion')">Opinión brutalmente honesta</button>
+          <button class="secondary" onclick="quickOpinion('impacto')">Cómo me beneficia/perjudica</button>
+          <button class="secondary" onclick="quickOpinion('sucede')">Qué crees que sucede</button>
+          <button class="secondary" onclick="quickOpinion('hacer')">Qué debería hacer</button>
+          <button class="secondary" onclick="quickOpinion('escrito')">Opina de este escrito</button><button class="secondary" onclick="quickOpinion('organizar')">Organizar expediente</button>
+        </div>
+      </div>
+      <div class="row">
+        <div><label>Modo</label><select id="chatMode">
+<option>Análisis estratégico protegido</option>
+<option>Gobierno documental: organizar expediente</option>
+<option>Opinión brutalmente honesta</option>
+<option>Impacto: cómo me beneficia/perjudica</option>
+<option>Qué creo que sucede</option>
+<option>Qué debería hacer ahora</option>
+<option>Análisis de escrito adverso</option>
+<option>Pre-flight de escrito</option>
+<option>Generación de escrito</option>
+<option>Comparación documental</option>
+<option>Resumen ejecutivo</option>
+<option>Verificación normativa pública</option>
+</select></div>
+        <div><label>Filtro RAG</label><select id="ragFilter"><option value="auto" selected>Automático: revisado, luego OCR con advertencia</option><option value="reviewed">Solo OCR revisado</option><option value="done">OCR completado + revisado</option><option value="all">Todos, incluso no cotejados</option><option value="selected">Solo documento seleccionado</option></select></div>
+      </div>
+      <div class="row">
+        <div><label>Fragmentos</label><input id="ragTopK" type="number" value="12" min="1" max="40"></div>
+        <div><label>Caracteres por fragmento</label><input id="chunkChars" type="number" value="1800" min="500" max="6000"></div>
+      </div>
+      <div class="row">
+        <div><label>Modelo manual</label><input id="modelOverride" placeholder="Vacío = auto"></div>
+        <div><label>Web normativa</label><select id="allowWeb"><option value="no">No usar web</option><option value="yes">Permitir solo si servidor lo habilitó</option></select></div>
+      </div>
+      <div class="toolbar">
+        <button onclick="sendChat()">Enviar al chat</button>
+        <button class="secondary" onclick="buildPacketPreview()">Ver paquete RAG</button>
+        <button class="secondary" onclick="clearCaseChat()">Limpiar chat del caso</button>
+      </div>
+      <div id="packetPreview" class="box info small">Paquete RAG no generado.</div>
+    </div>
+    <div class="card">
+      <h2>Fuentes recuperadas</h2>
+      <div id="sourcesList"></div>
+      <div class="box notice small">La respuesta debe citar estas fuentes. Si usa OCR no revisado, debe advertirlo.</div>
+    </div>
+  </div>
+</section>
+
+<section id="drafts">
+  <div class="grid two">
+    <div class="card">
+      <h2>Borradores versionados</h2>
+      <div class="toolbar">
+        <button onclick="saveLastAssistantAsDraft()">Guardar última respuesta como borrador</button>
+        <button class="secondary" onclick="exportDrafts()">Exportar borradores JSON</button>
+      </div>
+      <div id="draftList"></div>
+    </div>
+    <div class="card">
+      <h2>Editor de borrador</h2>
+      <div id="draftMeta" class="box info">Ningún borrador seleccionado.</div>
+      <textarea id="draftEditor" style="min-height:460px"></textarea>
+      <div class="toolbar">
+        <button onclick="saveDraftVersion()">Guardar nueva versión</button>
+        <button class="secondary" onclick="downloadDraftTxt()">Descargar TXT</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section id="privacy">
+  <div class="grid two">
+    <div class="card">
+      <h2>Privacidad, cifrado y respaldo</h2>
+      <div class="box notice small">
+        <b>Cifrado local opcional:</b> usa AES-GCM en navegador. No se guarda la contraseña. Si la pierdes, no se puede recuperar el respaldo cifrado.
+      </div>
+      <label>Contraseña maestra</label>
+      <input id="masterPassword" type="password" placeholder="Contraseña para cifrar/descifrar respaldos">
+      <div class="toolbar">
+        <button onclick="exportEncryptedBackup()">Exportar respaldo cifrado</button>
+        <label class="btn secondary" for="encryptedImport">Importar respaldo cifrado</label>
+        <input id="encryptedImport" type="file" accept="application/json" style="display:none" onchange="importEncryptedBackup(event)">
+        <button class="secondary" onclick="fullBackup()">Exportar respaldo normal</button>
+      </div>
+      <div id="cryptoStatus" class="box info small">Cifrado pendiente.</div>
+    </div>
+    <div class="card">
+      <h2>Política de uso seguro</h2>
+      <div class="box success"><b>Recomendación:</b> usa respaldo cifrado si el expediente contiene datos sensibles, testimonios, denuncias, acuses o información personal.</div>
+      <div class="box notice"><b>No subir:</b> no uses web search con documentos sensibles. Web solo para normativa pública.</div>
+      <div class="box info"><b>Exporta seguido:</b> después de importar/cotejar documentos importantes, genera respaldo.</div>
+    </div>
+  </div>
+</section>
+
+<section id="exporter">
+  <div class="grid two">
+    <div class="card">
+      <h2>Exportador profesional</h2>
+      <label>Título</label><input id="exportTitle" value="DefensaIPN_ai_export">
+      <label>Contenido</label><textarea id="exportContent" style="min-height:360px" placeholder="Pega aquí índice, borrador o reporte."></textarea>
+      <div class="toolbar exportBtns">
+        <button onclick="exportServer('txt')">TXT</button>
+        <button class="secondary" onclick="exportServer('html')">HTML</button>
+        <button class="secondary" onclick="exportServer('docx')">DOCX</button>
+        <button class="secondary" onclick="exportServer('pdf')">PDF</button>
+        <button class="secondary" onclick="copyCurrentIndexToExporter()">Usar índice maestro</button>
+        <button class="secondary" onclick="copyDraftToExporter()">Usar borrador seleccionado</button>
+      </div>
+      <div id="exportStatus" class="box info small">Exportador listo.</div>
+    </div>
+    <div class="card">
+      <h2>Buenas prácticas de exportación</h2>
+      <div class="box notice">Para entrega formal, exporta borrador a DOCX, revisa manualmente formato, anexos, firmas, acuses y destinatarios antes de imprimir o enviar.</div>
+      <div class="box success">Para archivo interno, usa PDF/HTML y guarda junto con respaldo JSON cifrado.</div>
+    </div>
+  </div>
+</section>
+
+<section id="audit">
+  <div class="card">
+    <h2>Auditoría de IA</h2>
+    <div class="toolbar"><button class="secondary" onclick="exportAudit()">Exportar auditoría</button><button class="secondary" onclick="exportFullBackup()">Exportar respaldo completo</button><label class="btn secondary" for="backupInput">Importar respaldo completo</label><input id="backupInput" type="file" accept="application/json" style="display:none" onchange="importFullBackup(event)"><button class="secondary" onclick="runSelfAudit()">Autoauditoría local</button><button class="danger" onclick="clearAudit()">Borrar auditoría</button></div><div id="selfAuditBox" class="box info small">Autoauditoría pendiente.</div>
+    <div style="overflow:auto"><table><thead><tr><th>Fecha</th><th>Caso</th><th>Modo</th><th>Modelo</th><th>Fuentes</th><th>Resumen</th></tr></thead><tbody id="auditTable"></tbody></table></div>
+  </div>
+</section>
+</main>
+
+<script>
+const tabs=[["panel","Panel"],["workflow","Flujo"],["cases","Casos"],["import","Importar/OCR"],["inbox","Bandeja"],["documents","Documentos"],["viewer","Visor"],["index","Índice"],["chat","Chat/RAG"],["drafts","Borradores"],["privacy","Privacidad"],["exporter","Exportar"],["audit","Auditoría/Backup"]];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
+const fmt=s=>{if(!s)return"";const [y,m,d]=s.split("-");return `${d}/${m}/${y}`};
+const uid=p=>p+"_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,7);
+const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`};
+
+let state={activeCaseId:null,selectedDocId:null,queue:[],audit:[],selectedDraftId:null,lastSources:[]};
+// ═══════════════════════════════════════════════════════════════
+// FIREBASE: Auth + Firestore  (reemplaza IndexedDB)
+// Blobs binarios se guardan localmente en IndexedDB separado
+// ═══════════════════════════════════════════════════════════════
+let fbApp, fbAuth, fbDb, currentUser = null, fbMod = {}, blobDb;
+
+async function openBlobDB() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open("defensaipn_blobs_v1", 1);
+    r.onupgradeneeded = e => { const d = e.target.result; if (!d.objectStoreNames.contains("blobs")) d.createObjectStore("blobs", { keyPath: "id" }); };
+    r.onsuccess = e => res(e.target.result); r.onerror = e => rej(e.target.error);
+  });
+}
+async function putBlobLocal(id, blob) {
+  if (!blobDb || !blob) return;
+  return new Promise(res => { const tx = blobDb.transaction("blobs", "readwrite"); tx.objectStore("blobs").put({ id: String(id), blob }); tx.oncomplete = () => res(); tx.onerror = () => res(); });
+}
+async function getBlobLocal(id) {
+  if (!blobDb) return null;
+  return new Promise(res => { const tx = blobDb.transaction("blobs", "readonly"); const r = tx.objectStore("blobs").get(String(id)); r.onsuccess = () => res(r.result?.blob || null); r.onerror = () => res(null); });
+}
+
+function cleanFs(obj) {
+  const o = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (v === undefined) continue;
+    if (Array.isArray(v)) { o[k] = v.map(i => (i === undefined ? null : i)); continue; }
+    o[k] = v;
+  }
+  return o;
+}
+function fsDoc(store, id) { return fbMod.doc(fbDb, "users", currentUser.uid, store, String(id)); }
+function fsCol(store) { return fbMod.collection(fbDb, "users", currentUser.uid, store); }
+
+async function put(store, obj) {
+  const id = obj.id || obj.key;
+  const clean = cleanFs({ ...obj });
+  if (clean.blob) { await putBlobLocal(String(id), clean.blob); clean.blob = null; clean.blobOmitted = true; }
+  await fbMod.setDoc(fsDoc(store, id), clean);
+  return obj;
+}
+async function del(store, key) { await fbMod.deleteDoc(fsDoc(store, key)); }
+async function get(store, key) {
+  const snap = await fbMod.getDoc(fsDoc(store, key));
+  if (!snap.exists()) return undefined;
+  const d = snap.data();
+  if (d && d.blobOmitted) d.blob = await getBlobLocal(String(d.id || d.key));
+  return d;
+}
+async function all(store) {
+  const snap = await fbMod.getDocs(fsCol(store));
+  const docs = snap.docs.map(d => d.data());
+  for (const d of docs) { if (d.blobOmitted) d.blob = await getBlobLocal(String(d.id || d.key)); }
+  return docs;
+}
+async function byIndex(store, index, value) {
+  const q = fbMod.query(fsCol(store), fbMod.where(index, "==", value));
+  const snap = await fbMod.getDocs(q);
+  const docs = snap.docs.map(d => d.data());
+  for (const d of docs) { if (d.blobOmitted) d.blob = await getBlobLocal(String(d.id || d.key)); }
+  return docs;
+}
+async function loadState() {
+  const s = await get("state", "app");
+  if (s && s.value) state = { ...state, ...s.value };
+  if (!state.audit) state.audit = [];
+}
+async function saveState() {
+  await put("state", { key: "app", value: { activeCaseId: state.activeCaseId, selectedDocId: state.selectedDocId, selectedDraftId: state.selectedDraftId, audit: state.audit, lastSources: state.lastSources || [] } });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AUTH: login / logout / init
+// ═══════════════════════════════════════════════════════════════
+async function initFirebase() {
+  const notice = $("loginConfigNotice");
+  try {
+    const cfg = await fetch("/api/firebase-config").then(r => r.ok ? r.json() : null).catch(() => null);
+    if (!cfg || !cfg.projectId) {
+      if (notice) notice.textContent = "⚠️ Firebase no configurado. Completa FIREBASE_* en el .env del servidor y reinicia.";
+      $("loginBtn").disabled = true; return;
+    }
+    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    const { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+    const { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs, query, where } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    fbApp = initializeApp(cfg);
+    fbAuth = getAuth(fbApp);
+    fbDb = getFirestore(fbApp);
+    fbMod = { doc, getDoc, setDoc, deleteDoc, collection, getDocs, query, where, signOut, signInWithEmailAndPassword };
+    if (notice) notice.textContent = "";
+    onAuthStateChanged(fbAuth, async user => {
+      if (user) {
+        currentUser = user;
+        $("userBadge").textContent = user.email;
+        $("loginScreen").style.display = "none";
+        $("main-app").style.display = "";
+        blobDb = await openBlobDB();
+        await boot();
+      } else {
+        currentUser = null;
+        $("loginScreen").style.display = "flex";
+        $("main-app").style.display = "none";
+      }
+    });
+  } catch (e) { if (notice) notice.textContent = "Error Firebase: " + e.message; }
+}
+async function doLogin() {
+  const email = $("loginEmail").value.trim();
+  const pass = $("loginPassword").value;
+  const notice = $("loginNotice");
+  notice.style.display = "none";
+  $("loginBtn").disabled = true; $("loginBtn").textContent = "Entrando...";
+  try { await fbMod.signInWithEmailAndPassword(fbAuth, email, pass); }
+  catch (e) {
+    notice.style.display = "";
+    notice.textContent = ["auth/invalid-credential", "auth/wrong-password", "auth/user-not-found"].includes(e.code) ? "Correo o contraseña incorrectos." : "Error: " + e.message;
+  }
+  finally { $("loginBtn").disabled = false; $("loginBtn").textContent = "Entrar"; }
+}
+async function doLogout() {
+  if (!confirm("¿Cerrar sesión?")) return;
+  await fbMod.signOut(fbAuth);
+}
+function configServerUrl() {
+  const cur = localStorage.getItem("defensaipn_server_url") || "";
+  const url = prompt("URL del servidor Express (vacío = mismo origen).\nEjemplo para acceso remoto: http://192.168.1.10:8787", cur);
+  if (url === null) return;
+  const trimmed = url.trim();
+  if (trimmed) localStorage.setItem("defensaipn_server_url", trimmed);
+  else localStorage.removeItem("defensaipn_server_url");
+  renderServerBadge();
+}
+function getServerUrl() { return localStorage.getItem("defensaipn_server_url") || ""; }
+function renderServerBadge() {
+  const u = getServerUrl();
+  const el = $("serverUrlBadge"); if (!el) return;
+  try { el.textContent = u ? new URL(u).host : "local"; } catch { el.textContent = "local"; }
+}
+
+function initTabs(){
+ const nav=$("tabs");nav.innerHTML="";
+ tabs.forEach(([id,label])=>{const b=document.createElement("button");b.className="tab"+(id==="panel"?" active":"");b.textContent=label;b.onclick=()=>{document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));$(id).classList.add("active");b.classList.add("active");renderAll()};nav.appendChild(b)})
+}
+async function ensureDefaultCase(){
+ const cases=await all("cases");
+ if(!cases.length){const c={id:"case_master",name:"Expediente Maestro Cese-IPN",type:"Expediente maestro",description:"Caso inicial. Crea subcasos para actas, ARCO, quejas, denuncias o Defensoría.",createdAt:new Date().toISOString()};await put("cases",c);state.activeCaseId=c.id;await saveState()}
+ else if(!state.activeCaseId){state.activeCaseId=cases[0].id;await saveState()}
+}
+async function activeCase(){return state.activeCaseId?await get("cases",state.activeCaseId):null}
+async function docsOfActive(){return state.activeCaseId?await byIndex("documents","caseId",state.activeCaseId):[]}
+async function messagesOfActive(){return state.activeCaseId?await byIndex("messages","caseId",state.activeCaseId):[]}
+async function draftsOfActive(){return state.activeCaseId?await byIndex("drafts","caseId",state.activeCaseId):[]}
+
+function normalize(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
+function tokens(s){return normalize(s).replace(/[^a-z0-9ñ]+/gi," ").split(/\s+/).filter(w=>w.length>2)}
+function splitPages(text){
+ const raw=String(text||"");
+ const parts=[];const re=/---\s*P[ÁA]GINA\s+(\d+)\s*---/gi;let last=0,lastPage=1,m;
+ while((m=re.exec(raw))){
+   if(m.index>last)parts.push({page:lastPage,text:raw.slice(last,m.index)});
+   lastPage=Number(m[1]);last=re.lastIndex;
+ }
+ parts.push({page:lastPage,text:raw.slice(last)});
+ return parts.filter(p=>p.text.trim());
+}
+function downloadText(text,filename,type="text/plain;charset=utf-8"){
+ const blob=new Blob([text],{type});const a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);a.download=filename;a.click();URL.revokeObjectURL(a.href);
+}
+async function estimateStorage(){
+ if(navigator.storage?.estimate){
+   const e=await navigator.storage.estimate();
+   return {usage:e.usage||0,quota:e.quota||0};
+ }
+ return {usage:0,quota:0};
+}
+function fmtBytes(n){
+ if(!n)return"0 B";const u=["B","KB","MB","GB"];let i=0,v=n;while(v>1024&&i<u.length-1){v/=1024;i++}return `${v.toFixed(i?1:0)} ${u[i]}`;
+}
+
+
+
+function docGovernanceReady(d){
+ return Boolean((d.docRole&&d.docRole!=="Sin clasificar") && d.docStatus && d.folio && d.authority && d.docDate && (d.reviewed||d.ocrStatus==="reviewed"));
+}
+function docPendingReasons(d){
+ const r=[];
+ if(!d.docRole||d.docRole==="Sin clasificar")r.push("sin clasificar");
+ if(!d.folio)r.push("sin folio/oficio");
+ if(!d.authority)r.push("sin autoridad");
+ if(!d.docDate)r.push("sin fecha visible");
+ if(!(d.reviewed||d.ocrStatus==="reviewed"))r.push("OCR no cotejado");
+ if(d.actionNeeded)r.push("acción pendiente");
+ if(d.dueDate){
+   const days=Math.ceil((new Date(d.dueDate+"T00:00:00")-new Date())/86400000);
+   if(days<=7)r.push(days<0?"vencimiento vencido":"vencimiento próximo");
+ }
+ return r;
+}
+function caseHealth(docs){
+ if(!docs.length)return {score:0,label:"sin documentos",issues:["No hay documentos en el caso activo."]};
+ let points=0,total=docs.length*6;const issues=[];
+ for(const d of docs){
+   if(d.docRole&&d.docRole!=="Sin clasificar")points++; else issues.push(`${d.fileName}: falta clasificación`);
+   if(d.folio)points++; else issues.push(`${d.fileName}: falta folio/oficio`);
+   if(d.authority)points++; else issues.push(`${d.fileName}: falta autoridad/remitente`);
+   if(d.docDate)points++; else issues.push(`${d.fileName}: falta fecha visible`);
+   if(d.reviewed||d.ocrStatus==="reviewed")points++; else issues.push(`${d.fileName}: OCR no cotejado`);
+   if(!d.actionNeeded||/listo|sin pendiente/i.test(d.actionNeeded))points++; else issues.push(`${d.fileName}: ${d.actionNeeded}`);
+ }
+ const score=Math.max(0,Math.min(100,Math.round(points/total*100)));
+ const label=score>=85?"sólido":score>=65?"usable con cautela":score>=40?"débil/ordenar antes de usar":"crítico/desordenado";
+ return {score,label,issues:[...new Set(issues)]};
+}
+function goTab(id){
+ document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+ document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+ if($(id))$(id).classList.add("active");
+ const label=tabs.find(t=>t[0]===id)?.[1];
+ [...document.querySelectorAll(".tab")].find(t=>t.textContent===label)?.classList.add("active");
+ renderAll();
+}
+async function renderWorkflow(){
+ if(!$("workflowSteps"))return;
+ const docs=await docsOfActive();const c=await activeCase();const msgs=await messagesOfActive();const health=caseHealth(docs);
+ const hasDocs=docs.length>0, hasReviewed=docs.some(d=>d.reviewed||d.ocrStatus==="reviewed"), hasClassified=docs.some(d=>d.docRole&&d.docRole!=="Sin clasificar"), hasIndex=health.score>=65, hasChat=msgs.length>0;
+ const steps=[
+  ["Caso creado",Boolean(c),"cases","Define un caso por asunto procesal."],
+  ["Documentos importados",hasDocs,"import","Carga carpetas completas o archivos."],
+  ["OCR/cotejo",hasReviewed,"viewer","Coteja OCR contra original antes de usarlo como soporte fuerte."],
+  ["Clasificación y metadatos",hasClassified&&health.score>=45,"inbox","Rol, folio, autoridad, fecha, estado, prioridad y acción pendiente."],
+  ["Índice maestro",hasIndex,"index","Genera carátula/índice para entender el expediente."],
+  ["Chat con fuentes",hasChat,"chat","Pregunta con RAG solo después de tener fuentes ordenadas."],
+  ["Borrador versionado",false,"drafts","Guarda respuestas útiles como borradores versionados."]
+ ];
+ $("workflowSteps").innerHTML=steps.map((s,i)=>`<div class="step ${s[1]?"done":"warn"}"><div class="stepnum">${i+1}</div><div><b>${esc(s[0])}</b><p class="small">${esc(s[3])}</p><button class="secondary" onclick="goTab('${s[2]}')">Ir</button></div></div>`).join("");
+ if($("governanceDashboard"))$("governanceDashboard").innerHTML=`<div class="box ${health.score>=70?"success":health.score>=40?"notice":"dangerbox"}"><b>Madurez:</b> ${health.score}% · ${esc(health.label)}<div class="healthbar"><span style="width:${health.score}%"></span></div></div><div class="docgrid">${governanceMetrics(docs).map(m=>`<div class="badgeblock"><b>${m.value}</b><br><span class="small">${esc(m.label)}</span></div>`).join("")}</div><div class="box info small">${health.issues.slice(0,8).map(i=>"• "+esc(i)).join("<br>")||"Sin pendientes relevantes."}</div>`;
+}
+function governanceMetrics(docs){
+ const overdue=docs.filter(d=>d.dueDate && new Date(d.dueDate+"T00:00:00")<new Date()).length;
+ return [
+  {label:"documentos",value:docs.length},
+  {label:"sin clasificar",value:docs.filter(d=>!d.docRole||d.docRole==="Sin clasificar").length},
+  {label:"OCR no cotejado",value:docs.filter(d=>!(d.reviewed||d.ocrStatus==="reviewed")).length},
+  {label:"metadatos incompletos",value:docs.filter(d=>!d.folio||!d.authority||!d.docDate).length},
+  {label:"acciones pendientes",value:docs.filter(d=>d.actionNeeded&&!/listo|sin pendiente/i.test(d.actionNeeded)).length},
+  {label:"vencidos",value:overdue}
+ ];
+}
+async function renderInbox(){
+ if(!$("pendingDocs"))return;
+ const docs=await docsOfActive();const pending=docs.filter(d=>docPendingReasons(d).length).sort((a,b)=>(a.priority==="Urgente"?-1:0)-(b.priority==="Urgente"?-1:0));
+ $("pendingDocs").innerHTML=pending.map(d=>`<div class="box ${d.priority==="Urgente"||d.priority==="Alta"?"dangerbox":"notice"}"><b>${esc(d.fileName)}</b><br><span class="tag violet">${esc(d.docRole||"Sin clasificar")}</span><span class="tag yellow">${esc(d.docStatus||"Pendiente")}</span><span class="tag">${esc(d.priority||"Media")}</span><p class="small">${docPendingReasons(d).map(r=>"• "+esc(r)).join("<br>")}</p><button class="secondary" onclick="selectDoc('${d.id}')">Abrir y completar</button></div>`).join("")||"<div class='box success'>No hay pendientes documentales relevantes en el caso activo.</div>";
+}
+async function applyBulkClassification(){
+ const scope=$("bulkScope").value;let docs=await docsOfActive();
+ if(scope==="selected") docs=docs.filter(d=>d.id===state.selectedDocId);
+ if(scope==="unclassified") docs=docs.filter(d=>!d.docRole||d.docRole==="Sin clasificar");
+ if(scope==="needsReview") docs=docs.filter(d=>!(d.reviewed||d.ocrStatus==="reviewed"));
+ if(!docs.length){alert("No hay documentos para aplicar la clasificación.");return}
+ for(const d of docs){
+  d.docRole=$("bulkRole").value;d.stage=$("bulkStage").value;d.docStatus=$("bulkStatus").value;d.priority=$("bulkPriority").value;d.confidentiality=$("bulkConf").value;
+  d.actionNeeded=$("bulkAction").value.trim()||d.actionNeeded||"";d.dueDate=$("bulkDue").value||d.dueDate||"";d.tags=$("bulkTags").value.trim()||d.tags||"";d.governedAt=new Date().toISOString();
+  await put("documents",d);
+ }
+ alert(`Clasificación aplicada a ${docs.length} documento(s).`);
+ renderAll();
+}
+async function quickClassifyDoc(id){state.selectedDocId=id;await saveState();goTab("inbox");$("bulkScope").value="selected";}
+async function generateCaseIndex(){
+ const c=await activeCase();const docs=(await docsOfActive()).sort((a,b)=>(a.docRole||"").localeCompare(b.docRole||"") || (a.docDate||"9999").localeCompare(b.docDate||"9999"));
+ const health=caseHealth(docs);const byRole={};docs.forEach(d=>{const k=d.docRole||"Sin clasificar";(byRole[k]=byRole[k]||[]).push(d)});
+ const lines=[];
+ lines.push(`ÍNDICE MAESTRO / CARÁTULA DEL CASO`);
+ lines.push(`Caso: ${c?.name||"Sin caso"}`);
+ lines.push(`Tipo: ${c?.type||""}`);
+ lines.push(`Descripción: ${c?.description||""}`);
+ lines.push(`Generado: ${new Date().toLocaleString()}`);
+ lines.push(`Madurez documental: ${health.score}% (${health.label})`);
+ lines.push(``);
+ lines.push(`RESUMEN DE GOBIERNO DOCUMENTAL`);
+ governanceMetrics(docs).forEach(m=>lines.push(`- ${m.label}: ${m.value}`));
+ lines.push(``);
+ lines.push(`PENDIENTES PRINCIPALES`);
+ (health.issues.slice(0,25)).forEach(i=>lines.push(`- ${i}`));
+ lines.push(``);
+ for(const [role,items] of Object.entries(byRole)){
+   lines.push(`=== ${role.toUpperCase()} ===`);
+   items.forEach((d,i)=>{lines.push(`${i+1}. ${d.fileName}`);
+     lines.push(`   ID: ${d.id}`);
+     lines.push(`   Ruta: ${d.folderPath}`);
+     lines.push(`   Folio/oficio: ${d.folio||"PENDIENTE"}`);
+     lines.push(`   Autoridad/remitente: ${d.authority||"PENDIENTE"}`);
+     lines.push(`   Fecha visible: ${d.docDate||"PENDIENTE"}`);
+     lines.push(`   Estado: ${d.docStatus||"PENDIENTE"} · Etapa: ${d.stage||"PENDIENTE"} · Prioridad: ${d.priority||"Media"}`);
+     lines.push(`   OCR: ${d.reviewed||d.ocrStatus==="reviewed"?"cotejado/revisado":"NO COTEJADO"} · Página/rango: ${d.pageRange||"N/A"}`);
+     lines.push(`   Acción pendiente: ${d.actionNeeded||"Sin pendiente registrada"}`);
+     lines.push(`   Etiquetas: ${d.tags||""}`);
+     lines.push(`   Hash: ${d.sha256}`);
+   });
+   lines.push("");
+ }
+ $("indexStats").innerHTML=`Índice generado con ${docs.length} documento(s). Madurez: ${health.score}%.`;
+ $("caseIndexOutput").textContent=lines.join("\n");
+}
+function downloadCaseIndex(){const txt=$("caseIndexOutput")?.textContent||"";if(!txt.trim()){alert("Genera el índice primero.");return}downloadText(txt,"indice_maestro_caso_"+today()+".txt");}
+async function downloadGovernanceCsv(){
+ const docs=await docsOfActive();
+ const rows=[["id","fileName","folderPath","docRole","stage","docStatus","priority","confidentiality","folio","authority","docDate","reviewed","ocrStatus","actionNeeded","dueDate","tags","sha256"],
+ ...docs.map(d=>[d.id,d.fileName,d.folderPath,d.docRole,d.stage,d.docStatus,d.priority,d.confidentiality,d.folio,d.authority,d.docDate,d.reviewed,d.ocrStatus,d.actionNeeded,d.dueDate,d.tags,d.sha256])];
+ const csv=rows.map(r=>r.map(x=>`"${String(x??"").replace(/"/g,'""')}"`).join(",")).join("\n");
+ downloadText(csv,"gobierno_documental_caso_"+today()+".csv","text/csv;charset=utf-8");
+}
+
+
+async function renderStorage(){
+ const box=$("storageBox");if(!box)return;
+ try{
+   const e=await estimateStorage();
+   const pct=e.quota?Math.round(e.usage/e.quota*100):0;
+   const docs=await all("documents");
+   const withBlob=docs.filter(d=>d.blob).length;
+   box.innerHTML=`<b>Almacenamiento local:</b> ${fmtBytes(e.usage)} usados de ${fmtBytes(e.quota)} (${pct}%).<br>Documentos con original guardado: ${withBlob}.<br><span class="small">Si se acerca al límite, exporta respaldo y evita guardar blobs de documentos muy pesados.</span>`;
+ }catch(err){box.innerHTML="No se pudo estimar almacenamiento: "+esc(err.message)}
+}
+
+async function renderAll(){await renderPanel();await renderWorkflow();await renderCases();renderQueue();await renderInbox();await renderDocuments();await renderSelectedDoc();await renderChat();renderSources();await renderDrafts();renderAudit();renderStorage()}
+async function renderPanel(){
+ const cases=await all("cases");const docs=await docsOfActive();const c=await activeCase();const msgs=await messagesOfActive();const chunks=buildChunks(docs,{filter:"done",chunkChars:1200}).length;
+ const health=caseHealth(docs);
+ $("mCase").textContent=c?c.name.slice(0,16):"—";$("mCases").textContent=cases.length;$("mDocs").textContent=docs.length;$("mChunks").textContent=chunks;$("mMsgs").textContent=msgs.length;$("mHealth").textContent=health.score+"%";
+ if($("caseHealthBox")) $("caseHealthBox").innerHTML=`<b>Semáforo documental:</b> ${health.label}<div class="healthbar"><span style="width:${health.score}%"></span></div>${health.issues.slice(0,6).map(x=>"• "+esc(x)).join("<br>")||"• Expediente razonablemente ordenado."}`;
+}
+async function renderCases(){
+ const cases=await all("cases");const docs=await all("documents");
+ $("caseList").innerHTML=cases.map(c=>{const n=docs.filter(d=>d.caseId===c.id).length;return `<button class="casepill ${c.id===state.activeCaseId?"ok":"secondary"}" onclick="selectCase('${c.id}')"><b>${esc(c.name)}</b><br><span class="small">${esc(c.type)} · ${n} docs</span><br><span class="tiny muted">${esc(c.description||"")}</span></button>`}).join("")||"<p class='muted'>Sin casos.</p>";
+}
+async function createCase(){const name=$("caseName").value.trim();if(!name){alert("Captura nombre del caso.");return}const c={id:uid("case"),name,type:$("caseType").value,description:$("caseDesc").value.trim(),createdAt:new Date().toISOString()};await put("cases",c);state.activeCaseId=c.id;state.selectedDocId=null;await saveState();$("caseName").value="";$("caseDesc").value="";renderAll()}
+async function selectCase(id){state.activeCaseId=id;state.selectedDocId=null;state.selectedDraftId=null;state.lastSources=[];await saveState();renderAll()}
+
+function renderQueue(){ $("queueList").innerHTML=state.queue.map(q=>`<div class="box"><b>${esc(q.file.name)}</b><br><span class="small muted">${esc(q.path||q.file.name)} · ${(q.file.size/1024).toFixed(1)} KB</span><br><span class="tag yellow">${esc(q.status||"pendiente")}</span></div>`).join("")||"<p class='muted'>Cola vacía.</p>"}
+function setupDrop(){const dz=$("dropZone");["dragenter","dragover"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add("drag")}));["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("drag")}));dz.addEventListener("drop",e=>handleFiles(e.dataTransfer.files))}
+function handleFiles(fileList){if(!state.activeCaseId){alert("Crea o selecciona un caso primero.");return}const files=[...fileList];const allowed=files.filter(f=>isSupported(f));const rejected=files.length-allowed.length;  allowed.forEach(f=>state.queue.push({file:f,path:f.webkitRelativePath||f.name,status:"pendiente"}));
+  const parts=[];
+  if(allowed.length)parts.push(`${allowed.length} archivo(s) agregados a la cola.`);
+  if(rejected)parts.push(`${rejected} ignorado(s) — solo se admiten PDF, imágenes y Word (.docx/.doc).`);
+  if(parts.length)$("ocrProgress").innerHTML=parts.join(" ");
+  renderQueue()}
+function isSupported(f){return /pdf$/i.test(f.name)||/^image\//.test(f.type)||/\.(png|jpe?g|webp|tiff?|bmp)$/i.test(f.name)||/\.(docx?)$/i.test(f.name)||/msword|wordprocessingml/.test(f.type||"")}
+async function sha256(file){const buf=await file.arrayBuffer();const hash=await crypto.subtle.digest("SHA-256",buf);return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,"0")).join("")}
+async function processQueue(){
+ if(!state.queue.length){alert("Cola vacía.");return}const c=await activeCase();if(!c){alert("Selecciona caso.");return}
+ $("ocrBar").value=0;let done=0;
+ for(const item of state.queue){
+  item.status="procesando";renderQueue();
+  try{
+   const result=await ocrFile(item.file,item.path);const hash=await sha256(item.file);
+   const doc={id:uid("doc"),caseId:state.activeCaseId,caseName:c.name,fileName:item.file.name,folderPath:item.path,mimeType:item.file.type||guessMime(item.file.name),size:item.file.size,lastModified:item.file.lastModified,sha256:hash,blob:$("storeBlob").value==="yes"?item.file:null,importedAt:new Date().toISOString(),ocrStatus:result.status,ocrLang:$("ocrLang").value,ocrText:result.text,pageCount:result.pageCount||null,pageRange:result.pageRange||null,ocrWarnings:result.warnings||[],reviewed:false,folio:"",authority:"",docDate:"",notes:"",sourceKind:result.sourceKind,docRole:"Sin clasificar",stage:"Ingreso",docStatus:"Pendiente de clasificación",priority:"Media",confidentiality:"Interno",actionNeeded:"Clasificar, cotejar OCR y capturar metadatos",dueDate:"",tags:"",relationIds:[]};
+   await put("documents",doc);item.status="ok";
+  }catch(err){item.status="error: "+err.message}
+  done++;$("ocrBar").value=Math.round(done/state.queue.length*100);$("ocrProgress").innerHTML=`Procesados ${done}/${state.queue.length}`;renderQueue();renderPanel();
+ }
+ state.queue=state.queue.filter(x=>!String(x.status).startsWith("ok"));renderAll();
+}
+function guessMime(name){return /\.pdf$/i.test(name)?"application/pdf":/\.docx$/i.test(name)?"application/vnd.openxmlformats-officedocument.wordprocessingml.document":/\.doc$/i.test(name)?"application/msword":"image/*"}
+async function ocrFile(file,path){
+  if(/pdf$/i.test(file.name)||file.type==="application/pdf")return await ocrPdf(file,path);
+  if(/\.docx?$/i.test(file.name)||/msword|wordprocessingml/.test(file.type||""))return await ocrDocx(file,path);
+  return await ocrImage(file,path);
+}
+async function ocrImage(file,path){
+ const Tesseract=await ensureTesseract();
+ const lang=$("ocrLang").value;$("ocrProgress").innerHTML=`OCR imagen: ${esc(path)}`;
+ const {data}=await Tesseract.recognize(file,lang,{langPath:"/vendor/tessdata",workerPath:"/vendor/tesseract/worker.min.js",corePath:"/vendor/tesseract/tesseract-core.wasm.js",logger:m=>{if(m.status)$("ocrProgress").innerHTML=`${esc(path)} · ${esc(m.status)} ${m.progress?Math.round(m.progress*100)+"%":""}`}});
+ return {status:"done",text:data.text||"",pageCount:1,pageRange:"1",warnings:[],sourceKind:"image_ocr"};
+}
+
+async function loadScriptOnce(src, globalName){
+ if(globalName && window[globalName]) return window[globalName];
+ await new Promise((resolve,reject)=>{
+  const s=document.createElement("script");s.src=src;s.onload=resolve;s.onerror=()=>reject(new Error("No se pudo cargar "+src));document.head.appendChild(s);
+ });
+ return globalName?window[globalName]:true;
+}
+async function ensureTesseract(){
+ if(window.Tesseract) return window.Tesseract;
+ try { return await loadScriptOnce("/vendor/tesseract/tesseract.min.js","Tesseract"); }
+ catch(e){ console.warn("Fallback CDN Tesseract",e); return await loadScriptOnce("https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js","Tesseract"); }
+}
+async function ensureMammoth(){
+ if(window.mammoth) return window.mammoth;
+ return await loadScriptOnce("https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js","mammoth");
+}
+async function ocrDocx(file,path){
+ $("ocrProgress").innerHTML=`Extrayendo texto Word: ${esc(path)}`;
+ const mammoth=await ensureMammoth();
+ const buf=await file.arrayBuffer();
+ let result;
+ try{ result=await mammoth.extractRawText({arrayBuffer:buf}); }
+ catch(e){ throw new Error("No se pudo leer el archivo Word. Verifica que sea .docx válido. "+e.message); }
+ const text=(result.value||"").trim();
+ const warnings=(result.messages||[]).filter(m=>m.type==="warning").map(m=>m.message);
+ if(!text) warnings.push("El documento Word no contenía texto extraíble (puede estar basado en imágenes; usa OCR manual).");
+ const isDoc=/\.doc$/i.test(file.name)&&!/\.docx$/i.test(file.name);
+ if(isDoc) warnings.push("Formato .doc antiguo: la extracción puede ser parcial. Se recomienda convertir a .docx o PDF antes de importar.");
+ return {status:"done",text:text||"[Sin texto extraíble]",pageCount:null,pageRange:null,warnings,sourceKind:"docx_text"};
+}
+async function loadPdfJs(){if(window.pdfjsLib)return window.pdfjsLib;
+ try{
+  const mod=await import("/vendor/pdfjs/pdf.mjs");
+  mod.GlobalWorkerOptions.workerSrc="/vendor/pdfjs/pdf.worker.mjs";
+  return mod;
+ }catch(e){
+  console.warn("Fallback CDN PDF.js",e);
+  const mod=await import("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs");
+  mod.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
+  return mod;
+ }
+}
+
+
+async function extractPdfNativeText(pdf, maxPages){
+ const parts=[];
+ for(let p=1;p<=maxPages;p++){
+   const page=await pdf.getPage(p);
+   const content=await page.getTextContent().catch(()=>null);
+   const text=(content?.items||[]).map(it=>it.str||"").join(" ").replace(/\s+/g," ").trim();
+   if(text)parts.push(`\n\n--- PÁGINA ${p} ---\n${text}`);
+ }
+ return parts.join("\n").trim();
+}
+async function ocrPdfPages(pdf,path,maxPages,scale,lang){
+ const Tesseract=await ensureTesseract();
+ const parts=[];const warnings=[];
+ for(let p=1;p<=maxPages;p++){
+   const page=await pdf.getPage(p);
+   const viewport=page.getViewport({scale});
+   const canvas=document.createElement("canvas");
+   const ctx=canvas.getContext("2d",{willReadFrequently:true});
+   canvas.width=viewport.width;canvas.height=viewport.height;
+   await page.render({canvasContext:ctx,viewport}).promise;
+   $("ocrProgress").innerHTML=`OCR PDF ${esc(path)} · página ${p}/${maxPages}`;
+   const {data}=await Tesseract.recognize(canvas,lang,{
+     langPath:"/vendor/tessdata",
+     workerPath:"/vendor/tesseract/worker.min.js",
+     corePath:"/vendor/tesseract/tesseract-core.wasm.js",
+     logger:m=>{if(m.status)$("ocrProgress").innerHTML=`${esc(path)} · pág. ${p} · ${esc(m.status)} ${m.progress?Math.round(m.progress*100)+"%":""}`}
+   });
+   parts.push(`\n\n--- PÁGINA ${p} ---\n${data.text||""}`);
+ }
+ return {text:parts.join("\n"),warnings};
+}
+async function ocrPdf(file,path){
+ const pdfjs=await loadPdfJs();
+ const buf=await file.arrayBuffer();
+ const pdf=await pdfjs.getDocument({data:buf}).promise;
+ const maxPages=Math.min(Number($("maxPdfPages").value||30),pdf.numPages);
+ const scale=Number($("pdfScale").value||2);
+ const lang=$("ocrLang").value;
+ const warnings=[];
+ if(pdf.numPages>maxPages)warnings.push(`PDF tenía ${pdf.numPages} páginas; se procesaron solo ${maxPages}.`);
+ $("ocrProgress").innerHTML=`Extrayendo texto nativo PDF: ${esc(path)}`;
+ const nativeText=await extractPdfNativeText(pdf,maxPages);
+ if(nativeText && nativeText.replace(/\s+/g," ").length>300){
+   return {status:"done",text:nativeText,pageCount:pdf.numPages,pageRange:`1-${maxPages}`,warnings,sourceKind:"pdf_text"};
+ }
+ const ocr=await ocrPdfPages(pdf,path,maxPages,scale,lang);
+ return {status:"done",text:ocr.text,pageCount:pdf.numPages,pageRange:`1-${maxPages}`,warnings:[...warnings,...ocr.warnings,"PDF sin texto nativo suficiente; se aplicó OCR."],sourceKind:"pdf_ocr"};
+}
+
+async function renderDocuments(){
+ const docs=await docsOfActive();const f=($("docSearch")?.value||"").toLowerCase();const roleF=$("docRoleFilter")?.value||"";const statusF=$("docStatusFilter")?.value||"";
+ const list=docs.filter(d=>{
+   if(roleF && (d.docRole||"Sin clasificar")!==roleF) return false;
+   if(statusF && (d.docStatus||"Pendiente de clasificación")!==statusF) return false;
+   return !f||JSON.stringify({...d,blob:null}).toLowerCase().includes(f);
+ }).sort((a,b)=>(a.docRole||"").localeCompare(b.docRole||"") || (a.folderPath||"").localeCompare(b.folderPath||""));
+ $("docTable").innerHTML=list.map(d=>`<tr>
+ <td><b>${esc(d.fileName)}</b><br><span class="tiny muted">${(d.size/1024).toFixed(1)} KB</span><br><span class="tag ${docGovernanceReady(d)?"green":"yellow"}">${docGovernanceReady(d)?"gobernado":"pendiente"}</span></td>
+ <td><span class="tag violet">${esc(d.caseName)}</span><br><span class="small">${esc(d.folderPath)}</span><br><span class="small muted">${esc(d.folio||"sin folio")} · ${esc(d.authority||"sin autoridad")} · ${esc(d.docDate||"sin fecha")}</span></td>
+ <td>${esc(d.sourceKind||d.mimeType)}<br>${d.pageCount?`<span class="tiny">Páginas: ${d.pageCount} · OCR: ${esc(d.pageRange)}</span>`:""}</td>
+ <td><span class="tag ${d.reviewed?"green":d.ocrStatus==="done"?"yellow":"red"}">${d.reviewed?"OCR revisado":esc(d.ocrStatus)}</span><br><span class="tag">${esc(d.docRole||"Sin clasificar")}</span><span class="tag yellow">${esc(d.docStatus||"Pendiente")}</span><br><span class="small">${esc(d.actionNeeded||"")}</span></td>
+ <td><span class="mono tiny">${esc((d.sha256||"").slice(0,18))}...</span><br><span class="tag ${d.priority==="Urgente"||d.priority==="Alta"?"red":"green"}">${esc(d.priority||"Media")}</span></td>
+ <td><span class="small">${esc((d.ocrText||"").slice(0,220))}</span></td>
+ <td><button class="secondary" onclick="selectDoc('${d.id}')">Abrir</button><button class="secondary" onclick="quickClassifyDoc('${d.id}')">Clasificar</button><button class="danger" onclick="deleteDoc('${d.id}')">Eliminar</button></td>
+ </tr>`).join("")||"<tr><td colspan='7'>Sin documentos en este caso.</td></tr>";
+}
+async function selectDoc(id){state.selectedDocId=id;await saveState();await renderSelectedDoc();document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));$("viewer").classList.add("active");document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));[...document.querySelectorAll(".tab")].find(t=>t.textContent==="Visor")?.classList.add("active")}
+async function renderSelectedDoc(){
+ const d=state.selectedDocId?await get("documents",state.selectedDocId):null;
+ if(!d){$("selectedDocBox").innerHTML="Ningún documento seleccionado.";["selectedText","selectedFolio","selectedAuthority","selectedDocDate","selectedNotes","selectedAction","selectedDue","selectedTags"].forEach(id=>{$(id).value=""});["selectedRole","selectedStage","selectedStatus","selectedPriority","selectedConf"].forEach(id=>{if($(id))$(id).selectedIndex=0});$("sourcePreview").innerHTML="Vista del original disponible solo si se guardó blob local.";return}
+ $("selectedDocBox").innerHTML=`<b>${esc(d.fileName)}</b><br><span class="small">${esc(d.folderPath)}</span><br><span class="tag violet">${esc(d.caseName)}</span><span class="tag ${d.reviewed?"green":"yellow"}">${d.reviewed?"OCR revisado":"OCR no cotejado"}</span><br><span class="mono tiny">${esc(d.sha256)}</span>`;
+ $("selectedText").value=d.ocrText||"";$("selectedFolio").value=d.folio||"";$("selectedAuthority").value=d.authority||"";$("selectedDocDate").value=d.docDate||"";$("selectedNotes").value=d.notes||"";$("selectedRole").value=d.docRole||"Sin clasificar";$("selectedStage").value=d.stage||"Ingreso";$("selectedStatus").value=d.docStatus||"Pendiente de clasificación";$("selectedPriority").value=d.priority||"Media";$("selectedConf").value=d.confidentiality||"Interno";$("selectedAction").value=d.actionNeeded||"";$("selectedDue").value=d.dueDate||"";$("selectedTags").value=d.tags||"";
+ $("sourcePreview").innerHTML=d.blob?`<b>Original guardado localmente.</b><br><span class="small">Tipo: ${esc(d.mimeType)}.</span><div id="blobPreview"></div>`:"No se guardó archivo original local; solo texto/metadatos."; if(d.blob) renderBlobPreview(d);
+}
+async function saveSelectedText(){const d=await get("documents",state.selectedDocId);if(!d)return;d.ocrText=$("selectedText").value;d.ocrStatus="done";d.reviewed=false;d.correctedAt=new Date().toISOString();await put("documents",d);renderAll();alert("Texto guardado. Quedó como no cotejado.")}
+async function markReviewed(){const d=await get("documents",state.selectedDocId);if(!d)return;d.reviewed=true;d.ocrStatus="reviewed";d.reviewedAt=new Date().toISOString();await put("documents",d);renderAll()}
+async function markNeedsReview(){const d=await get("documents",state.selectedDocId);if(!d)return;d.reviewed=false;d.ocrStatus="done";await put("documents",d);renderAll()}
+async function saveSelectedMeta(){const d=await get("documents",state.selectedDocId);if(!d)return;
+ d.folio=$("selectedFolio").value.trim();d.authority=$("selectedAuthority").value.trim();d.docDate=$("selectedDocDate").value;d.notes=$("selectedNotes").value.trim();
+ d.docRole=$("selectedRole").value;d.stage=$("selectedStage").value;d.docStatus=$("selectedStatus").value;d.priority=$("selectedPriority").value;d.confidentiality=$("selectedConf").value;d.actionNeeded=$("selectedAction").value.trim();d.dueDate=$("selectedDue").value;d.tags=$("selectedTags").value.trim();
+ d.governedAt=new Date().toISOString();
+ await put("documents",d);renderAll();alert("Metadatos y gobierno documental guardados.");
+}
+
+async function deleteDoc(id){
+ if(!confirm("¿Eliminar documento del caso activo? Se conservarán respaldos externos si los exportaste."))return;
+ await del("documents",id);
+ if(state.selectedDocId===id)state.selectedDocId=null;
+ await saveState();await renderAll();
+}
+async function deleteCaseDocs(){
+ if(!confirm("¿Eliminar TODOS los documentos del caso activo? Esta acción no borra casos, chats ni borradores."))return;
+ const docs=await docsOfActive();
+ for(const d of docs)await del("documents",d.id);
+ state.selectedDocId=null;await saveState();await renderAll();
+}
+
+function chunkText(text, size=1800){const out=[];let t=text.replace(/\n{3,}/g,"\n\n").trim();while(t.length>size){let cut=t.lastIndexOf("\n\n",size);if(cut<size*0.45)cut=t.lastIndexOf(". ",size);if(cut<size*0.45)cut=size;out.push(t.slice(0,cut).trim());t=t.slice(cut).trim()}if(t)out.push(t);return out}
+function buildChunks(docs,{filter="auto",chunkChars=1800}={}){
+ let allowed=docs;
+ if(filter==="auto"){
+   const reviewed=docs.filter(d=>d.reviewed||d.ocrStatus==="reviewed");
+   allowed=reviewed.length?reviewed:docs.filter(d=>d.ocrStatus==="done"||d.ocrStatus==="reviewed");
+ }
+ if(filter==="reviewed")allowed=docs.filter(d=>d.reviewed||d.ocrStatus==="reviewed");
+ if(filter==="done")allowed=docs.filter(d=>d.ocrStatus==="done"||d.ocrStatus==="reviewed");
+ if(filter==="selected")allowed=docs.filter(d=>d.id===state.selectedDocId);
+ const chunks=[];
+ for(const d of allowed){
+  const pages=splitPages(d.ocrText||"");
+  for(const p of pages){
+   const cs=chunkText(p.text,Number(chunkChars)||1800);
+   cs.forEach((txt,i)=>chunks.push({id:`${d.id}:p${p.page}:c${i+1}`,docId:d.id,caseId:d.caseId,fileName:d.fileName,folderPath:d.folderPath,folio:d.folio,authority:d.authority,docDate:d.docDate,page:p.page,chunk:i+1,text:txt,reviewed:!!d.reviewed||d.ocrStatus==="reviewed",ocrStatus:d.ocrStatus,sha256:d.sha256,notes:d.notes,docRole:d.docRole,stage:d.stage,docStatus:d.docStatus,priority:d.priority,confidentiality:d.confidentiality,actionNeeded:d.actionNeeded,dueDate:d.dueDate,tags:d.tags,score:0}))
+  }
+ }
+ return chunks;
+}
+function scoreChunk(query,ch){
+ const q=tokens(query);if(!q.length)return ch.reviewed?2:1;
+ const hay=normalize([ch.fileName,ch.folderPath,ch.folio,ch.authority,ch.notes,ch.docRole,ch.stage,ch.docStatus,ch.priority,ch.actionNeeded,ch.tags,ch.text].join(" "));
+ let s=0;for(const term of q){const safe=term.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");const count=(hay.match(new RegExp(safe,"g"))||[]).length;s+=count?Math.min(8,count)*3:0}
+ if(ch.reviewed)s+=4;if(ch.folio&&normalize(query).includes(normalize(ch.folio)))s+=20;
+ return s;
+}
+function baselineLegalQuery(mode){
+ const base="acta administrativa citatorio oficio folio notificación sanción prescripción hechos fecha autoridad prueba anexo acuse expediente datos personales ARCO defensa debido proceso";
+ if(/brutal|opinión|impacto|beneficia|perjudica|afecta|debería|sucede|hace/i.test(mode||""))return base+" beneficio perjuicio impacto riesgo oculto estrategia ruido institucional denunciante autoridad escrito afectación ventaja desventaja recomendación escenario prueba soporte";
+ if(/pre-flight|escrito|generación/i.test(mode||""))return base+" solicitud preservación derechos estado procesal fundamentación motivación bajo protesta";
+ if(/comparación/i.test(mode||""))return base+" contradicción diferencia inconsistencia fechas folios";
+ return base;
+}
+async function retrieve(query){
+ const docs=await docsOfActive();const filter=$("ragFilter")?.value||"auto";const chunkChars=Number($("chunkChars")?.value||1800);const topK=Number($("ragTopK")?.value||12);
+ let chunks=buildChunks(docs,{filter,chunkChars});
+ const q=(query||"").trim() || baselineLegalQuery($("chatMode")?.value);
+ let scored=chunks.map(c=>({...c,score:scoreChunk(q,c)})).sort((a,b)=>b.score-a.score);
+ let selected=scored.filter(c=>c.score>0).slice(0,topK);
+ if(!selected.length && filter==="reviewed"){
+   const fallback=buildChunks(docs,{filter:"done",chunkChars}).map(c=>({...c,score:scoreChunk(q,c)-3})).sort((a,b)=>b.score-a.score).slice(0,topK);
+   selected=fallback.map(c=>({...c,notes:[c.notes,"FALLBACK: no había OCR revisado; este fragmento requiere cotejo."].filter(Boolean).join(" | ")}));
+ }
+ if(!selected.length && chunks.length) selected=chunks.slice(0,Math.min(topK,chunks.length)).map(c=>({...c,score:1,notes:[c.notes,"FALLBACK: fragmento incluido por falta de coincidencias."].filter(Boolean).join(" | ")}));
+ return selected;
+}
+async function buildPacket(query){
+ const c=await activeCase();const docs=await docsOfActive();const retrieved=await retrieve(query);
+ const docIds=[...new Set(retrieved.map(r=>r.docId))];
+ const metas=docs.filter(d=>docIds.includes(d.id)).map(d=>({id:d.id,caseId:d.caseId,fileName:d.fileName,folderPath:d.folderPath,folio:d.folio,authority:d.authority,docDate:d.docDate,ocrStatus:d.ocrStatus,reviewed:!!d.reviewed,sha256:d.sha256,notes:d.notes,pageRange:d.pageRange,sourceKind:d.sourceKind,ocrWarnings:d.ocrWarnings||[],docRole:d.docRole,stage:d.stage,docStatus:d.docStatus,priority:d.priority,confidentiality:d.confidentiality,actionNeeded:d.actionNeeded,dueDate:d.dueDate,tags:d.tags}));
+ const warnings=[];
+ if(!retrieved.length)warnings.push("No se recuperaron fragmentos RAG; la IA no debe afirmar hechos del expediente.");
+ const health=caseHealth(docs); if(health.score<70) warnings.push("El caso tiene madurez documental baja/media; prioriza organización antes de usar conclusiones fuertes.");
+ if(retrieved.some(r=>!r.reviewed))warnings.push("Hay fragmentos OCR no cotejados; deben usarse como datos por verificar.");
+ if($("ragFilter")?.value==="selected"&&!state.selectedDocId)warnings.push("Filtro seleccionado activo, pero no hay documento seleccionado.");
+ const norms=[
+  {id:"LFTSE",title:"Ley Federal de los Trabajadores al Servicio del Estado",use:"Prescripción y causales laborales; verificar artículos exactos antes de citar."},
+  {id:"IPN_ACTAS_1892",title:"Lineamientos IPN para Actas Administrativas y Sanciones",use:"Citatorio, acta, opinión jurídica, notificación, reconsideración."},
+  {id:"LGPDPPSO_2025",title:"Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados",use:"ARCO y acceso a datos personales."},
+  {id:"CPEUM_14_16",title:"Constitución",use:"Debido proceso, fundamentación y motivación."}
+ ];
+ return {selectedCase:c,documents:metas,retrievedChunks:retrieved.map(r=>({...r,text:r.text.slice(0,Number($("chunkChars")?.value||1800))})),norms,ragSettings:{filter:$("ragFilter")?.value,topK:$("ragTopK")?.value,chunkChars:$("chunkChars")?.value,mode:$("chatMode")?.value,analysisContract:analysisContract($("chatMode")?.value)},packetWarnings:warnings};
+}
+async function buildPacketPreview(){const q=$("chatInput").value||"";const p=await buildPacket(q);state.lastSources=p.retrievedChunks;await saveState();renderSources();const warn=p.packetWarnings?.length?`<div class="box notice">${p.packetWarnings.map(w=>`⚠️ ${esc(w)}`).join("<br>")}</div>`:"";$("packetPreview").innerHTML=`Caso: <b>${esc(p.selectedCase?.name)}</b><br>Documentos fuente: ${p.documents.length}<br>Fragmentos: ${p.retrievedChunks.length}<br>Chars aprox: ${p.retrievedChunks.reduce((a,c)=>a+(c.text||"").length,0)}${warn}<details><summary>Ver JSON</summary><pre class="mono">${esc(JSON.stringify(p,null,2).slice(0,22000))}</pre></details>`;return p}
+function renderSources(){
+ const list=state.lastSources||[];
+ $("sourcesList").innerHTML=list.map(s=>`<div class="box srcitem" onclick="selectDoc('${s.docId}')"><b>[src:${esc(s.id)}]</b><br><span class="small">${esc(s.fileName)} · pág. ${esc(s.page)} · score ${esc(s.score)}</span><br><span class="tag ${s.reviewed?"green":"yellow"}">${s.reviewed?"revisado":"OCR no cotejado"}</span><p class="small">${esc((s.text||"").slice(0,420))}</p></div>`).join("")||"<p class='muted'>Aún no hay fuentes recuperadas.</p>";
+}
+function validateCitations(output, sources){
+ const expected=(sources||[]).map(s=>s.id);
+ const cited=[...String(output||"").matchAll(/\[src:([^\]]+)\]/g)].map(m=>m[1]);
+ const valid=cited.filter(c=>expected.includes(c));
+ const invalid=cited.filter(c=>!expected.includes(c));
+ const hasSources=expected.length>0;
+ const hasCitation=valid.length>0;
+ let level="ok",message="Respuesta con citas internas válidas.";
+ if(hasSources&&!hasCitation){level="warn";message="La respuesta no citó fuentes internas recuperadas; revisa antes de usar.";}
+ if(invalid.length){level="warn";message+=` Citas no reconocidas: ${invalid.join(", ")}.`;}
+ if(!hasSources){level="warn";message="No se enviaron fuentes RAG; la respuesta no debe tratarse como sustentada en expediente.";}
+ return {level,message,cited,valid,invalid,expected};
+}
+async function renderChat(){
+ const msgs=(await messagesOfActive()).sort((a,b)=>a.createdAt.localeCompare(b.createdAt));
+ $("chatBox").innerHTML=msgs.map(m=>`<div class="msg ${m.role}"><div class="msgmeta">${esc(m.role)} · ${esc(new Date(m.createdAt).toLocaleString())}${m.meta?.model?` · ${esc(m.meta.model)}`:""}</div>${esc(m.content)}</div>`).join("")||"<p class='muted'>Sin mensajes. Haz una pregunta sobre el caso activo.</p>";
+ $("chatBox").scrollTop=$("chatBox").scrollHeight;
+}
+
+function analysisContract(mode){
+ const m=String(mode||"").toLowerCase();
+ if(/brutal|opinión|impacto|beneficia|perjudica|afecta|sucede|debería|adverso/.test(m)){
+   return {
+     type:"opinion_estrategica",
+     requiredLabels:["HECHO SOPORTADO","INFERENCIA RAZONABLE","HIPÓTESIS INTERNA","RIESGO NO PROBADO","OPINIÓN ESTRATÉGICA"],
+     requiredSections:["Opinión brutalmente honesta","Cómo te beneficia","Cómo te perjudica","Riesgos ocultos","Relación con el caso","Qué haría yo","Qué NO haría","Nivel de certeza","Citas internas"],
+     caution:"Ser franco sin convertir sospechas en hechos; proteger al denunciado y evitar ruido institucional innecesario."
+   };
+ }
+ return {type:"analisis_protegido",caution:"No inventar hechos; citar fuentes internas; separar hechos de inferencias."};
+}
+function quickOpinion(kind){
+ const templates={
+  opinion:"Dame tu opinión brutalmente honesta sobre este caso/documento. Quiero que me digas sin suavizar: qué ves fuerte, qué ves débil, qué me beneficia, qué me perjudica, qué riesgos ocultos hay, qué no debo hacer y qué harías tú en mi lugar. Separa hechos soportados, inferencias razonables e hipótesis internas.",
+  impacto:"Analiza cómo este escrito/documento me beneficia y cómo me perjudica. Dime qué efecto puede tener en mi defensa, qué reacción podría provocar en la autoridad o denunciantes, y si conviene usarlo, ajustarlo, guardarlo o no enviarlo.",
+  sucede:"Con base únicamente en los documentos del caso, dime qué crees que está sucediendo. Dame escenario más probable, escenario alternativo y escenario de riesgo. Indica qué prueba confirmaría o descartaría cada escenario.",
+  hacer:"Dime qué debería hacer ahora de forma estratégica y de bajo ruido. Dame pasos concretos, qué priorizar, qué esperar, qué pedir por escrito, qué no mover todavía y qué documento faltaría para fortalecerme.",
+  escrito:"Opina de este escrito/documento como si fueras mi asesor crítico. Dime si me ayuda o me perjudica, si genera ruido, si tiene frases peligrosas, si conviene enviarlo, modificarlo, guardarlo como antecedente o usarlo solo internamente.",
+  organizar:"Organiza estratégicamente el expediente del caso activo. Dime qué documentos están incompletos, cuáles deben cotejarse, cuáles son útiles para escritos, qué metadatos faltan, qué acciones pendientes debo priorizar y genera una ruta de trabajo para no mezclar asuntos."
+ };
+ $("chatInput").value=templates[kind]||templates.opinion;
+ const map={opinion:"Opinión brutalmente honesta",impacto:"Impacto: cómo me beneficia/perjudica",sucede:"Qué creo que sucede",hacer:"Qué debería hacer ahora",escrito:"Análisis de escrito adverso",organizar:"Gobierno documental: organizar expediente"};
+ $("chatMode").value=map[kind]||"Opinión brutalmente honesta";
+}
+
+async function sendChat(){
+ const text=$("chatInput").value.trim();if(!text){alert("Escribe una instrucción.");return}
+ const caseObj=await activeCase();if(!caseObj){alert("Selecciona caso.");return}
+ const userMsg={id:uid("msg"),caseId:state.activeCaseId,role:"user",content:text,createdAt:new Date().toISOString(),meta:{mode:$("chatMode").value}};await put("messages",userMsg);$("chatInput").value="";await renderChat();
+ const packet=await buildPacketPreview();const hist=(await messagesOfActive()).sort((a,b)=>a.createdAt.localeCompare(b.createdAt)).slice(-16).map(m=>({role:m.role,content:m.content,createdAt:m.createdAt}));
+ const loading={id:uid("msg"),caseId:state.activeCaseId,role:"assistant",content:"Procesando con IA...",createdAt:new Date().toISOString(),meta:{loading:true}};await put("messages",loading);await renderChat();
+ try{
+  const body={userInstruction:text,packet,conversation:hist,modelOverride:$("modelOverride").value.trim()||undefined,mode:$("chatMode").value,allowWebSearch:$("allowWeb").value==="yes"};
+  const d=await api("/api/ai/chat",{method:"POST",body:JSON.stringify(body)});
+  await del("messages",loading.id);
+  const r=d.result;
+  const citationAudit=validateCitations(r.output_text||"", packet.retrievedChunks);
+  const contentWithAudit=(r.output_text||"")+`
+
+---
+VALIDACIÓN LOCAL DE CITAS: ${citationAudit.message}`;
+  const msg={id:uid("msg"),caseId:state.activeCaseId,role:"assistant",content:contentWithAudit,createdAt:r.created_at,meta:{model:r.model_returned,response_id:r.response_id,usage:r.raw_usage,mode:$("chatMode").value,sources:packet.retrievedChunks.map(c=>c.id),citationAudit}};
+  await put("messages",msg);
+  state.audit.unshift({created_at:r.created_at,caseId:state.activeCaseId,caseName:caseObj.name,mode:$("chatMode").value,model_requested:r.model_requested,model_returned:r.model_returned,sources:packet.retrievedChunks.map(c=>c.id),output_text:contentWithAudit,raw_usage:r.raw_usage,citationAudit});
+  await saveState();await renderAll();
+ }catch(e){await del("messages",loading.id);const err={id:uid("msg"),caseId:state.activeCaseId,role:"assistant",content:"Error al llamar IA: "+e.message,createdAt:new Date().toISOString(),meta:{error:true}};await put("messages",err);await renderChat();}
+}
+async function clearCaseChat(){if(!confirm("¿Limpiar chat de este caso?"))return;const msgs=await messagesOfActive();for(const m of msgs)await del("messages",m.id);renderAll()}
+async function api(path,opts={}){const url=getServerUrl()+path;const res=await fetch(url,{headers:{"Content-Type":"application/json"},...opts});const data=await res.json().catch(()=>({}));if(!res.ok||data.ok===false)throw new Error(data.error||"Error del servidor");return data}
+async function checkHealth(){try{const d=await api("/api/health");$("healthBox").className=d.api_key_configured?"box success":"box notice";$("healthBox").innerHTML=`<b>Servidor:</b> activo<br>API key: ${d.api_key_configured?"configurada":"NO configurada"}<br>Web search: ${d.allow_web_search?"habilitado":"deshabilitado"}<br>Razonamiento: ${esc(d.reasoning_effort)}<br>Policy: ${esc(d.policy_version)}`;}catch(e){$("healthBox").className="box dangerbox";$("healthBox").textContent=e.message}}
+async function resolveModel(){try{const d=await api("/api/models/resolve");$("modelBox").className="box success";$("modelBox").innerHTML=`<b>Modelo:</b> <span class="tag green">${esc(d.selected)}</span><br><b>Razón:</b> ${esc(d.reason)}<br><b>Verificado:</b> ${esc(d.checked_at)}`;}catch(e){$("modelBox").className="box dangerbox";$("modelBox").textContent=e.message}}
+
+async function saveLastAssistantAsDraft(){
+ const msgs=(await messagesOfActive()).filter(m=>m.role==="assistant").sort((a,b)=>b.createdAt.localeCompare(a.createdAt));if(!msgs.length){alert("No hay respuesta de IA para guardar.");return}
+ const c=await activeCase();const root=uid("draftroot");const d={id:uid("draft"),rootId:root,caseId:state.activeCaseId,caseName:c.name,title:"Borrador desde chat "+new Date().toLocaleString(),version:1,content:msgs[0].content,sourceMessageId:msgs[0].id,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),sources:msgs[0].meta?.sources||[]};
+ await put("drafts",d);state.selectedDraftId=d.id;await saveState();renderDrafts();alert("Borrador guardado.");
+}
+async function renderDrafts(){
+ const drafts=(await draftsOfActive()).sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt));
+ $("draftList").innerHTML=drafts.map(d=>`<div class="box"><b>${esc(d.title)}</b><br><span class="tag violet">v${d.version}</span><span class="small muted">${esc(new Date(d.updatedAt).toLocaleString())}</span><p class="small">${esc((d.content||"").slice(0,260))}</p><button class="secondary" onclick="selectDraft('${d.id}')">Editar</button><button class="danger" onclick="deleteDraft('${d.id}')">Eliminar</button></div>`).join("")||"<p class='muted'>Sin borradores.</p>";
+ const selected=state.selectedDraftId?await get("drafts",state.selectedDraftId):null;
+ $("draftMeta").innerHTML=selected?`<b>${esc(selected.title)}</b><br><span class="tag violet">v${selected.version}</span><br>Fuentes: ${(selected.sources||[]).map(s=>`<span class='tag'>${esc(s)}</span>`).join("")}`:"Ningún borrador seleccionado.";
+ $("draftEditor").value=selected?.content||"";
+}
+async function selectDraft(id){state.selectedDraftId=id;await saveState();renderDrafts()}
+async function saveDraftVersion(){
+ const d=state.selectedDraftId?await get("drafts",state.selectedDraftId):null;if(!d){alert("Selecciona borrador.");return}
+ const v={...d,id:uid("draft"),version:(d.version||1)+1,content:$("draftEditor").value,updatedAt:new Date().toISOString(),parentId:d.id};
+ await put("drafts",v);state.selectedDraftId=v.id;await saveState();renderDrafts();alert("Nueva versión guardada.");
+}
+async function deleteDraft(id){if(confirm("¿Eliminar borrador?")){await del("drafts",id);if(state.selectedDraftId===id)state.selectedDraftId=null;await saveState();renderDrafts()}}
+async function downloadDraftTxt(){const d=state.selectedDraftId?await get("drafts",state.selectedDraftId):null;if(!d){alert("Selecciona borrador.");return}downloadText($("draftEditor").value,`${d.title.replace(/[^\w.-]+/g,"_")}_v${d.version}.txt`)}
+async function exportDrafts(){const ds=await draftsOfActive();downloadText(JSON.stringify(ds,null,2),"borradores_defensaipn_v7_1_"+today()+".json","application/json")}
+
+function renderAudit(){ $("auditTable").innerHTML=(state.audit||[]).map(a=>`<tr><td>${esc(a.created_at)}</td><td>${esc(a.caseName)}</td><td>${esc(a.mode)}</td><td>${esc(a.model_returned||a.model_requested)}</td><td>${(a.sources||[]).length}</td><td>${esc((a.output_text||"").slice(0,220))}...</td></tr>`).join("")||"<tr><td colspan='6'>Sin auditoría.</td></tr>"}
+function exportAudit(){downloadText(JSON.stringify(state.audit||[],null,2),"auditoria_ia_defensaipn_v7_1_"+today()+".json","application/json")}
+async function clearAudit(){if(confirm("¿Borrar auditoría local?")){state.audit=[];await saveState();renderAudit()}}
+async function exportCaseJson(){const c=await activeCase();const docs=(await docsOfActive()).map(d=>({...d,blob:null,blobOmitted:Boolean(d.blob)}));const msgs=await messagesOfActive();const drafts=await draftsOfActive();downloadText(JSON.stringify({version:"7.1.0",selectedCase:c,documents:docs,messages:msgs,drafts},null,2),`caso_completo_${(c?.name||"sin_caso").replace(/[^\w.-]+/g,"_")}_${today()}.json`,"application/json")}
+async function downloadCSV(){
+ const docs=await docsOfActive();
+ const rows=[
+  ["caseId","caseName","fileName","folderPath","docRole","stage","docStatus","priority","confidentiality","folio","authority","docDate","sha256","ocrStatus","reviewed","pageRange","actionNeeded","dueDate","tags","notes"],
+  ...docs.map(d=>[d.caseId,d.caseName,d.fileName,d.folderPath,d.docRole,d.stage,d.docStatus,d.priority,d.confidentiality,d.folio,d.authority,d.docDate,d.sha256,d.ocrStatus,d.reviewed,d.pageRange,d.actionNeeded,d.dueDate,d.tags,d.notes])
+ ];
+ const csv=rows.map(r=>r.map(x=>`"${String(x??"").replace(/"/g,'""')}"`).join(",")).join("\n");
+ downloadText(csv,"indice_documentos_caso_"+today()+".csv","text/csv;charset=utf-8");
+}
+async function fullBackupObject(){
+ return {version:"7.1.0",exportedAt:new Date().toISOString(),state:{activeCaseId:state.activeCaseId,selectedDocId:state.selectedDocId,selectedDraftId:state.selectedDraftId,audit:state.audit,lastSources:state.lastSources||[]},cases:await all("cases"),documents:(await all("documents")).map(d=>({...d,blob:null,blobOmitted:Boolean(d.blob)})),messages:await all("messages"),drafts:await all("drafts")};
+}
+async function exportFullBackup(){const b=await fullBackupObject();downloadText(JSON.stringify(b,null,2),"respaldo_completo_defensaipn_v7_1_"+today()+".json","application/json")}
+async function fullBackup(){return exportFullBackup()}
+async function importFullBackup(ev){
+ const file=ev.target.files?.[0];if(!file)return;
+ if(!confirm("Esto importará casos, documentos, mensajes y borradores del respaldo. No restaura archivos originales blob, solo texto/metadatos. ¿Continuar?"))return;
+ const text=await file.text();let b;try{b=JSON.parse(text)}catch(e){alert("JSON inválido: "+e.message);return}
+ try{await importBackupObject(b);alert("Respaldo importado. Los archivos originales no se restauran; se conserva OCR/metadatos.");}
+ catch(e){alert("Respaldo no compatible: "+e.message)}
+}
+async function runSelfAudit(){
+ const cases=await all("cases"),docs=await all("documents"),msgs=await all("messages"),drafts=await all("drafts");
+ const activeDocs=await docsOfActive();const noOcr=activeDocs.filter(d=>!(d.ocrText||"").trim()).length;const notReviewed=activeDocs.filter(d=>d.ocrStatus==="done"&&!d.reviewed).length;const dupes={};docs.forEach(d=>{dupes[d.sha256]=(dupes[d.sha256]||0)+1});const dupCount=Object.values(dupes).filter(n=>n>1).length;
+ const problems=[];
+ if(!state.activeCaseId)problems.push("No hay caso activo.");
+ if(noOcr)problems.push(`${noOcr} documento(s) del caso activo no tienen texto OCR.`);
+ if(notReviewed)problems.push(`${notReviewed} documento(s) tienen OCR sin cotejar.`);
+ if(dupCount)problems.push(`${dupCount} hash(es) duplicados entre documentos.`);
+ if(!msgs.length)problems.push("No hay historial de chat; aún no hay trazabilidad conversacional.");
+ const level=problems.length?"notice":"success";
+ $("selfAuditBox").className="box "+level+" small";
+ $("selfAuditBox").innerHTML=`<b>Autoauditoría local</b><br>Casos: ${cases.length} · Documentos: ${docs.length} · Mensajes: ${msgs.length} · Borradores: ${drafts.length}<br>${problems.length?problems.map(p=>"⚠️ "+esc(p)).join("<br>"):"✅ Sin problemas locales relevantes."}`;
+}
+
+
+async function renderBlobPreview(d){
+ const el=$("blobPreview");if(!el)return;
+ try{
+  const url=URL.createObjectURL(d.blob);
+  if(/^image\//.test(d.mimeType||"") || /\.(png|jpe?g|webp|bmp|tiff?)$/i.test(d.fileName||"")){
+    el.innerHTML=`<img class="imgPreview" src="${url}" alt="vista original">`;
+  }else if(/pdf/i.test(d.mimeType||"") || /\.pdf$/i.test(d.fileName||"")){
+    el.innerHTML=`<iframe class="viewerFrame" src="${url}"></iframe>`;
+  }else{
+    el.innerHTML=`<a class="btn secondary" href="${url}" target="_blank">Abrir original</a>`;
+  }
+ }catch(e){el.textContent="No se pudo previsualizar original: "+e.message}
+}
+async function deriveKey(password,salt){
+ const enc=new TextEncoder();
+ const base=await crypto.subtle.importKey("raw",enc.encode(password),"PBKDF2",false,["deriveKey"]);
+ return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:210000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+}
+function b64(buf){return btoa(String.fromCharCode(...new Uint8Array(buf)))}
+function unb64(s){return Uint8Array.from(atob(s),c=>c.charCodeAt(0))}
+
+async function importBackupObject(b){
+ if(!b || !Array.isArray(b.cases) || !Array.isArray(b.documents)) throw new Error("Respaldo no compatible.");
+ for(const c of b.cases)await put("cases",c);
+ for(const d of b.documents)await put("documents",{...d,blob:null});
+ for(const m of b.messages||[])await put("messages",m);
+ for(const dr of b.drafts||[])await put("drafts",dr);
+ state={...state,...(b.state||{})};
+ await saveState();await renderAll();
+}
+
+async function exportEncryptedBackup(){
+ const pass=$("masterPassword").value;if(!pass||pass.length<10){alert("Usa una contraseña de al menos 10 caracteres.");return}
+ const backup=await fullBackupObject();
+ const salt=crypto.getRandomValues(new Uint8Array(16));const iv=crypto.getRandomValues(new Uint8Array(12));const key=await deriveKey(pass,salt);
+ const data=new TextEncoder().encode(JSON.stringify(backup));
+ const cipher=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,data);
+ const payload={format:"DefensaIPN.ai encrypted backup",version:"7.1.0",kdf:"PBKDF2-SHA256-210000",cipher:"AES-GCM-256",salt:b64(salt),iv:b64(iv),data:b64(cipher),createdAt:new Date().toISOString()};
+ downloadText(JSON.stringify(payload,null,2),"respaldo_cifrado_defensaipn_v7_1_"+today()+".json","application/json");
+ $("cryptoStatus").innerHTML="Respaldo cifrado generado. Guarda la contraseña en lugar seguro.";
+}
+async function importEncryptedBackup(ev){
+ const file=ev.target.files[0];if(!file)return;const pass=$("masterPassword").value;if(!pass){alert("Captura la contraseña maestra.");return}
+ const text=await file.text();const payload=JSON.parse(text);
+ const salt=unb64(payload.salt),iv=unb64(payload.iv),cipher=unb64(payload.data);const key=await deriveKey(pass,salt);
+ try{
+  const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv},key,cipher);
+  const data=JSON.parse(new TextDecoder().decode(plain));
+  if(!confirm("¿Importar respaldo cifrado y fusionar/restaurar datos?"))return;
+  await importBackupObject(data);
+  $("cryptoStatus").innerHTML="Respaldo cifrado importado correctamente.";
+ }catch(e){$("cryptoStatus").innerHTML="Error al descifrar. Contraseña incorrecta o archivo dañado."}
+}
+async function exportServer(kind){
+ const title=$("exportTitle").value.trim()||"DefensaIPN_export";
+ const content=$("exportContent").value||"";
+ try{
+  const res=await fetch("/api/export/"+kind,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({title,content})});
+  if(!res.ok){const e=await res.json().catch(()=>({error:"Error"}));throw new Error(e.error||"Error exportando");}
+  const blob=await res.blob();const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  const ext=kind==="docx"?"docx":kind==="pdf"?"pdf":kind==="html"?"html":"txt";
+  a.download=title.replace(/[^\w.-]+/g,"_")+"."+ext;a.click();URL.revokeObjectURL(a.href);
+  $("exportStatus").innerHTML="Exportación "+kind.toUpperCase()+" generada.";
+ }catch(e){$("exportStatus").innerHTML="Error: "+esc(e.message)}
+}
+function copyCurrentIndexToExporter(){
+ const txt=$("caseIndexOutput")?.textContent||"";if(!txt.trim()){alert("Genera índice maestro primero.");return}
+ $("exportContent").value=txt;$("exportTitle").value="indice_maestro_caso_"+today();goTab("exporter");
+}
+async function copyDraftToExporter(){
+ const d=state.selectedDraftId?await get("drafts",state.selectedDraftId):null;if(!d){alert("Selecciona borrador primero.");return}
+ $("exportContent").value=d.content||"";$("exportTitle").value=(d.title||"borrador").replace(/[^\w.-]+/g,"_")+"_v"+(d.version||1);goTab("exporter");
+}
+async function runDoctor(){
+ try{
+  const d=await api("/api/doctor");
+  $("doctorBox").innerHTML=d.checks.map(c=>`${c.ok?"✅":"⚠️"} <b>${esc(c.name)}</b>: ${esc(c.detail)}`).join("<br>")+"<br><br>Modo vendor offline: "+d.offline_vendor_mode;
+ }catch(e){$("doctorBox").innerHTML="Error doctor: "+esc(e.message)}
+}
+
+async function boot(){initTabs();setupDrop();renderServerBadge();await loadState();await ensureDefaultCase();await renderAll();renderStorage();checkHealth();resolveModel()}
+initFirebase();
+</script>
+</div><!-- /main-app -->
+</body>
+</html>
