@@ -443,7 +443,7 @@ let state={activeCaseId:null,selectedDocId:null,queue:[],audit:[],selectedDraftI
 // FIREBASE: Auth + Firestore  (reemplaza IndexedDB)
 // Blobs binarios se guardan localmente en IndexedDB separado
 // ═══════════════════════════════════════════════════════════════
-let fbApp, fbAuth, fbDb, currentUser = null, fbMod = {}, blobDb;
+let fbApp, fbAuth, fbDb, fbStorage = null, currentUser = null, fbMod = {}, blobDb;
 
 async function openBlobDB() {
   return new Promise((res, rej) => {
@@ -453,12 +453,36 @@ async function openBlobDB() {
   });
 }
 async function putBlobLocal(id, blob) {
-  if (!blobDb || !blob) return;
-  return new Promise(res => { const tx = blobDb.transaction("blobs", "readwrite"); tx.objectStore("blobs").put({ id: String(id), blob }); tx.oncomplete = () => res(); tx.onerror = () => res(); });
+  if (!blob) return;
+  const sid = String(id);
+  // 1. Guarda en IndexedDB local (acceso rápido)
+  if (blobDb) await new Promise(res => { const tx = blobDb.transaction("blobs","readwrite"); tx.objectStore("blobs").put({id:sid,blob}); tx.oncomplete=()=>res(); tx.onerror=()=>res(); });
+  // 2. Sube a Firebase Storage (acceso desde cualquier PC)
+  if (fbStorage && currentUser && fbMod.storageRef) {
+    try {
+      const r = fbMod.storageRef(fbStorage, `users/${currentUser.uid}/blobs/${sid}`);
+      await fbMod.uploadBytes(r, blob);
+    } catch(e) { console.warn("Storage upload:", e.message); }
+  }
 }
 async function getBlobLocal(id) {
-  if (!blobDb) return null;
-  return new Promise(res => { const tx = blobDb.transaction("blobs", "readonly"); const r = tx.objectStore("blobs").get(String(id)); r.onsuccess = () => res(r.result?.blob || null); r.onerror = () => res(null); });
+  const sid = String(id);
+  // 1. Busca en IndexedDB local primero (más rápido)
+  if (blobDb) {
+    const local = await new Promise(res => { const tx = blobDb.transaction("blobs","readonly"); const r = tx.objectStore("blobs").get(sid); r.onsuccess=()=>res(r.result?.blob||null); r.onerror=()=>res(null); });
+    if (local) return local;
+  }
+  // 2. Descarga de Firebase Storage si no está local
+  if (fbStorage && currentUser && fbMod.storageRef) {
+    try {
+      const r = fbMod.storageRef(fbStorage, `users/${currentUser.uid}/blobs/${sid}`);
+      const blob = await fbMod.getBlob(r);
+      // Cachea localmente para próxima vez
+      if (blobDb && blob) await new Promise(res => { const tx = blobDb.transaction("blobs","readwrite"); tx.objectStore("blobs").put({id:sid,blob}); tx.oncomplete=()=>res(); tx.onerror=()=>res(); });
+      return blob || null;
+    } catch(e) { return null; }
+  }
+  return null;
 }
 
 function cleanFs(obj) {
@@ -527,10 +551,12 @@ async function initFirebase() {
     const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
     const { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
     const { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs, query, where } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    const { getStorage, ref: storageRef, uploadBytes, getBlob } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js");
     fbApp = initializeApp(cfg);
     fbAuth = getAuth(fbApp);
     fbDb = getFirestore(fbApp);
-    fbMod = { doc, getDoc, setDoc, deleteDoc, collection, getDocs, query, where, signOut, signInWithEmailAndPassword };
+    fbStorage = getStorage(fbApp);
+    fbMod = { doc, getDoc, setDoc, deleteDoc, collection, getDocs, query, where, signOut, signInWithEmailAndPassword, storageRef, uploadBytes, getBlob };
     if (notice) notice.textContent = "";
     btn.disabled = false;
     btn.textContent = "Entrar";
