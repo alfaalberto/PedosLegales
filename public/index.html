@@ -72,7 +72,7 @@ progress{width:100%;height:14px;border-radius:999px;overflow:hidden}.drop{border
     <input id="loginEmail" type="email" placeholder="tu@correo.com" autocomplete="email" onkeydown="if(event.key==='Enter')doLogin()">
     <label>Contraseña</label>
     <input id="loginPassword" type="password" placeholder="••••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
-    <button id="loginBtn" onclick="doLogin()" style="width:100%;margin-top:20px">Entrar</button>
+    <button id="loginBtn" onclick="doLogin()" style="width:100%;margin-top:20px" disabled>Iniciando...</button>
     <p id="loginConfigNotice" class="tiny muted" style="margin:14px 0 0;text-align:center;min-height:16px"></p>
   </div>
 </div>
@@ -421,6 +421,16 @@ progress{width:100%;height:14px;border-radius:999px;overflow:hidden}.drop{border
 </main>
 
 <script>
+// Config Firebase pública (no es secreto — la seguridad la dan las Firestore Rules)
+const FIREBASE_CONFIG_FALLBACK = {
+  apiKey: "AIzaSyB9T9Uado1Q-O3P8D-MZl-b7v3GCkNfCCA",
+  authDomain: "pedoslegales.firebaseapp.com",
+  projectId: "pedoslegales",
+  appId: "1:638020457588:web:9c947c0363f94e2e33ad21"
+};
+</script>
+
+<script>
 const tabs=[["panel","Panel"],["workflow","Flujo"],["cases","Casos"],["import","Importar/OCR"],["inbox","Bandeja"],["documents","Documentos"],["viewer","Visor"],["index","Índice"],["chat","Chat/RAG"],["drafts","Borradores"],["privacy","Privacidad"],["exporter","Exportar"],["audit","Auditoría/Backup"]];
 const $=id=>document.getElementById(id);
 const esc=s=>String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
@@ -505,11 +515,14 @@ async function saveState() {
 // ═══════════════════════════════════════════════════════════════
 async function initFirebase() {
   const notice = $("loginConfigNotice");
+  const btn = $("loginBtn");
   try {
-    const cfg = await fetch("/api/firebase-config").then(r => r.ok ? r.json() : null).catch(() => null);
+    // Intenta obtener config del servidor; si falla usa el config embebido
+    const serverCfg = await fetch("/api/firebase-config").then(r => r.ok ? r.json() : null).catch(() => null);
+    const cfg = (serverCfg && serverCfg.projectId) ? serverCfg : FIREBASE_CONFIG_FALLBACK;
     if (!cfg || !cfg.projectId) {
-      if (notice) notice.textContent = "⚠️ Firebase no configurado. Completa FIREBASE_* en el .env del servidor y reinicia.";
-      $("loginBtn").disabled = true; return;
+      if (notice) notice.textContent = "⚠️ Firebase no configurado.";
+      return;
     }
     const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
     const { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
@@ -519,6 +532,8 @@ async function initFirebase() {
     fbDb = getFirestore(fbApp);
     fbMod = { doc, getDoc, setDoc, deleteDoc, collection, getDocs, query, where, signOut, signInWithEmailAndPassword };
     if (notice) notice.textContent = "";
+    btn.disabled = false;
+    btn.textContent = "Entrar";
     onAuthStateChanged(fbAuth, async user => {
       if (user) {
         currentUser = user;
@@ -531,9 +546,15 @@ async function initFirebase() {
         currentUser = null;
         $("loginScreen").style.display = "flex";
         $("main-app").style.display = "none";
+        btn.disabled = false;
+        btn.textContent = "Entrar";
       }
     });
-  } catch (e) { if (notice) notice.textContent = "Error Firebase: " + e.message; }
+  } catch (e) {
+    if (notice) notice.textContent = "Error Firebase: " + e.message;
+    btn.disabled = false;
+    btn.textContent = "Entrar";
+  }
 }
 async function doLogin() {
   const email = $("loginEmail").value.trim();
