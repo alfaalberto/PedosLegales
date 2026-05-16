@@ -1,0 +1,7 @@
+// Config Firebase p??blica (no es secreto ??? la seguridad la dan las Firestore Rules)
+const FIREBASE_CONFIG_FALLBACK = {
+  apiKey: "AIzaSyB9T9Uado1Q-O3P8D-MZl-b7v3GCkNfCCA",
+  authDomain: "pedoslegales.firebaseapp.com",
+  projectId: "pedoslegales",
+  appId: "1:638020457588:web:9c947c0363f94e2e33ad21"
+};
