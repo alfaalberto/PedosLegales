@@ -1,505 +1,3 @@
-<!doctype html>
-<html lang="es">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DefensaIPN.ai v7.1 — Sistema Jurídico Inteligente</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@500;700&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230a0a0f'/><text x='16' y='22' font-size='20' text-anchor='middle' fill='%23d4af37'>⚖</text></svg>">
-<style>
-
-:root{--bg:#0a0a0f;--s:#111118;--b:#1c1c28;--brd:#2a2a3a;--ink:#f0f0f8;--mut:#7070a0;--gold:#d4af37;--blue:#4f8ef7;--green:#22c55e;--red:#ef4444;--warn:#f59e0b;--r:12px;--r2:8px}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',system-ui,sans-serif;font-size:14px;line-height:1.6;background:var(--bg);color:var(--ink);height:100vh;overflow:hidden;display:flex;flex-direction:column}
-/* ── LOGIN ── */
-#loginScreen{position:fixed;inset:0;z-index:9999;background:radial-gradient(ellipse at 30% 20%,#1a1a2e,#0a0a0f);display:flex;align-items:center;justify-content:center}
-.login-card{background:var(--s);border:1px solid var(--brd);border-radius:var(--r);padding:40px 36px;width:100%;max-width:420px;box-shadow:0 25px 60px rgba(0,0,0,.6)}
-.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px}
-.login-badge{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--gold),#a07800);display:flex;align-items:center;justify-content:center;font-size:1.4rem}
-.login-title{font-size:1.3rem;font-weight:700;color:#fff}
-.login-sub{font-size:.78rem;color:var(--mut);margin-top:2px}
-/* ── APP FRAME ── */
-#main-app{display:flex;height:100vh;width:100%}
-.sidebar{width:240px;background:var(--s);border-right:1px solid var(--brd);display:flex;flex-direction:column;flex-shrink:0}
-.sb-top{padding:20px 18px 12px;border-bottom:1px solid var(--brd)}
-.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:16px}
-.sb-badge{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--gold),#a07800);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
-.sb-brand{font-size:.95rem;font-weight:700}
-.sb-brand small{display:block;font-size:.65rem;color:var(--mut);font-weight:400}
-.active-case-box{background:var(--b);border:1px solid var(--brd);border-radius:var(--r2);padding:10px 12px;cursor:pointer;transition:border-color .2s}
-.active-case-box:hover{border-color:var(--gold)}
-.acb-label{font-size:.62rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);font-weight:700;margin-bottom:3px}
-.acb-name{font-size:.88rem;font-weight:600;color:var(--gold);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.acb-meta{font-size:.7rem;color:var(--mut);margin-top:2px}
-.sb-nav{flex:1;overflow-y:auto;padding:8px 0;scrollbar-width:none}
-.sb-nav::-webkit-scrollbar{display:none}
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;color:var(--mut);font-size:.85rem;font-weight:500;transition:all .15s;border:none;background:transparent;width:100%;text-align:left;border-left:3px solid transparent}
-.nav-item:hover{color:var(--ink);background:rgba(255,255,255,.03)}
-.nav-item.active{color:#fff;font-weight:600;background:rgba(212,175,55,.08);border-left-color:var(--gold)}
-.nav-icon{font-size:1.1rem;width:22px;text-align:center;flex-shrink:0}
-.sb-footer{padding:12px 18px;border-top:1px solid var(--brd)}
-.server-badge{display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--mut)}
-.sdot{width:7px;height:7px;border-radius:50%;background:var(--mut);flex-shrink:0}
-.sdot.on{background:var(--green);box-shadow:0 0 6px var(--green)}
-.sdot.off{background:var(--red)}
-.user-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.user-av{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#a07800);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#000}
-/* ── MAIN AREA ── */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.page{display:none;flex-direction:column;height:100%;overflow:hidden;animation:fi .2s ease}
-.page.active{display:flex}
-@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-.page-header{padding:24px 28px 16px;border-bottom:1px solid var(--brd);flex-shrink:0}
-.page-title{font-size:1.3rem;font-weight:700;display:flex;align-items:center;gap:10px}
-.page-sub{font-size:.8rem;color:var(--mut);margin-top:4px}
-.page-body{flex:1;overflow-y:auto;padding:24px 28px}
-/* ── CARDS ── */
-.card{background:var(--s);border:1px solid var(--brd);border-radius:var(--r);padding:20px}
-.card+.card{margin-top:16px}
-.card-title{font-size:.9rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-/* ── CASE GRID ── */
-.case-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
-.case-card{background:var(--s);border:1px solid var(--brd);border-radius:var(--r);padding:18px;cursor:pointer;transition:all .2s;position:relative}
-.case-card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
-.case-card.current{border-color:var(--gold);background:rgba(212,175,55,.06)}
-.cc-icon{font-size:1.6rem;margin-bottom:10px}
-.cc-name{font-size:.95rem;font-weight:700;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cc-type{font-size:.72rem;color:var(--mut);margin-bottom:8px}
-.cc-stats{display:flex;gap:10px;font-size:.72rem;color:var(--mut)}
-.cc-active-badge{position:absolute;top:10px;right:10px;background:var(--gold);color:#000;font-size:.6rem;font-weight:800;padding:2px 7px;border-radius:4px}
-.add-case-card{border:2px dashed var(--brd);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:130px;transition:all .2s}
-.add-case-card:hover{border-color:var(--blue);background:rgba(79,142,247,.04)}
-/* ── FORMS ── */
-.field{margin-bottom:16px}
-.field label{display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);margin-bottom:6px}
-.field input,.field select,.field textarea{width:100%;background:#000;border:1px solid var(--brd);border-radius:var(--r2);padding:10px 14px;color:var(--ink);font:inherit;font-size:.9rem;outline:none;transition:border-color .2s}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(79,142,247,.15)}
-.field textarea{min-height:90px;resize:vertical}
-/* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:var(--r2);font-family:inherit;font-size:.85rem;font-weight:600;cursor:pointer;border:0;transition:all .2s;white-space:nowrap}
-.btn-primary{background:var(--blue);color:#fff}.btn-primary:hover{background:#6fa3ff;box-shadow:0 4px 14px rgba(79,142,247,.35)}
-.btn-gold{background:var(--gold);color:#000}.btn-gold:hover{background:#e8c44a}
-.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--brd)}.btn-ghost:hover{border-color:var(--mut)}
-.btn-danger{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.25)}.btn-danger:hover{background:rgba(239,68,68,.2)}
-.btn-sm{padding:6px 14px;font-size:.78rem}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-/* ── UPLOAD ── */
-.drop-zone{border:2px dashed var(--brd);border-radius:var(--r);padding:40px 20px;text-align:center;transition:all .2s;cursor:pointer}
-.drop-zone:hover,.drop-zone.drag{border-color:var(--blue);background:rgba(79,142,247,.04)}
-.drop-icon{font-size:2.5rem;margin-bottom:12px}
-/* ── CHAT ── */
-.chat-wrap{display:flex;flex-direction:column;height:100%}
-.chatbox{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;background:#000}
-.msg{max-width:80%;padding:14px 18px;border-radius:var(--r);font-size:.9rem;line-height:1.6}
-.msg.user{margin-left:auto;background:var(--blue);color:#fff;border-bottom-right-radius:4px}
-.msg.assistant{margin-right:auto;background:var(--b);border:1px solid var(--brd);border-bottom-left-radius:4px}
-.msg-meta{font-size:.68rem;opacity:.6;margin-bottom:5px}
-.chat-input-area{padding:16px;border-top:1px solid var(--brd);background:var(--s)}
-.chat-input-row{display:flex;gap:10px;align-items:flex-end}
-.chat-input-row textarea{flex:1;background:#000;border:1px solid var(--brd);border-radius:var(--r2);padding:10px 14px;color:var(--ink);font:inherit;font-size:.9rem;resize:none;min-height:44px;max-height:160px;outline:none;transition:border-color .2s}
-.chat-input-row textarea:focus{border-color:var(--blue)}
-.quick-prompts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.qp{padding:5px 12px;border-radius:99px;border:1px solid var(--brd);background:transparent;color:var(--mut);font-size:.75rem;cursor:pointer;transition:all .2s}
-.qp:hover{border-color:var(--gold);color:var(--gold)}
-.chat-mode-row{display:flex;gap:10px;margin-bottom:10px;align-items:center}
-.chat-mode-row select{background:#000;border:1px solid var(--brd);color:var(--ink);border-radius:var(--r2);padding:6px 10px;font:inherit;font-size:.78rem;outline:none;flex:1}
-/* ── DOC TABLE ── */
-.doc-table{width:100%;border-collapse:collapse;font-size:.84rem}
-.doc-table th{text-align:left;padding:8px 12px;color:var(--mut);font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--brd)}
-.doc-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
-.doc-table tr:hover td{background:rgba(255,255,255,.02)}
-/* ── TAGS/STATUS ── */
-.tag{display:inline-block;padding:2px 8px;border-radius:5px;font-size:.68rem;font-weight:600}
-.tag-gold{background:rgba(212,175,55,.15);color:var(--gold)}
-.tag-green{background:rgba(34,197,94,.13);color:#4ade80}
-.tag-red{background:rgba(239,68,68,.13);color:#f87171}
-.tag-blue{background:rgba(79,142,247,.13);color:#7eb3ff}
-.tag-gray{background:rgba(255,255,255,.07);color:var(--mut)}
-/* ── ALERTS ── */
-.alert{padding:12px 16px;border-radius:var(--r2);font-size:.84rem;margin:8px 0}
-.alert-info{background:rgba(79,142,247,.07);border-left:3px solid var(--blue)}
-.alert-ok{background:rgba(34,197,94,.07);border-left:3px solid var(--green)}
-.alert-warn{background:rgba(245,158,11,.07);border-left:3px solid var(--warn)}
-.alert-err{background:rgba(239,68,68,.07);border-left:3px solid var(--red)}
-/* ── HEALTH METRICS ── */
-.metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px}
-.metric-box{background:var(--b);border:1px solid var(--brd);border-radius:var(--r2);padding:14px}
-.metric-val{font-size:1.8rem;font-weight:800;letter-spacing:-.04em;color:#fff}
-.metric-lbl{font-size:.68rem;color:var(--mut);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
-/* ── MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px}
-.modal{background:var(--s);border:1px solid var(--brd);border-radius:var(--r);width:100%;max-width:520px;max-height:85vh;overflow-y:auto;padding:28px}
-.modal-title{font-size:1.1rem;font-weight:700;margin-bottom:20px}
-/* ── PROGRESS ── */
-progress{width:100%;height:6px;border-radius:99px;appearance:none}
-progress::-webkit-progress-bar{background:var(--brd);border-radius:99px}
-progress::-webkit-progress-value{background:linear-gradient(90deg,var(--blue),#a78bfa);border-radius:99px}
-/* ── DRAFTS ── */
-.draft-item{background:var(--b);border:1px solid var(--brd);border-radius:var(--r2);padding:14px;margin-bottom:10px;cursor:pointer;transition:border-color .2s}
-.draft-item:hover{border-color:var(--mut)}
-.draft-item.sel{border-color:var(--blue)}
-/* ── ADVANCED (collapsed) ── */
-.adv-toggle{cursor:pointer;font-size:.78rem;color:var(--mut);display:flex;align-items:center;gap:6px;padding:8px 0;user-select:none}
-.adv-toggle:hover{color:var(--ink)}
-.adv-body{display:none}.adv-body.open{display:block}
-/* ── SCROLL ── */
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--brd);border-radius:99px}
-/* ── RESPONSIVE ── */
-@media(max-width:700px){.sidebar{width:56px}.sb-brand,.acb-name,.acb-meta,.acb-label,.nav-item span,.sb-footer .user-row span,.server-badge span{display:none}.page-body{padding:16px}}
-
-</style>
-</head>
-<body>
-
-<div id="loginScreen">
-  <div class="login-card">
-    <div class="login-logo">
-      <div class="login-badge">⚖</div>
-      <div><div class="login-title">DefensaIPN.ai</div><div class="login-sub">Sistema Jurídico Inteligente · v7.1</div></div>
-    </div>
-    <div id="loginNotice" class="alert alert-err" style="display:none"></div>
-    <div class="field"><label>Correo electrónico</label><input id="loginEmail" type="email" placeholder="tu@correo.com" autocomplete="email" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <div class="field"><label>Contraseña</label><input id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <button id="loginBtn" class="btn btn-gold" onclick="doLogin()" disabled style="width:100%;margin-top:8px;justify-content:center">Iniciando...</button>
-    <p id="loginConfigNotice" style="text-align:center;font-size:.72rem;color:var(--mut);margin-top:14px"></p>
-  </div>
-</div>
-
-<div id="main-app" style="display:none" class="app-layout">
-  <aside class="sidebar">
-    <div class="sb-top">
-      <div class="sb-logo">
-        <div class="sb-badge">⚖</div>
-        <div class="sb-brand">DefensaIPN.ai<small>Sistema Jurídico</small></div>
-      </div>
-      <div class="active-case-box" onclick="showPage('casos')">
-        <div class="acb-label">Expediente abierto</div>
-        <div class="acb-name" id="acsName">Sin expediente</div>
-        <div class="acb-meta" id="acsType"></div>
-      </div>
-    </div>
-    <nav class="sb-nav" id="tabs">
-      <button class="nav-item active" id="nav-casos" onclick="showPage('casos')"><span class="nav-icon">📁</span><span>Expedientes</span></button>
-      <button class="nav-item" id="nav-import" onclick="showPage('import')"><span class="nav-icon">📥</span><span>Agregar documentos</span></button>
-      <button class="nav-item" id="nav-documents" onclick="showPage('documents')"><span class="nav-icon">📄</span><span>Documentos</span></button>
-      <button class="nav-item" id="nav-chat" onclick="showPage('chat')"><span class="nav-icon">💬</span><span>Consultar a la IA</span></button>
-      <button class="nav-item" id="nav-drafts" onclick="showPage('drafts')"><span class="nav-icon">📝</span><span>Borradores</span></button>
-      <button class="nav-item" id="nav-ajustes" onclick="showPage('ajustes')"><span class="nav-icon">⚙️</span><span>Configuración</span></button>
-    </nav>
-    <div class="sb-footer">
-      <div class="user-row">
-        <div class="user-av" id="userInitial">U</div>
-        <span id="userBadge" style="font-size:.72rem;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px"></span>
-      </div>
-      <div class="server-badge">
-        <span class="sdot" id="serverDot"></span>
-        <span id="serverUrlBadge">localhost:8787</span>
-        <button class="btn btn-ghost btn-sm" style="margin-left:auto;padding:2px 8px;font-size:.68rem" onclick="doLogout()">Salir</button>
-      </div>
-    </div>
-  </aside>
-
-  <div class="main">
-    <!-- ══ EXPEDIENTES ══ -->
-    <div class="page active" id="page-casos">
-      <div class="page-header">
-        <div class="page-title">📁 Mis Expedientes</div>
-        <div class="page-sub">Selecciona o crea un expediente para comenzar</div>
-      </div>
-      <div class="page-body">
-        <div class="case-grid" id="caseGrid">
-          <div class="case-card add-case-card" onclick="openNewCaseModal()">
-            <div style="font-size:2rem;margin-bottom:8px">➕</div>
-            <div style="font-weight:700;font-size:.9rem">Nuevo expediente</div>
-            <div style="font-size:.75rem;color:var(--mut);margin-top:4px">Crear un nuevo caso</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ AGREGAR DOCUMENTOS ══ -->
-    <div class="page" id="page-import">
-      <div class="page-header">
-        <div class="page-title">📥 Agregar Documentos</div>
-        <div class="page-sub" id="importCaseSub">Selecciona un expediente primero</div>
-      </div>
-      <div class="page-body">
-        <div id="dropZone" class="drop-zone" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="this.classList.remove('drag');handleFiles(event.dataTransfer.files)">
-          <div class="drop-icon">📂</div>
-          <div style="font-weight:700;font-size:1rem;margin-bottom:6px">Arrastra tus archivos aquí</div>
-          <div style="color:var(--mut);font-size:.83rem">PDF, Word (.docx) o imágenes · También puedes hacer clic para seleccionar</div>
-          <input id="fileInput" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.webp,.tif,.tiff,.bmp,.docx,.doc" style="display:none" onchange="handleFiles(this.files)">
-          <input id="folderInput" type="file" multiple webkitdirectory directory style="display:none" onchange="handleFiles(this.files)">
-        </div>
-        <div class="btn-row">
-          <label class="btn btn-ghost" for="folderInput">📁 Cargar carpeta completa</label>
-          <button class="btn btn-primary" onclick="processQueue()">▶ Iniciar procesamiento</button>
-        </div>
-        <div id="ocrProgress" class="alert alert-info" style="margin-top:14px;display:none"></div>
-        <progress id="ocrBar" value="0" max="100" style="margin-top:10px;display:none"></progress>
-        <div id="queueList" style="margin-top:14px"></div>
-      </div>
-    </div>
-
-    <!-- ══ DOCUMENTOS ══ -->
-    <div class="page" id="page-documents">
-      <div class="page-header">
-        <div class="page-title">📄 Documentos del Expediente</div>
-        <div class="page-sub" id="docsCaseSub">Selecciona un expediente</div>
-      </div>
-      <div class="page-body">
-        <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
-          <input id="docSearch" placeholder="🔍 Buscar documento..." oninput="renderDocuments()" style="flex:1;min-width:200px;background:#000;border:1px solid var(--brd);border-radius:var(--r2);padding:8px 14px;color:var(--ink);font:inherit;outline:none">
-          <select id="docRoleFilter" onchange="renderDocuments()" style="background:#000;border:1px solid var(--brd);border-radius:var(--r2);padding:8px 12px;color:var(--ink);font:inherit;outline:none">
-            <option value="">Todos los tipos</option>
-            <option>Sin clasificar</option><option>Citatorio</option><option>Acta administrativa</option>
-            <option>Notificación</option><option>Respuesta ARCO</option><option>Acuse</option>
-            <option>Prueba / anexo</option><option>Borrador propio</option>
-          </select>
-        </div>
-        <div style="overflow-x:auto">
-          <table class="doc-table"><thead><tr>
-            <th>Documento</th><th>Tipo</th><th>Estado</th><th>Acciones</th>
-          </tr></thead><tbody id="docTable"></tbody></table>
-        </div>
-        <!-- Visor integrado -->
-        <div id="docVisorCard" class="card" style="margin-top:20px;display:none">
-          <div class="card-title">📋 Documento seleccionado</div>
-          <div id="selectedDocBox" class="alert alert-info" style="margin-bottom:12px"></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;flex-wrap:wrap">
-            <div>
-              <div class="field"><label>Texto extraído (OCR)</label><textarea id="selectedText" style="min-height:200px"></textarea></div>
-              <div class="btn-row">
-                <button class="btn btn-primary btn-sm" onclick="saveSelectedText()">💾 Guardar corrección</button>
-                <button class="btn btn-ghost btn-sm" onclick="markReviewed()">✅ Marcar cotejado</button>
-              </div>
-            </div>
-            <div>
-              <div class="field"><label>Folio / Número de oficio</label><input id="selectedFolio" placeholder="Ej: OFICIO/2024/001"></div>
-              <div class="field"><label>Autoridad o remitente</label><input id="selectedAuthority" placeholder="Ej: Dirección de Capital Humano IPN"></div>
-              <div class="field"><label>Fecha del documento</label><input id="selectedDocDate" type="date"></div>
-              <div class="field"><label>Tipo de documento</label>
-                <select id="selectedRole"><option>Sin clasificar</option><option>Citatorio</option><option>Acta administrativa</option><option>Notificación</option><option>Opinión jurídica / dictamen</option><option>Respuesta ARCO</option><option>Acuerdo</option><option>Queja / denuncia</option><option>Oficio</option><option>Correo</option><option>Acuse</option><option>Prueba / anexo</option><option>Borrador propio</option><option>Otro</option></select>
-              </div>
-              <div class="field"><label>Estado</label>
-                <select id="selectedStatus"><option>Pendiente de clasificación</option><option>Pendiente de cotejo</option><option>Metadatos incompletos</option><option>Listo para RAG</option><option>Listo para escrito</option><option>Solo referencia interna</option><option>No usar</option></select>
-              </div>
-              <div class="field"><label>Notas</label><textarea id="selectedNotes" style="min-height:70px"></textarea></div>
-              <!-- Hidden fields needed by JS -->
-              <input id="selectedStage" type="hidden" value="Ingreso">
-              <input id="selectedPriority" type="hidden" value="Media">
-              <input id="selectedConf" type="hidden" value="Interno">
-              <input id="selectedAction" type="hidden" value="">
-              <input id="selectedDue" type="hidden" value="">
-              <input id="selectedTags" type="hidden" value="">
-              <button class="btn btn-primary" onclick="saveSelectedMeta()" style="width:100%">💾 Guardar metadatos</button>
-            </div>
-          </div>
-          <div id="sourcePreview" style="margin-top:12px"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ CHAT ══ -->
-    <div class="page" id="page-chat">
-      <div class="chat-wrap">
-        <div class="page-header" style="padding-bottom:12px">
-          <div class="page-title">💬 Consultar a la IA</div>
-          <div class="page-sub" id="chatCaseSub">Pregunta sobre los documentos del expediente activo</div>
-        </div>
-        <div class="chatbox" id="chatBox"></div>
-        <div class="chat-input-area">
-          <div class="quick-prompts">
-            <button class="qp" onclick="quickOpinion('opinion')">Opinión honesta del caso</button>
-            <button class="qp" onclick="quickOpinion('hacer')">¿Qué debo hacer ahora?</button>
-            <button class="qp" onclick="quickOpinion('sucede')">¿Qué está pasando?</button>
-            <button class="qp" onclick="quickOpinion('impacto')">¿Cómo me afecta este doc?</button>
-            <button class="qp" onclick="quickOpinion('escrito')">Analiza este escrito</button>
-          </div>
-          <div class="chat-mode-row">
-            <select id="chatMode">
-              <option>Análisis estratégico protegido</option>
-              <option>Opinión brutalmente honesta</option>
-              <option>Impacto: cómo me beneficia/perjudica</option>
-              <option>Qué creo que sucede</option>
-              <option>Qué debería hacer ahora</option>
-              <option>Análisis de escrito adverso</option>
-              <option>Pre-flight de escrito</option>
-              <option>Generación de escrito</option>
-              <option>Comparación documental</option>
-              <option>Resumen ejecutivo</option>
-              <option>Verificación normativa pública</option>
-              <option>Gobierno documental: organizar expediente</option>
-            </select>
-            <!-- Hidden advanced controls needed by JS -->
-            <input id="ragFilter" type="hidden" value="auto">
-            <input id="ragTopK" type="hidden" value="12">
-            <input id="chunkChars" type="hidden" value="1800">
-            <input id="modelOverride" type="hidden" value="">
-            <input id="allowWeb" type="hidden" value="no">
-          </div>
-          <div class="chat-input-row">
-            <textarea id="chatInput" placeholder="Escribe tu pregunta aquí... Ej: ¿Qué puntos débiles tiene el acta administrativa en mi contra?" rows="2"></textarea>
-            <button class="btn btn-primary" onclick="sendChat()" style="height:44px;padding:0 18px">Enviar</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ BORRADORES ══ -->
-    <div class="page" id="page-drafts">
-      <div class="page-header">
-        <div class="page-title">📝 Borradores</div>
-        <div class="page-sub">Respuestas y escritos guardados del expediente activo</div>
-      </div>
-      <div class="page-body">
-        <div style="display:grid;grid-template-columns:280px 1fr;gap:20px;height:100%">
-          <div>
-            <button class="btn btn-primary btn-sm" onclick="saveLastAssistantAsDraft()" style="width:100%;margin-bottom:12px">💾 Guardar última respuesta IA</button>
-            <div id="draftList"></div>
-          </div>
-          <div>
-            <div id="draftMeta" class="alert alert-info">Selecciona un borrador de la lista</div>
-            <textarea id="draftEditor" style="width:100%;min-height:400px;background:#000;border:1px solid var(--brd);border-radius:var(--r2);padding:14px;color:var(--ink);font:inherit;font-size:.88rem;line-height:1.7;outline:none;resize:vertical;margin-top:10px"></textarea>
-            <div class="btn-row">
-              <button class="btn btn-primary btn-sm" onclick="saveDraftVersion()">💾 Guardar versión</button>
-              <button class="btn btn-ghost btn-sm" onclick="downloadDraftTxt()">⬇ Descargar TXT</button>
-              <button class="btn btn-ghost btn-sm" onclick="copyDraftToExporter()">📤 Exportar</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ CONFIGURACIÓN ══ -->
-    <div class="page" id="page-ajustes">
-      <div class="page-header">
-        <div class="page-title">⚙️ Configuración</div>
-        <div class="page-sub">Servidor, exportación, respaldos y diagnóstico</div>
-      </div>
-      <div class="page-body">
-        <!-- Servidor -->
-        <div class="card">
-          <div class="card-title">🖥 Servidor IA</div>
-          <div id="healthBox" class="alert alert-info">Sin verificar.</div>
-          <div id="modelBox" class="alert alert-info" style="margin-top:8px">Modelo: pendiente.</div>
-          <div class="btn-row">
-            <button class="btn btn-ghost btn-sm" onclick="configServerUrl()">🔧 Configurar URL</button>
-            <button class="btn btn-primary btn-sm" onclick="checkHealth()">🔁 Verificar servidor</button>
-            <button class="btn btn-ghost btn-sm" onclick="resolveModel()">🤖 Resolver modelo</button>
-            <button class="btn btn-ghost btn-sm" onclick="runDoctor()">🩺 Diagnóstico v7</button>
-          </div>
-          <div id="doctorBox" style="margin-top:10px"></div>
-        </div>
-        <!-- Exportación -->
-        <div class="card">
-          <div class="card-title">📤 Exportar documento</div>
-          <div class="field"><label>Título</label><input id="exportTitle" value="DefensaIPN_export"></div>
-          <div class="field"><label>Contenido</label><textarea id="exportContent" style="min-height:150px" placeholder="Pega aquí el texto o usa 'Exportar' desde Borradores"></textarea></div>
-          <div class="btn-row">
-            <button class="btn btn-primary btn-sm" onclick="exportServer('txt')">TXT</button>
-            <button class="btn btn-ghost btn-sm" onclick="exportServer('docx')">DOCX</button>
-            <button class="btn btn-ghost btn-sm" onclick="exportServer('pdf')">PDF</button>
-          </div>
-          <div id="exportStatus" class="alert alert-info" style="margin-top:10px">Listo para exportar.</div>
-        </div>
-        <!-- Respaldo -->
-        <div class="card">
-          <div class="card-title">🔒 Respaldo y privacidad</div>
-          <div class="field"><label>Contraseña para cifrar respaldo</label><input id="masterPassword" type="password" placeholder="Mínimo 10 caracteres"></div>
-          <div class="btn-row">
-            <button class="btn btn-primary btn-sm" onclick="exportEncryptedBackup()">🔐 Respaldo cifrado</button>
-            <label class="btn btn-ghost btn-sm" for="encryptedImport">📂 Importar cifrado</label>
-            <input id="encryptedImport" type="file" accept="application/json" style="display:none" onchange="importEncryptedBackup(event)">
-            <button class="btn btn-ghost btn-sm" onclick="fullBackup()">💾 Respaldo normal</button>
-            <label class="btn btn-ghost btn-sm" for="backupInput">📥 Importar respaldo</label>
-            <input id="backupInput" type="file" accept="application/json" style="display:none" onchange="importFullBackup(event)">
-          </div>
-          <div id="cryptoStatus" class="alert alert-info" style="margin-top:10px">Cifrado disponible.</div>
-        </div>
-        <!-- Auditoría -->
-        <div class="card">
-          <div class="card-title">📊 Auditoría IA</div>
-          <div class="btn-row">
-            <button class="btn btn-ghost btn-sm" onclick="runSelfAudit()">🔍 Autoauditoría</button>
-            <button class="btn btn-ghost btn-sm" onclick="exportAudit()">⬇ Exportar log</button>
-            <button class="btn btn-danger btn-sm" onclick="clearAudit()">🗑 Borrar log</button>
-          </div>
-          <div id="selfAuditBox" class="alert alert-info" style="margin-top:10px">Pendiente.</div>
-          <div style="overflow-x:auto;margin-top:12px;max-height:300px">
-            <table class="doc-table"><thead><tr><th>Fecha</th><th>Expediente</th><th>Modo</th><th>Modelo</th><th>Fuentes</th></tr></thead><tbody id="auditTable"></tbody></table>
-          </div>
-        </div>
-        <!-- Almacenamiento -->
-        <div class="card">
-          <div id="storageBox" class="alert alert-info">Almacenamiento: pendiente.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ HIDDEN SECTIONS for JS compatibility ══ -->
-    <div style="display:none">
-      <div id="panel"></div>
-      <div id="workflow"><div id="workflowSteps"></div><div id="governanceDashboard"></div></div>
-      <div id="inbox"><div id="pendingDocs"></div>
-        <select id="bulkScope"><option value="selected">selected</option><option value="unclassified">unclassified</option><option value="needsReview">needsReview</option><option value="all">all</option></select>
-        <select id="bulkRole"><option>Sin clasificar</option><option>Citatorio</option><option>Acta administrativa</option></select>
-        <select id="bulkStage"><option>Ingreso</option></select>
-        <select id="bulkStatus"><option>Pendiente de clasificación</option></select>
-        <select id="bulkPriority"><option>Media</option></select>
-        <select id="bulkConf"><option>Interno</option></select>
-        <input id="bulkAction"><input id="bulkDue" type="date"><input id="bulkTags">
-      </div>
-      <div id="index"><div id="indexStats"></div><div id="caseIndexOutput"></div></div>
-      <div id="cases"><div id="caseFilter"><input id="caseSearch"></div><div id="caseList"></div>
-        <input id="caseName"><select id="caseType"><option>Acta administrativa</option><option>ARCO / datos personales</option><option>Queja</option><option>Denuncia</option><option>Defensoría</option><option>Espacios / laboratorio</option><option>Expediente maestro</option><option>Otro</option></select>
-        <textarea id="caseDesc"></textarea>
-      </div>
-      <div id="viewer"><div id="blobPreview"></div></div>
-      <div id="drafts-old"></div>
-      <div id="privacy"></div>
-      <div id="exporter"></div>
-      <div id="audit"></div>
-      <div id="mCase"></div><div id="mDocs"></div><div id="mChunks"></div><div id="mMsgs"></div><div id="mCases"></div><div id="mHealth"></div>
-      <div id="caseBar"><span id="cbarName"></span><span id="cbarType"></span></div>
-      <div id="caseSpotlight"><div id="spotName"></div><div id="spotMeta"></div></div>
-      <div id="noCase"></div>
-      <div id="packetPreview"></div><div id="sourcesList"></div><div id="caseHealthBox"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ MODAL: Nuevo expediente ══ -->
-<div class="modal-overlay" id="newCaseModal" style="display:none" onclick="if(event.target===this)closeNewCaseModal()">
-  <div class="modal">
-    <div class="modal-title">📁 Nuevo Expediente</div>
-    <div class="field"><label>Nombre del expediente</label><input id="newCaseName" placeholder="Ej: Acta administrativa 05-mar-2026"></div>
-    <div class="field"><label>Tipo</label>
-      <select id="newCaseType"><option>Acta administrativa</option><option>ARCO / datos personales</option><option>Queja</option><option>Denuncia</option><option>Defensoría</option><option>Espacios / laboratorio</option><option>Expediente maestro</option><option>Otro</option></select>
-    </div>
-    <div class="field"><label>Descripción (opcional)</label><textarea id="newCaseDesc" placeholder="Breve descripción del caso, autoridad involucrada, objetivo..."></textarea></div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="createCaseFromModal()">✅ Crear expediente</button>
-      <button class="btn btn-ghost" onclick="closeNewCaseModal()">Cancelar</button>
-    </div>
-  </div>
-</div>
-
-<script>
-// Config Firebase pública (no es secreto — la seguridad la dan las Firestore Rules)
-const FIREBASE_CONFIG_FALLBACK = {
-  apiKey: "AIzaSyB9T9Uado1Q-O3P8D-MZl-b7v3GCkNfCCA",
-  authDomain: "pedoslegales.firebaseapp.com",
-  projectId: "pedoslegales",
-  appId: "1:638020457588:web:9c947c0363f94e2e33ad21"
-};
-</script>
-<script>
 <script>
 const tabs=[["panel","Panel"],["workflow","Flujo"],["cases","Casos"],["import","Importar/OCR"],["inbox","Bandeja"],["documents","Documentos"],["viewer","Visor"],["index","Índice"],["chat","Chat/RAG"],["drafts","Borradores"],["privacy","Privacidad"],["exporter","Exportar"],["audit","Auditoría/Backup"]];
 const $=id=>document.getElementById(id);
@@ -669,13 +167,38 @@ async function doLogout() {
   if (!confirm("¿Cerrar sesión?")) return;
   await fbMod.signOut(fbAuth);
 }
-
-
-
- catch { el.textContent = "local"; }
+function configServerUrl() {
+  const cur = localStorage.getItem("defensaipn_server_url") || DEFAULT_SERVER_URL;
+  const url = prompt(
+    "URL del servidor Express local.\n" +
+    "Por defecto: " + DEFAULT_SERVER_URL + "\n" +
+    "Borra el campo para restablecer el valor por defecto.\n" +
+    "Ejemplo remoto: http://192.168.1.10:8787",
+    cur
+  );
+  if (url === null) return;
+  const trimmed = url.trim();
+  if (trimmed && trimmed !== DEFAULT_SERVER_URL) localStorage.setItem("defensaipn_server_url", trimmed);
+  else localStorage.removeItem("defensaipn_server_url");
+  renderServerBadge();
+  checkHealth();
+}
+const DEFAULT_SERVER_URL = "http://localhost:8787";
+function getServerUrl() { return localStorage.getItem("defensaipn_server_url") || DEFAULT_SERVER_URL; }
+function renderServerBadge() {
+  const stored = localStorage.getItem("defensaipn_server_url");
+  const u = stored || DEFAULT_SERVER_URL;
+  const el = $("serverUrlBadge"); if (!el) return;
+  try {
+    const host = new URL(u).host;
+    el.textContent = host;
+    el.title = stored ? "Servidor configurado: " + u : "Servidor por defecto: " + u;
+  } catch { el.textContent = "local"; }
 }
 
-</span> ${label}`;b.id="tabbtn_"+id;b.onclick=()=>{if(!state.activeCaseId && id!=="cases"){alert("Selecciona un caso primero.");goTab('cases');return;}document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));$(id).classList.add("active");b.classList.add("active");renderAll()};nav.appendChild(b)})
+function initTabs(){
+ const nav=$("tabs");nav.innerHTML="";
+ tabs.forEach(([id,label])=>{const b=document.createElement("button");b.className="tab"+(id==="panel"?" active":"");b.innerHTML=`<span style="display:inline-block;width:16px">${id==='cases'?'📁':id==='chat'?'💬':'•'}</span> ${label}`;b.id="tabbtn_"+id;b.onclick=()=>{if(!state.activeCaseId && id!=="cases"){alert("Selecciona un caso primero.");goTab('cases');return;}document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));$(id).classList.add("active");b.classList.add("active");renderAll()};nav.appendChild(b)})
 }
 async function ensureDefaultCase(){
  const cases=await all("cases");
@@ -748,7 +271,8 @@ function caseHealth(docs){
  const label=score>=85?"sólido":score>=65?"usable con cautela":score>=40?"débil/ordenar antes de usar":"crítico/desordenado";
  return {score,label,issues:[...new Set(issues)]};
 }
-
+function goTab(id){
+ if(!state.activeCaseId && id !== 'cases') { id = 'cases'; }
  document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
  if($(id))$(id).classList.add("active");
@@ -860,7 +384,7 @@ async function renderStorage(){
  }catch(err){box.innerHTML="No se pudo estimar almacenamiento: "+esc(err.message)}
 }
 
-
+async function renderAll(){await renderPanel();await renderWorkflow();await renderCases();renderQueue();await renderInbox();await renderDocuments();await renderSelectedDoc();await renderChat();renderSources();await renderDrafts();renderAudit();renderStorage()}
 async function renderPanel(){
  const cases=await all("cases");const docs=await docsOfActive();const c=await activeCase();const msgs=await messagesOfActive();const chunks=buildChunks(docs,{filter:"done",chunkChars:1200}).length;
  const health=caseHealth(docs);
@@ -874,8 +398,14 @@ async function renderCases(){
 async function createCase(){const name=$("caseName").value.trim();if(!name){alert("Captura nombre del caso.");return}const c={id:uid("case"),name,type:$("caseType").value,description:$("caseDesc").value.trim(),createdAt:new Date().toISOString()};await put("cases",c);state.activeCaseId=c.id;state.selectedDocId=null;await saveState();$("caseName").value="";$("caseDesc").value="";renderAll()}
 async function selectCase(id){state.activeCaseId=id;state.selectedDocId=null;state.selectedDraftId=null;state.lastSources=[];await saveState();renderAll()}
 
-</b><br><span class="small muted">${esc(q.path||q.file.name)} · ${(q.file.size/1024).toFixed(1)} KB</span><br><span class="tag yellow">${esc(q.status||"pendiente")}</span></div>`).join("")||"<p class='muted'>Cola vacía.</p>"}
+function renderQueue(){ $("queueList").innerHTML=state.queue.map(q=>`<div class="box"><b>${esc(q.file.name)}</b><br><span class="small muted">${esc(q.path||q.file.name)} · ${(q.file.size/1024).toFixed(1)} KB</span><br><span class="tag yellow">${esc(q.status||"pendiente")}</span></div>`).join("")||"<p class='muted'>Cola vacía.</p>"}
 function setupDrop(){const dz=$("dropZone");["dragenter","dragover"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add("drag")}));["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("drag")}));dz.addEventListener("drop",e=>handleFiles(e.dataTransfer.files))}
+function handleFiles(fileList){if(!state.activeCaseId){alert("Crea o selecciona un caso primero.");return}const files=[...fileList];const allowed=files.filter(f=>isSupported(f));const rejected=files.length-allowed.length;  allowed.forEach(f=>state.queue.push({file:f,path:f.webkitRelativePath||f.name,status:"pendiente"}));
+  const parts=[];
+  if(allowed.length)parts.push(`${allowed.length} archivo(s) agregados a la cola.`);
+  if(rejected)parts.push(`${rejected} ignorado(s) — solo se admiten PDF, imágenes y Word (.docx/.doc).`);
+  if(parts.length)$("ocrProgress").innerHTML=parts.join(" ");
+  renderQueue()}
 function isSupported(f){return /pdf$/i.test(f.name)||/^image\//.test(f.type)||/\.(png|jpe?g|webp|tiff?|bmp)$/i.test(f.name)||/\.(docx?)$/i.test(f.name)||/msword|wordprocessingml/.test(f.type||"")}
 async function sha256(file){const buf=await file.arrayBuffer();const hash=await crypto.subtle.digest("SHA-256",buf);return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,"0")).join("")}
 async function processQueue(){
@@ -1015,7 +545,7 @@ async function renderDocuments(){
  <td><button class="secondary" onclick="selectDoc('${d.id}')">Abrir</button><button class="secondary" onclick="quickClassifyDoc('${d.id}')">Clasificar</button><button class="danger" onclick="deleteDoc('${d.id}')">Eliminar</button></td>
  </tr>`).join("")||"<tr><td colspan='7'>Sin documentos en este caso.</td></tr>";
 }
-
+async function selectDoc(id){state.selectedDocId=id;await saveState();await renderSelectedDoc();document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));$("viewer").classList.add("active");document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));[...document.querySelectorAll(".tab")].find(t=>t.textContent==="Visor")?.classList.add("active")}
 async function renderSelectedDoc(){
  const d=state.selectedDocId?await get("documents",state.selectedDocId):null;
  if(!d){$("selectedDocBox").innerHTML="Ningún documento seleccionado.";["selectedText","selectedFolio","selectedAuthority","selectedDocDate","selectedNotes","selectedAction","selectedDue","selectedTags"].forEach(id=>{$(id).value=""});["selectedRole","selectedStage","selectedStatus","selectedPriority","selectedConf"].forEach(id=>{if($(id))$(id).selectedIndex=0});$("sourcePreview").innerHTML="Vista del original disponible solo si se guardó blob local.";return}
@@ -1128,7 +658,9 @@ function validateCitations(output, sources){
  if(!hasSources){level="warn";message="No se enviaron fuentes RAG; la respuesta no debe tratarse como sustentada en expediente.";}
  return {level,message,cited,valid,invalid,expected};
 }
-"><div class="msgmeta">${esc(m.role)} · ${esc(new Date(m.createdAt).toLocaleString())}${m.meta?.model?` · ${esc(m.meta.model)}`:""}</div>${esc(m.content)}</div>`).join("")||"<p class='muted'>Sin mensajes. Haz una pregunta sobre el caso activo.</p>";
+async function renderChat(){
+ const msgs=(await messagesOfActive()).sort((a,b)=>a.createdAt.localeCompare(b.createdAt));
+ $("chatBox").innerHTML=msgs.map(m=>`<div class="msg ${m.role}"><div class="msgmeta">${esc(m.role)} · ${esc(new Date(m.createdAt).toLocaleString())}${m.meta?.model?` · ${esc(m.meta.model)}`:""}</div>${esc(m.content)}</div>`).join("")||"<p class='muted'>Sin mensajes. Haz una pregunta sobre el caso activo.</p>";
  $("chatBox").scrollTop=$("chatBox").scrollHeight;
 }
 
@@ -1236,7 +768,9 @@ async function saveLastAssistantAsDraft(){
  const c=await activeCase();const root=uid("draftroot");const d={id:uid("draft"),rootId:root,caseId:state.activeCaseId,caseName:c.name,title:"Borrador desde chat "+new Date().toLocaleString(),version:1,content:msgs[0].content,sourceMessageId:msgs[0].id,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),sources:msgs[0].meta?.sources||[]};
  await put("drafts",d);state.selectedDraftId=d.id;await saveState();renderDrafts();alert("Borrador guardado.");
 }
-</b><br><span class="tag violet">v${d.version}</span><span class="small muted">${esc(new Date(d.updatedAt).toLocaleString())}</span><p class="small">${esc((d.content||"").slice(0,260))}</p><button class="secondary" onclick="selectDraft('${d.id}')">Editar</button><button class="danger" onclick="deleteDraft('${d.id}')">Eliminar</button></div>`).join("")||"<p class='muted'>Sin borradores.</p>";
+async function renderDrafts(){
+ const drafts=(await draftsOfActive()).sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt));
+ $("draftList").innerHTML=drafts.map(d=>`<div class="box"><b>${esc(d.title)}</b><br><span class="tag violet">v${d.version}</span><span class="small muted">${esc(new Date(d.updatedAt).toLocaleString())}</span><p class="small">${esc((d.content||"").slice(0,260))}</p><button class="secondary" onclick="selectDraft('${d.id}')">Editar</button><button class="danger" onclick="deleteDraft('${d.id}')">Eliminar</button></div>`).join("")||"<p class='muted'>Sin borradores.</p>";
  const selected=state.selectedDraftId?await get("drafts",state.selectedDraftId):null;
  $("draftMeta").innerHTML=selected?`<b>${esc(selected.title)}</b><br><span class="tag violet">v${selected.version}</span><br>Fuentes: ${(selected.sources||[]).map(s=>`<span class='tag'>${esc(s)}</span>`).join("")}`:"Ningún borrador seleccionado.";
  $("draftEditor").value=selected?.content||"";
@@ -1391,199 +925,6 @@ async function runDoctor(){
   }
 }
 
-).catch(()=>{});resolveModel().then(()=>{}).catch(()=>{})}
+async function boot(){initTabs();setupDrop();renderServerBadge();await loadState();await ensureDefaultCase();await renderAll();renderStorage();checkHealth().then(()=>{}).catch(()=>{});resolveModel().then(()=>{}).catch(()=>{})}
 initFirebase();
 </script>
-
-// ── SIMPLIFIED UI GLUE ─────────────────────────────────────────
-const DEFAULT_SERVER_URL = "http://localhost:8787";
-function getServerUrl(){return localStorage.getItem("defensaipn_server_url")||DEFAULT_SERVER_URL;}
-function renderServerBadge(){
-  const u=getServerUrl();const el=document.getElementById("serverUrlBadge");
-  if(!el)return;try{el.textContent=new URL(u).host;}catch{el.textContent="local";}
-}
-
-// Page navigation
-function showPage(name){
-  const NEEDS_CASE=["import","documents","chat","drafts"];
-  if(NEEDS_CASE.includes(name)&&!state.activeCaseId){openNewCaseModal();return;}
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
-  const pg=document.getElementById("page-"+name);
-  if(pg)pg.classList.add("active");
-  const nav=document.getElementById("nav-"+name);
-  if(nav)nav.classList.add("active");
-  if(name==="documents")renderDocuments();
-  if(name==="chat")renderChat();
-  if(name==="drafts")renderDrafts();
-  if(name==="casos")renderCaseGrid();
-  if(name==="import"){renderQueue();const sub=document.getElementById("importCaseSub");if(sub)sub.textContent=currentCaseName();}
-  if(name==="ajustes"){renderStorage();checkHealth().catch(()=>{});resolveModel().catch(()=>{});}
-}
-function currentCaseName(){return state._activeCase?state._activeCase.name:"Sin expediente";}
-
-// Modal
-function openNewCaseModal(){document.getElementById("newCaseModal").style.display="";}
-function closeNewCaseModal(){document.getElementById("newCaseModal").style.display="none";}
-async function createCaseFromModal(){
-  const name=document.getElementById("newCaseName").value.trim();
-  if(!name){alert("Escribe el nombre del expediente.");return;}
-  document.getElementById("caseName").value=name;
-  document.getElementById("caseType").value=document.getElementById("newCaseType").value;
-  document.getElementById("caseDesc").value=document.getElementById("newCaseDesc").value;
-  await createCase();
-  closeNewCaseModal();
-  document.getElementById("newCaseName").value="";
-  document.getElementById("newCaseDesc").value="";
-}
-
-// Render case grid
-async function renderCaseGrid(){
-  const cases=await all("cases");const docs=await all("documents");
-  const msgs=await all("messages");
-  const grid=document.getElementById("caseGrid");if(!grid)return;
-  let html='<div class="case-card add-case-card" onclick="openNewCaseModal()"><div style="font-size:2rem;margin-bottom:8px">➕</div><div style="font-weight:700;font-size:.9rem">Nuevo expediente</div><div style="font-size:.75rem;color:var(--mut);margin-top:4px">Crear un nuevo caso</div></div>';
-  for(const c of cases){
-    const nd=docs.filter(d=>d.caseId===c.id).length;
-    const nm=msgs.filter(m=>m.caseId===c.id).length;
-    const isCur=c.id===state.activeCaseId;
-    const icon=c.type&&c.type.includes("ARCO")?"🗂":c.type&&c.type.includes("Queja")?"⚠️":c.type&&c.type.includes("Denuncia")?"📢":"📁";
-    html+=`<div class="case-card${isCur?" current":""}" onclick="selectCaseAndGo('${c.id}')">
-      ${isCur?'<div class="cc-active-badge">ACTIVO</div>':""}
-      <div class="cc-icon">${icon}</div>
-      <div class="cc-name">${esc(c.name)}</div>
-      <div class="cc-type">${esc(c.type||"")}</div>
-      <div class="cc-stats"><span>📄 ${nd} docs</span><span>💬 ${nm} chats</span></div>
-    </div>`;
-  }
-  grid.innerHTML=html;
-}
-async function selectCaseAndGo(id){
-  await selectCase(id);
-  showPage("chat");
-}
-
-// Update sidebar active case
-async function updateSidebarCase(){
-  const c=await activeCase();
-  state._activeCase=c;
-  const el=document.getElementById("acsName");const et=document.getElementById("acsType");
-  if(el)el.textContent=c?c.name:"Sin expediente";
-  if(et)et.textContent=c?c.type:"Selecciona un expediente";
-  const sub1=document.getElementById("importCaseSub");if(sub1&&c)sub1.textContent="Expediente: "+c.name;
-  const sub2=document.getElementById("docsCaseSub");if(sub2&&c)sub2.textContent="Expediente: "+c.name;
-  const sub3=document.getElementById("chatCaseSub");if(sub3&&c)sub3.textContent="Consultando sobre: "+c.name;
-}
-
-// Override selectDoc to show visor inside documents page
-const _origSelectDoc=window.selectDoc;
-async function selectDoc(id){
-  state.selectedDocId=id;await saveState();await renderSelectedDoc();
-  const card=document.getElementById("docVisorCard");if(card)card.style.display="";
-  showPage("documents");
-}
-
-// Intercept goTab for JS compatibility
-function goTab(id){
-  const map={cases:"casos",import:"import",inbox:"documents",documents:"documents",viewer:"documents",index:"ajustes",chat:"chat",drafts:"drafts",privacy:"ajustes",exporter:"ajustes",audit:"ajustes",panel:"casos",workflow:"casos"};
-  showPage(map[id]||"casos");
-}
-
-// Override renderDocuments to render table in new UI
-const _origRenderDocuments=window.renderDocuments;
-async function renderDocuments(){
-  if(typeof _origRenderDocuments==="function")await _origRenderDocuments();
-}
-
-// Override renderDrafts for new UI
-const _origRenderDrafts=window.renderDrafts;
-async function renderDrafts(){
-  const drafts=(await draftsOfActive()).sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt));
-  const list=document.getElementById("draftList");
-  if(list)list.innerHTML=drafts.map(d=>`<div class="draft-item${d.id===state.selectedDraftId?" sel":""}" onclick="selectDraft('${d.id}')"><div style="font-weight:600;font-size:.85rem">${esc(d.title)}</div><div style="font-size:.7rem;color:var(--mut);margin-top:3px">${esc(new Date(d.updatedAt).toLocaleString())}</div><div class="btn-row" style="margin-top:8px"><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteDraft('${d.id}')">🗑</button></div></div>`).join("")||"<div style='color:var(--mut);font-size:.83rem;padding:10px 0'>Sin borradores guardados.</div>";
-  const sel=state.selectedDraftId?await get("drafts",state.selectedDraftId):null;
-  const meta=document.getElementById("draftMeta");
-  const ed=document.getElementById("draftEditor");
-  if(meta)meta.textContent=sel?sel.title:"Selecciona un borrador de la lista";
-  if(ed)ed.value=sel?.content||"";
-}
-
-// Chat render override (remove citation audit noise from display)
-const _origRenderChat=window.renderChat;
-async function renderChat(){
-  const msgs=(await messagesOfActive()).sort((a,b)=>a.createdAt.localeCompare(b.createdAt));
-  const box=document.getElementById("chatBox");if(!box)return;
-  if(!msgs.length){box.innerHTML="<div style='color:var(--mut);text-align:center;margin-top:40px;font-size:.9rem'>No hay mensajes. Escribe tu primera pregunta arriba.</div>";return;}
-  box.innerHTML=msgs.map(m=>{
-    const text=(m.content||"").replace(/\n---\nVALIDACIÓN LOCAL.*$/s,"").trim();
-    const isUser=m.role==="user";
-    const time=new Date(m.createdAt).toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"});
-    return `<div class="msg ${m.role}"><div class="msg-meta">${isUser?"Tú":("IA"+(m.meta?.model?" · "+esc(m.meta.model):""))} · ${time}</div>${esc(text)}</div>`;
-  }).join("");
-  box.scrollTop=box.scrollHeight;
-}
-
-// Override renderAll
-async function renderAll(){
-  await updateSidebarCase();
-  const active=document.querySelector(".page.active");
-  const id=active?.id?.replace("page-","");
-  if(id==="casos")await renderCaseGrid();
-  if(id==="documents")if(typeof _origRenderDocuments==="function")await _origRenderDocuments();
-  if(id==="chat")await renderChat();
-  if(id==="drafts")await renderDrafts();
-  if(id==="ajustes"){renderStorage();renderAudit();}
-  renderServerBadge();
-}
-
-// Override boot
-async function boot(){
-  renderServerBadge();
-  setupDrop();
-  await loadState();
-  await ensureDefaultCase();
-  await updateSidebarCase();
-  await renderCaseGrid();
-  checkHealth().catch(()=>{});
-  resolveModel().catch(()=>{});
-}
-
-// queueList render
-const _origRenderQueue=window.renderQueue;
-function renderQueue(){
-  const el=document.getElementById("queueList");
-  const bar=document.getElementById("ocrBar");
-  const prog=document.getElementById("ocrProgress");
-  if(!el)return;
-  if(!state.queue.length){el.innerHTML="";if(bar)bar.style.display="none";if(prog)prog.style.display="none";return;}
-  if(bar)bar.style.display="";
-  el.innerHTML=state.queue.map(q=>`<div class="alert ${q.status==="ok"?"alert-ok":q.status.startsWith("error")?"alert-err":"alert-info"}" style="margin:6px 0"><b>${esc(q.file.name)}</b> <span style="float:right">${esc(q.status)}</span></div>`).join("");
-}
-
-// handleFiles - show bar
-const _origHandleFiles=window.handleFiles;
-function handleFiles(fl){
-  if(_origHandleFiles)_origHandleFiles(fl);
-  const prog=document.getElementById("ocrProgress");
-  if(prog&&state.queue.length){prog.style.display="";prog.textContent=state.queue.length+" archivo(s) en cola. Haz clic en 'Iniciar procesamiento'.";}
-}
-
-// configServerUrl
-function configServerUrl(){
-  const cur=localStorage.getItem("defensaipn_server_url")||DEFAULT_SERVER_URL;
-  const url=prompt("URL del servidor Express:\nPor defecto: "+DEFAULT_SERVER_URL+"\nDeja vacío para restablecer el valor por defecto.\nEjemplo remoto: http://192.168.1.10:8787",cur);
-  if(url===null)return;
-  const t=url.trim();
-  if(t&&t!==DEFAULT_SERVER_URL)localStorage.setItem("defensaipn_server_url",t);
-  else localStorage.removeItem("defensaipn_server_url");
-  renderServerBadge();
-  checkHealth().catch(()=>{});
-}
-
-// Expose tab buttons as expected by JS internals
-function initTabs(){}  // no-op, we init manually above
-
-initFirebase();
-</script>
-</body>
-</html>

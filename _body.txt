@@ -1,0 +1,334 @@
+
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-badge">⚖</div>
+      <div><div class="login-title">DefensaIPN.ai</div><div class="login-sub">Sistema Jurídico Inteligente · v7.1</div></div>
+    </div>
+    <div id="loginNotice" class="alert alert-err" style="display:none"></div>
+    <div class="field"><label>Correo electrónico</label><input id="loginEmail" type="email" placeholder="tu@correo.com" autocomplete="email" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="field"><label>Contraseña</label><input id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button id="loginBtn" class="btn btn-gold" onclick="doLogin()" disabled style="width:100%;margin-top:8px;justify-content:center">Iniciando...</button>
+    <p id="loginConfigNotice" style="text-align:center;font-size:.72rem;color:var(--mut);margin-top:14px"></p>
+  </div>
+</div>
+
+<div id="main-app" style="display:none" class="app-layout">
+  <aside class="sidebar">
+    <div class="sb-top">
+      <div class="sb-logo">
+        <div class="sb-badge">⚖</div>
+        <div class="sb-brand">DefensaIPN.ai<small>Sistema Jurídico</small></div>
+      </div>
+      <div class="active-case-box" onclick="showPage('casos')">
+        <div class="acb-label">Expediente abierto</div>
+        <div class="acb-name" id="acsName">Sin expediente</div>
+        <div class="acb-meta" id="acsType"></div>
+      </div>
+    </div>
+    <nav class="sb-nav" id="tabs">
+      <button class="nav-item active" id="nav-casos" onclick="showPage('casos')"><span class="nav-icon">📁</span><span>Expedientes</span></button>
+      <button class="nav-item" id="nav-import" onclick="showPage('import')"><span class="nav-icon">📥</span><span>Agregar documentos</span></button>
+      <button class="nav-item" id="nav-documents" onclick="showPage('documents')"><span class="nav-icon">📄</span><span>Documentos</span></button>
+      <button class="nav-item" id="nav-chat" onclick="showPage('chat')"><span class="nav-icon">💬</span><span>Consultar a la IA</span></button>
+      <button class="nav-item" id="nav-drafts" onclick="showPage('drafts')"><span class="nav-icon">📝</span><span>Borradores</span></button>
+      <button class="nav-item" id="nav-ajustes" onclick="showPage('ajustes')"><span class="nav-icon">⚙️</span><span>Configuración</span></button>
+    </nav>
+    <div class="sb-footer">
+      <div class="user-row">
+        <div class="user-av" id="userInitial">U</div>
+        <span id="userBadge" style="font-size:.72rem;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px"></span>
+      </div>
+      <div class="server-badge">
+        <span class="sdot" id="serverDot"></span>
+        <span id="serverUrlBadge">localhost:8787</span>
+        <button class="btn btn-ghost btn-sm" style="margin-left:auto;padding:2px 8px;font-size:.68rem" onclick="doLogout()">Salir</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <!-- ══ EXPEDIENTES ══ -->
+    <div class="page active" id="page-casos">
+      <div class="page-header">
+        <div class="page-title">📁 Mis Expedientes</div>
+        <div class="page-sub">Selecciona o crea un expediente para comenzar</div>
+      </div>
+      <div class="page-body">
+        <div class="case-grid" id="caseGrid">
+          <div class="case-card add-case-card" onclick="openNewCaseModal()">
+            <div style="font-size:2rem;margin-bottom:8px">➕</div>
+            <div style="font-weight:700;font-size:.9rem">Nuevo expediente</div>
+            <div style="font-size:.75rem;color:var(--mut);margin-top:4px">Crear un nuevo caso</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ AGREGAR DOCUMENTOS ══ -->
+    <div class="page" id="page-import">
+      <div class="page-header">
+        <div class="page-title">📥 Agregar Documentos</div>
+        <div class="page-sub" id="importCaseSub">Selecciona un expediente primero</div>
+      </div>
+      <div class="page-body">
+        <div id="dropZone" class="drop-zone" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="this.classList.remove('drag');handleFiles(event.dataTransfer.files)">
+          <div class="drop-icon">📂</div>
+          <div style="font-weight:700;font-size:1rem;margin-bottom:6px">Arrastra tus archivos aquí</div>
+          <div style="color:var(--mut);font-size:.83rem">PDF, Word (.docx) o imágenes · También puedes hacer clic para seleccionar</div>
+          <input id="fileInput" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.webp,.tif,.tiff,.bmp,.docx,.doc" style="display:none" onchange="handleFiles(this.files)">
+          <input id="folderInput" type="file" multiple webkitdirectory directory style="display:none" onchange="handleFiles(this.files)">
+        </div>
+        <div class="btn-row">
+          <label class="btn btn-ghost" for="folderInput">📁 Cargar carpeta completa</label>
+          <button class="btn btn-primary" onclick="processQueue()">▶ Iniciar procesamiento</button>
+        </div>
+        <div id="ocrProgress" class="alert alert-info" style="margin-top:14px;display:none"></div>
+        <progress id="ocrBar" value="0" max="100" style="margin-top:10px;display:none"></progress>
+        <div id="queueList" style="margin-top:14px"></div>
+      </div>
+    </div>
+
+    <!-- ══ DOCUMENTOS ══ -->
+    <div class="page" id="page-documents">
+      <div class="page-header">
+        <div class="page-title">📄 Documentos del Expediente</div>
+        <div class="page-sub" id="docsCaseSub">Selecciona un expediente</div>
+      </div>
+      <div class="page-body">
+        <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+          <input id="docSearch" placeholder="🔍 Buscar documento..." oninput="renderDocuments()" style="flex:1;min-width:200px;background:#000;border:1px solid var(--brd);border-radius:var(--r2);padding:8px 14px;color:var(--ink);font:inherit;outline:none">
+          <select id="docRoleFilter" onchange="renderDocuments()" style="background:#000;border:1px solid var(--brd);border-radius:var(--r2);padding:8px 12px;color:var(--ink);font:inherit;outline:none">
+            <option value="">Todos los tipos</option>
+            <option>Sin clasificar</option><option>Citatorio</option><option>Acta administrativa</option>
+            <option>Notificación</option><option>Respuesta ARCO</option><option>Acuse</option>
+            <option>Prueba / anexo</option><option>Borrador propio</option>
+          </select>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="doc-table"><thead><tr>
+            <th>Documento</th><th>Tipo</th><th>Estado</th><th>Acciones</th>
+          </tr></thead><tbody id="docTable"></tbody></table>
+        </div>
+        <!-- Visor integrado -->
+        <div id="docVisorCard" class="card" style="margin-top:20px;display:none">
+          <div class="card-title">📋 Documento seleccionado</div>
+          <div id="selectedDocBox" class="alert alert-info" style="margin-bottom:12px"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;flex-wrap:wrap">
+            <div>
+              <div class="field"><label>Texto extraído (OCR)</label><textarea id="selectedText" style="min-height:200px"></textarea></div>
+              <div class="btn-row">
+                <button class="btn btn-primary btn-sm" onclick="saveSelectedText()">💾 Guardar corrección</button>
+                <button class="btn btn-ghost btn-sm" onclick="markReviewed()">✅ Marcar cotejado</button>
+              </div>
+            </div>
+            <div>
+              <div class="field"><label>Folio / Número de oficio</label><input id="selectedFolio" placeholder="Ej: OFICIO/2024/001"></div>
+              <div class="field"><label>Autoridad o remitente</label><input id="selectedAuthority" placeholder="Ej: Dirección de Capital Humano IPN"></div>
+              <div class="field"><label>Fecha del documento</label><input id="selectedDocDate" type="date"></div>
+              <div class="field"><label>Tipo de documento</label>
+                <select id="selectedRole"><option>Sin clasificar</option><option>Citatorio</option><option>Acta administrativa</option><option>Notificación</option><option>Opinión jurídica / dictamen</option><option>Respuesta ARCO</option><option>Acuerdo</option><option>Queja / denuncia</option><option>Oficio</option><option>Correo</option><option>Acuse</option><option>Prueba / anexo</option><option>Borrador propio</option><option>Otro</option></select>
+              </div>
+              <div class="field"><label>Estado</label>
+                <select id="selectedStatus"><option>Pendiente de clasificación</option><option>Pendiente de cotejo</option><option>Metadatos incompletos</option><option>Listo para RAG</option><option>Listo para escrito</option><option>Solo referencia interna</option><option>No usar</option></select>
+              </div>
+              <div class="field"><label>Notas</label><textarea id="selectedNotes" style="min-height:70px"></textarea></div>
+              <!-- Hidden fields needed by JS -->
+              <input id="selectedStage" type="hidden" value="Ingreso">
+              <input id="selectedPriority" type="hidden" value="Media">
+              <input id="selectedConf" type="hidden" value="Interno">
+              <input id="selectedAction" type="hidden" value="">
+              <input id="selectedDue" type="hidden" value="">
+              <input id="selectedTags" type="hidden" value="">
+              <button class="btn btn-primary" onclick="saveSelectedMeta()" style="width:100%">💾 Guardar metadatos</button>
+            </div>
+          </div>
+          <div id="sourcePreview" style="margin-top:12px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CHAT ══ -->
+    <div class="page" id="page-chat">
+      <div class="chat-wrap">
+        <div class="page-header" style="padding-bottom:12px">
+          <div class="page-title">💬 Consultar a la IA</div>
+          <div class="page-sub" id="chatCaseSub">Pregunta sobre los documentos del expediente activo</div>
+        </div>
+        <div class="chatbox" id="chatBox"></div>
+        <div class="chat-input-area">
+          <div class="quick-prompts">
+            <button class="qp" onclick="quickOpinion('opinion')">Opinión honesta del caso</button>
+            <button class="qp" onclick="quickOpinion('hacer')">¿Qué debo hacer ahora?</button>
+            <button class="qp" onclick="quickOpinion('sucede')">¿Qué está pasando?</button>
+            <button class="qp" onclick="quickOpinion('impacto')">¿Cómo me afecta este doc?</button>
+            <button class="qp" onclick="quickOpinion('escrito')">Analiza este escrito</button>
+          </div>
+          <div class="chat-mode-row">
+            <select id="chatMode">
+              <option>Análisis estratégico protegido</option>
+              <option>Opinión brutalmente honesta</option>
+              <option>Impacto: cómo me beneficia/perjudica</option>
+              <option>Qué creo que sucede</option>
+              <option>Qué debería hacer ahora</option>
+              <option>Análisis de escrito adverso</option>
+              <option>Pre-flight de escrito</option>
+              <option>Generación de escrito</option>
+              <option>Comparación documental</option>
+              <option>Resumen ejecutivo</option>
+              <option>Verificación normativa pública</option>
+              <option>Gobierno documental: organizar expediente</option>
+            </select>
+            <!-- Hidden advanced controls needed by JS -->
+            <input id="ragFilter" type="hidden" value="auto">
+            <input id="ragTopK" type="hidden" value="12">
+            <input id="chunkChars" type="hidden" value="1800">
+            <input id="modelOverride" type="hidden" value="">
+            <input id="allowWeb" type="hidden" value="no">
+          </div>
+          <div class="chat-input-row">
+            <textarea id="chatInput" placeholder="Escribe tu pregunta aquí... Ej: ¿Qué puntos débiles tiene el acta administrativa en mi contra?" rows="2"></textarea>
+            <button class="btn btn-primary" onclick="sendChat()" style="height:44px;padding:0 18px">Enviar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ BORRADORES ══ -->
+    <div class="page" id="page-drafts">
+      <div class="page-header">
+        <div class="page-title">📝 Borradores</div>
+        <div class="page-sub">Respuestas y escritos guardados del expediente activo</div>
+      </div>
+      <div class="page-body">
+        <div style="display:grid;grid-template-columns:280px 1fr;gap:20px;height:100%">
+          <div>
+            <button class="btn btn-primary btn-sm" onclick="saveLastAssistantAsDraft()" style="width:100%;margin-bottom:12px">💾 Guardar última respuesta IA</button>
+            <div id="draftList"></div>
+          </div>
+          <div>
+            <div id="draftMeta" class="alert alert-info">Selecciona un borrador de la lista</div>
+            <textarea id="draftEditor" style="width:100%;min-height:400px;background:#000;border:1px solid var(--brd);border-radius:var(--r2);padding:14px;color:var(--ink);font:inherit;font-size:.88rem;line-height:1.7;outline:none;resize:vertical;margin-top:10px"></textarea>
+            <div class="btn-row">
+              <button class="btn btn-primary btn-sm" onclick="saveDraftVersion()">💾 Guardar versión</button>
+              <button class="btn btn-ghost btn-sm" onclick="downloadDraftTxt()">⬇ Descargar TXT</button>
+              <button class="btn btn-ghost btn-sm" onclick="copyDraftToExporter()">📤 Exportar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CONFIGURACIÓN ══ -->
+    <div class="page" id="page-ajustes">
+      <div class="page-header">
+        <div class="page-title">⚙️ Configuración</div>
+        <div class="page-sub">Servidor, exportación, respaldos y diagnóstico</div>
+      </div>
+      <div class="page-body">
+        <!-- Servidor -->
+        <div class="card">
+          <div class="card-title">🖥 Servidor IA</div>
+          <div id="healthBox" class="alert alert-info">Sin verificar.</div>
+          <div id="modelBox" class="alert alert-info" style="margin-top:8px">Modelo: pendiente.</div>
+          <div class="btn-row">
+            <button class="btn btn-ghost btn-sm" onclick="configServerUrl()">🔧 Configurar URL</button>
+            <button class="btn btn-primary btn-sm" onclick="checkHealth()">🔁 Verificar servidor</button>
+            <button class="btn btn-ghost btn-sm" onclick="resolveModel()">🤖 Resolver modelo</button>
+            <button class="btn btn-ghost btn-sm" onclick="runDoctor()">🩺 Diagnóstico v7</button>
+          </div>
+          <div id="doctorBox" style="margin-top:10px"></div>
+        </div>
+        <!-- Exportación -->
+        <div class="card">
+          <div class="card-title">📤 Exportar documento</div>
+          <div class="field"><label>Título</label><input id="exportTitle" value="DefensaIPN_export"></div>
+          <div class="field"><label>Contenido</label><textarea id="exportContent" style="min-height:150px" placeholder="Pega aquí el texto o usa 'Exportar' desde Borradores"></textarea></div>
+          <div class="btn-row">
+            <button class="btn btn-primary btn-sm" onclick="exportServer('txt')">TXT</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportServer('docx')">DOCX</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportServer('pdf')">PDF</button>
+          </div>
+          <div id="exportStatus" class="alert alert-info" style="margin-top:10px">Listo para exportar.</div>
+        </div>
+        <!-- Respaldo -->
+        <div class="card">
+          <div class="card-title">🔒 Respaldo y privacidad</div>
+          <div class="field"><label>Contraseña para cifrar respaldo</label><input id="masterPassword" type="password" placeholder="Mínimo 10 caracteres"></div>
+          <div class="btn-row">
+            <button class="btn btn-primary btn-sm" onclick="exportEncryptedBackup()">🔐 Respaldo cifrado</button>
+            <label class="btn btn-ghost btn-sm" for="encryptedImport">📂 Importar cifrado</label>
+            <input id="encryptedImport" type="file" accept="application/json" style="display:none" onchange="importEncryptedBackup(event)">
+            <button class="btn btn-ghost btn-sm" onclick="fullBackup()">💾 Respaldo normal</button>
+            <label class="btn btn-ghost btn-sm" for="backupInput">📥 Importar respaldo</label>
+            <input id="backupInput" type="file" accept="application/json" style="display:none" onchange="importFullBackup(event)">
+          </div>
+          <div id="cryptoStatus" class="alert alert-info" style="margin-top:10px">Cifrado disponible.</div>
+        </div>
+        <!-- Auditoría -->
+        <div class="card">
+          <div class="card-title">📊 Auditoría IA</div>
+          <div class="btn-row">
+            <button class="btn btn-ghost btn-sm" onclick="runSelfAudit()">🔍 Autoauditoría</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportAudit()">⬇ Exportar log</button>
+            <button class="btn btn-danger btn-sm" onclick="clearAudit()">🗑 Borrar log</button>
+          </div>
+          <div id="selfAuditBox" class="alert alert-info" style="margin-top:10px">Pendiente.</div>
+          <div style="overflow-x:auto;margin-top:12px;max-height:300px">
+            <table class="doc-table"><thead><tr><th>Fecha</th><th>Expediente</th><th>Modo</th><th>Modelo</th><th>Fuentes</th></tr></thead><tbody id="auditTable"></tbody></table>
+          </div>
+        </div>
+        <!-- Almacenamiento -->
+        <div class="card">
+          <div id="storageBox" class="alert alert-info">Almacenamiento: pendiente.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ HIDDEN SECTIONS for JS compatibility ══ -->
+    <div style="display:none">
+      <div id="panel"></div>
+      <div id="workflow"><div id="workflowSteps"></div><div id="governanceDashboard"></div></div>
+      <div id="inbox"><div id="pendingDocs"></div>
+        <select id="bulkScope"><option value="selected">selected</option><option value="unclassified">unclassified</option><option value="needsReview">needsReview</option><option value="all">all</option></select>
+        <select id="bulkRole"><option>Sin clasificar</option><option>Citatorio</option><option>Acta administrativa</option></select>
+        <select id="bulkStage"><option>Ingreso</option></select>
+        <select id="bulkStatus"><option>Pendiente de clasificación</option></select>
+        <select id="bulkPriority"><option>Media</option></select>
+        <select id="bulkConf"><option>Interno</option></select>
+        <input id="bulkAction"><input id="bulkDue" type="date"><input id="bulkTags">
+      </div>
+      <div id="index"><div id="indexStats"></div><div id="caseIndexOutput"></div></div>
+      <div id="cases"><div id="caseFilter"><input id="caseSearch"></div><div id="caseList"></div>
+        <input id="caseName"><select id="caseType"><option>Acta administrativa</option><option>ARCO / datos personales</option><option>Queja</option><option>Denuncia</option><option>Defensoría</option><option>Espacios / laboratorio</option><option>Expediente maestro</option><option>Otro</option></select>
+        <textarea id="caseDesc"></textarea>
+      </div>
+      <div id="viewer"><div id="blobPreview"></div></div>
+      <div id="drafts-old"></div>
+      <div id="privacy"></div>
+      <div id="exporter"></div>
+      <div id="audit"></div>
+      <div id="mCase"></div><div id="mDocs"></div><div id="mChunks"></div><div id="mMsgs"></div><div id="mCases"></div><div id="mHealth"></div>
+      <div id="caseBar"><span id="cbarName"></span><span id="cbarType"></span></div>
+      <div id="caseSpotlight"><div id="spotName"></div><div id="spotMeta"></div></div>
+      <div id="noCase"></div>
+      <div id="packetPreview"></div><div id="sourcesList"></div><div id="caseHealthBox"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Nuevo expediente ══ -->
+<div class="modal-overlay" id="newCaseModal" style="display:none" onclick="if(event.target===this)closeNewCaseModal()">
+  <div class="modal">
+    <div class="modal-title">📁 Nuevo Expediente</div>
+    <div class="field"><label>Nombre del expediente</label><input id="newCaseName" placeholder="Ej: Acta administrativa 05-mar-2026"></div>
+    <div class="field"><label>Tipo</label>
+      <select id="newCaseType"><option>Acta administrativa</option><option>ARCO / datos personales</option><option>Queja</option><option>Denuncia</option><option>Defensoría</option><option>Espacios / laboratorio</option><option>Expediente maestro</option><option>Otro</option></select>
+    </div>
+    <div class="field"><label>Descripción (opcional)</label><textarea id="newCaseDesc" placeholder="Breve descripción del caso, autoridad involucrada, objetivo..."></textarea></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="createCaseFromModal()">✅ Crear expediente</button>
+      <button class="btn btn-ghost" onclick="closeNewCaseModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
