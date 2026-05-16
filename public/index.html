@@ -826,19 +826,32 @@ async function doLogout() {
   await fbMod.signOut(fbAuth);
 }
 function configServerUrl() {
-  const cur = localStorage.getItem("defensaipn_server_url") || "";
-  const url = prompt("URL del servidor Express (vacío = mismo origen).\nEjemplo para acceso remoto: http://192.168.1.10:8787", cur);
+  const cur = localStorage.getItem("defensaipn_server_url") || DEFAULT_SERVER_URL;
+  const url = prompt(
+    "URL del servidor Express local.\n" +
+    "Por defecto: " + DEFAULT_SERVER_URL + "\n" +
+    "Borra el campo para restablecer el valor por defecto.\n" +
+    "Ejemplo remoto: http://192.168.1.10:8787",
+    cur
+  );
   if (url === null) return;
   const trimmed = url.trim();
-  if (trimmed) localStorage.setItem("defensaipn_server_url", trimmed);
+  if (trimmed && trimmed !== DEFAULT_SERVER_URL) localStorage.setItem("defensaipn_server_url", trimmed);
   else localStorage.removeItem("defensaipn_server_url");
   renderServerBadge();
+  checkHealth();
 }
-function getServerUrl() { return localStorage.getItem("defensaipn_server_url") || ""; }
+const DEFAULT_SERVER_URL = "http://localhost:8787";
+function getServerUrl() { return localStorage.getItem("defensaipn_server_url") || DEFAULT_SERVER_URL; }
 function renderServerBadge() {
-  const u = getServerUrl();
+  const stored = localStorage.getItem("defensaipn_server_url");
+  const u = stored || DEFAULT_SERVER_URL;
   const el = $("serverUrlBadge"); if (!el) return;
-  try { el.textContent = u ? new URL(u).host : "local"; } catch { el.textContent = "local"; }
+  try {
+    const host = new URL(u).host;
+    el.textContent = host;
+    el.title = stored ? "Servidor configurado: " + u : "Servidor por defecto: " + u;
+  } catch { el.textContent = "local"; }
 }
 
 function initTabs(){
