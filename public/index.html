@@ -319,7 +319,7 @@ progress::-webkit-progress-value { background: linear-gradient(90deg, var(--prim
     <div class="card">
       <h2>Estado del servidor IA</h2>
       <div id="healthBox" class="box notice">Sin verificar. Configura la URL del servidor Express para usar funciones de IA.</div>
-      <div id="modelBox" class="box info" style="display:none">Modelo sin resolver.</div>
+      <div id="modelBox" class="box info">Modelo: pendiente de verificación.</div>
       <div class="toolbar">
         <button onclick="checkHealth()">Verificar servidor</button>
         <button class="secondary" onclick="resolveModel()">Resolver modelo</button>
@@ -643,6 +643,8 @@ progress::-webkit-progress-value { background: linear-gradient(90deg, var(--prim
   </div>
 </section>
 </main>
+  </div><!-- /main-area -->
+</div><!-- /app-layout -->
 
 <script>
 // Config Firebase pública (no es secreto — la seguridad la dan las Firestore Rules)
@@ -1356,9 +1358,55 @@ VALIDACIÓN LOCAL DE CITAS: ${citationAudit.message}`;
  }catch(e){await del("messages",loading.id);const err={id:uid("msg"),caseId:state.activeCaseId,role:"assistant",content:"Error al llamar IA: "+e.message,createdAt:new Date().toISOString(),meta:{error:true}};await put("messages",err);await renderChat();}
 }
 async function clearCaseChat(){if(!confirm("¿Limpiar chat de este caso?"))return;const msgs=await messagesOfActive();for(const m of msgs)await del("messages",m.id);renderAll()}
-async function api(path,opts={}){const url=getServerUrl()+path;const res=await fetch(url,{headers:{"Content-Type":"application/json"},...opts});const text=await res.text();let data;try{data=JSON.parse(text)}catch(e){throw new Error("La respuesta no es JSON válido (Revisa el servidor Express).");}if(!res.ok||!data.ok)throw new Error(data?.error||"Error del servidor");return data;}
-async function checkHealth(){try{const d=await api("/api/health");$("healthBox").className=d.api_key_configured?"box success":"box notice";$("healthBox").innerHTML=`<b>Servidor:</b> activo<br>API key: ${d.api_key_configured?"configurada":"NO configurada"}<br>Web search: ${d.allow_web_search?"habilitado":"deshabilitado"}<br>Razonamiento: ${esc(d.reasoning_effort)}<br>Policy: ${esc(d.policy_version)}`;}catch(e){$("healthBox").className="box dangerbox";$("healthBox").textContent=e.message}}
-async function resolveModel(){try{const d=await api("/api/models/resolve");$("modelBox").className="box success";$("modelBox").innerHTML=`<b>Modelo:</b> <span class="tag green">${esc(d.selected)}</span><br><b>Razón:</b> ${esc(d.reason)}<br><b>Verificado:</b> ${esc(d.checked_at)}`;}catch(e){$("modelBox").className="box dangerbox";$("modelBox").textContent=e.message}}
+async function api(path,opts={}){
+  const base=getServerUrl();
+  const url=base+path;
+  let res,text,data;
+  try{res=await fetch(url,{headers:{"Content-Type":"application/json"},...opts});}
+  catch(e){throw new Error("No se pudo conectar al servidor Express ("+base+"). Verifica que esté corriendo: "+e.message);}
+  try{text=await res.text();}catch(e){throw new Error("Error leyendo respuesta del servidor.");}
+  try{data=JSON.parse(text);}catch(e){throw new Error("El servidor no respondió JSON válido. URL usada: "+url+". Respuesta: "+text.slice(0,200));}
+  if(!res.ok||data.ok===false)throw new Error(data?.error||"Error del servidor (status "+res.status+")");
+  return data;
+}
+async function checkHealth(){
+  const box=$("healthBox");
+  if(box){box.className="box notice";box.textContent="Verificando servidor...";}
+  try{
+    const d=await api("/api/health");
+    if(box){
+      box.className=d.api_key_configured?"box success":"box notice";
+      box.innerHTML="<b>Servidor:</b> <span style='color:var(--success)'>activo ✓</span><br>"+
+        "<b>API key:</b> "+(d.api_key_configured?"configurada ✓":"NO configurada ✗")+"<br>"+
+        "<b>Web search:</b> "+(d.allow_web_search?"habilitado":"deshabilitado")+"<br>"+
+        "<b>Razonamiento:</b> "+esc(d.reasoning_effort)+"<br>"+
+        "<b>Policy:</b> "+esc(d.policy_version)+"<br>"+
+        "<b>Max tokens:</b> "+d.max_output_tokens;
+    }
+    const dot=$("serverDot");
+    if(dot){dot.className="sdot on";}
+  }catch(e){
+    if(box){box.className="box dangerbox";box.innerHTML="<b>Error:</b> "+esc(e.message);}
+    const dot=$("serverDot");
+    if(dot){dot.className="sdot off";}
+  }
+}
+async function resolveModel(){
+  const box=$("modelBox");
+  if(box){box.style.display="";box.className="box notice";box.textContent="Resolviendo modelo...";}
+  try{
+    const d=await api("/api/models/resolve");
+    if(box){
+      box.className="box success";
+      box.innerHTML="<b>Modelo seleccionado:</b> <span class='tag green'>"+esc(d.selected)+"</span><br>"+
+        "<b>Razón:</b> "+esc(d.reason)+"<br>"+
+        "<b>Verificado:</b> "+esc(d.checked_at)+"<br>"+
+        "<b>Modo:</b> "+esc(d.model_policy_mode);
+    }
+  }catch(e){
+    if(box){box.className="box dangerbox";box.innerHTML="<b>Error:</b> "+esc(e.message);}
+  }
+}
 
 async function saveLastAssistantAsDraft(){
  const msgs=(await messagesOfActive()).filter(m=>m.role==="assistant").sort((a,b)=>b.createdAt.localeCompare(a.createdAt));if(!msgs.length){alert("No hay respuesta de IA para guardar.");return}
@@ -1476,16 +1524,22 @@ async function importEncryptedBackup(ev){
  }catch(e){$("cryptoStatus").innerHTML="Error al descifrar. Contraseña incorrecta o archivo dañado."}
 }
 async function exportServer(kind){
- const title=$("exportTitle").value.trim()||"DefensaIPN_export";
- const content=$("exportContent").value||"";
- try{
-  const res=await fetch("/api/export/"+kind,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({title,content})});
-  if(!res.ok){const e=await res.json().catch(()=>({error:"Error"}));throw new Error(e.error||"Error exportando");}
-  const blob=await res.blob();const a=document.createElement("a");a.href=URL.createObjectURL(blob);
-  const ext=kind==="docx"?"docx":kind==="pdf"?"pdf":kind==="html"?"html":"txt";
-  a.download=title.replace(/[^\w.-]+/g,"_")+"."+ext;a.click();URL.revokeObjectURL(a.href);
-  $("exportStatus").innerHTML="Exportación "+kind.toUpperCase()+" generada.";
- }catch(e){$("exportStatus").innerHTML="Error: "+esc(e.message)}
+  const statusEl=$("exportStatus");
+  const title=$("exportTitle").value.trim()||"DefensaIPN_export";
+  const content=$("exportContent").value||"";
+  if(statusEl){statusEl.className="box notice";statusEl.textContent="Generando "+kind.toUpperCase()+"..."}
+  try{
+    const base=getServerUrl();
+    const res=await fetch(base+"/api/export/"+kind,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({title,content})});
+    if(!res.ok){let err={error:"Error exportando"};try{err=await res.json();}catch(e2){}throw new Error(err.error||"Error exportando");}
+    const blob=await res.blob();
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+    const ext=kind==="docx"?"docx":kind==="pdf"?"pdf":kind==="html"?"html":"txt";
+    a.download=title.replace(/[^\w.-]+/g,"_")+"."+ext;a.click();URL.revokeObjectURL(a.href);
+    if(statusEl){statusEl.className="box success";statusEl.innerHTML="Exportación "+kind.toUpperCase()+" generada exitosamente.";}
+  }catch(e){
+    if(statusEl){statusEl.className="box dangerbox";statusEl.innerHTML="Error: "+esc(e.message);}
+  }
 }
 function copyCurrentIndexToExporter(){
  const txt=$("caseIndexOutput")?.textContent||"";if(!txt.trim()){alert("Genera índice maestro primero.");return}
@@ -1496,15 +1550,28 @@ async function copyDraftToExporter(){
  $("exportContent").value=d.content||"";$("exportTitle").value=(d.title||"borrador").replace(/[^\w.-]+/g,"_")+"_v"+(d.version||1);goTab("exporter");
 }
 async function runDoctor(){
- try{
-  const d=await api("/api/doctor");
-  $("doctorBox").innerHTML=d.checks.map(c=>`${c.ok?"✅":"⚠️"} <b>${esc(c.name)}</b>: ${esc(c.detail)}`).join("<br>")+"<br><br>Modo vendor offline: "+d.offline_vendor_mode;
- }catch(e){$("doctorBox").innerHTML="Error doctor: "+esc(e.message)}
+  const box=$("doctorBox");
+  if(box){box.className="box notice";box.textContent="Ejecutando diagnóstico v7, conectando al servidor..."}
+  try{
+    const d=await api("/api/doctor");
+    if(box){
+      const ok=d.checks.filter(c=>c.ok).length;
+      const total=d.checks.length;
+      const allOk=ok===total;
+      box.className="box "+(allOk?"success":"notice");
+      box.innerHTML="<b>Diagnóstico: "+ok+"/"+total+" verificaciones OK</b><br><br>"+
+        d.checks.map(c=>'<div style="padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.06)">'+
+          (c.ok?'<span style="color:var(--success)">✅</span>':'<span style="color:var(--warning)">⚠️</span>')+
+          ' <b>'+esc(c.name)+'</b>: '+esc(c.detail)+'</div>').join('')+
+        '<div style="margin-top:10px;font-size:.8rem"><b>Modo vendor offline:</b> '+String(d.offline_vendor_mode)+'</div>';
+    }
+  }catch(e){
+    if(box){box.className="box dangerbox";box.innerHTML="<b>Error en diagnóstico:</b> "+esc(e.message);}
+  }
 }
 
-async function boot(){initTabs();setupDrop();renderServerBadge();await loadState();await ensureDefaultCase();await renderAll();renderStorage();checkHealth();resolveModel()}
+async function boot(){initTabs();setupDrop();renderServerBadge();await loadState();await ensureDefaultCase();await renderAll();renderStorage();checkHealth().then(()=>{}).catch(()=>{});resolveModel().then(()=>{}).catch(()=>{})}
 initFirebase();
 </script>
-</div><!-- /main-app -->
 </body>
 </html>
