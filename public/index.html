@@ -3,62 +3,244 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DefensaIPN.ai v7.1 — Offline Profesional Auditada</title>
+<title>DefensaIPN.ai v7.1 — Sistema Jurídico Inteligente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Lora:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2306101f'/><text x='16' y='22' font-size='20' text-anchor='middle' fill='%2338bdf8'>⚖</text></svg>">
 <style>
-:root{
-  --bg:#06101f;--panel:#0f172a;--panel2:#1e293b;--ink:#e5e7eb;--muted:#9ca3af;
-  --line:rgba(255,255,255,.12);--accent:#38bdf8;--violet:#a78bfa;--green:#34d399;--yellow:#fbbf24;--red:#fb7185;
-  --paper:#f8fafc;--paperInk:#111827;--radius:18px;--shadow:0 18px 50px rgba(0,0,0,.38)
+/* ── Variables ─────────────────────────────────────────────────── */
+:root {
+  --bg: #09090b; --panel: #18181b; --panel-border: #27272a;
+  --sidebar: #000000; --sidebar-border: #27272a;
+  --ink: #f4f4f5; --muted: #a1a1aa;
+  --accent: #d4af37; --accent-hover: #fcd34d;
+  --primary: #3b82f6; --primary-hover: #60a5fa;
+  --danger: #ef4444; --success: #10b981; --warning: #f59e0b;
+  --radius: 12px; --radius-sm: 8px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  --glass: rgba(24, 24, 27, 0.7);
 }
-*{box-sizing:border-box}
-body{margin:0;color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 8% 0%,rgba(56,189,248,.22),transparent 31%),radial-gradient(circle at 90% 5%,rgba(167,139,250,.18),transparent 33%),var(--bg);min-height:100vh}
-header{position:sticky;top:0;background:rgba(6,16,31,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:18px 20px 12px;z-index:20}
-h1{margin:0;font-size:clamp(1.25rem,2.4vw,2.25rem);letter-spacing:-.045em}.subtitle{color:var(--muted);margin:7px 0 0;max-width:1180px}
-nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.tab{cursor:pointer;border:1px solid var(--line);background:rgba(30,41,59,.72);color:var(--ink);border-radius:999px;padding:8px 12px;font-weight:850;font-size:.84rem}.tab.active{background:linear-gradient(135deg,var(--accent),var(--violet));color:#06101f;border-color:transparent}
-main{max-width:1580px;margin:auto;padding:20px}section{display:none}section.active{display:block}
-.grid{display:grid;gap:16px}.two{grid-template-columns:repeat(auto-fit,minmax(360px,1fr))}.three{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}.cards{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
-.card{background:linear-gradient(180deg,rgba(30,41,59,.95),rgba(15,23,42,.95));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:17px}
-h2,h3{letter-spacing:-.025em}h2{font-size:1.18rem;margin:0 0 12px}h3{font-size:1rem;margin:0 0 9px}
-label{display:block;margin:11px 0 6px;color:#dbeafe;font-size:.84rem;font-weight:850}
-input,select,textarea{width:100%;border:1px solid var(--line);background:#06101f;color:var(--ink);border-radius:12px;padding:10px 11px;font:inherit;outline:none}
-textarea{min-height:130px;resize:vertical;line-height:1.45}
-button,.btn{border:0;border-radius:12px;padding:10px 13px;font-weight:900;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--violet));color:#06101f;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
-button.secondary,.btn.secondary{background:rgba(255,255,255,.08);color:var(--ink);border:1px solid var(--line)}button.danger{background:rgba(251,113,133,.14);color:#fecdd3;border:1px solid rgba(251,113,133,.35)}button.ok{background:rgba(52,211,153,.13);color:#bbf7d0;border:1px solid rgba(52,211,153,.35)}button.warn{background:rgba(251,191,36,.14);color:#fde68a;border:1px solid rgba(251,191,36,.35)}
-.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:10px 0}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}.row>*{flex:1}.row .shrink{flex:0 0 auto}
-.box{border:1px solid var(--line);border-radius:15px;padding:12px;background:rgba(255,255,255,.045);margin:10px 0}
-.info{border-color:rgba(56,189,248,.32);background:rgba(56,189,248,.08);color:#e0f2fe}.success{border-color:rgba(52,211,153,.36);background:rgba(52,211,153,.09);color:#dcfce7}.notice{border-color:rgba(251,191,36,.36);background:rgba(251,191,36,.09);color:#fef3c7}.dangerbox{border-color:rgba(251,113,133,.36);background:rgba(251,113,133,.09);color:#ffe4e6}
-.tag{display:inline-block;border-radius:999px;padding:4px 8px;margin:2px;font-size:.74rem;font-weight:900;background:rgba(56,189,248,.12);color:#bae6fd;border:1px solid rgba(56,189,248,.24)}
-.tag.green{background:rgba(52,211,153,.12);color:#bbf7d0;border-color:rgba(52,211,153,.28)}.tag.yellow{background:rgba(251,191,36,.13);color:#fde68a;border-color:rgba(251,191,36,.32)}.tag.red{background:rgba(251,113,133,.13);color:#fecdd3;border-color:rgba(251,113,133,.32)}.tag.violet{background:rgba(167,139,250,.14);color:#ddd6fe;border-color:rgba(167,139,250,.35)}
-.metric{font-size:2rem;font-weight:950;letter-spacing:-.055em;margin-top:6px}.small{font-size:.86rem}.tiny{font-size:.76rem}.muted{color:var(--muted)}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-.paper{background:var(--paper);color:var(--paperInk);border-radius:13px;padding:18px;white-space:pre-wrap;line-height:1.52;box-shadow:inset 0 0 0 1px rgba(17,24,39,.12);min-height:380px;max-height:76vh;overflow:auto;font-family:ui-serif,Georgia,Cambria,"Times New Roman",serif}
-table{width:100%;border-collapse:collapse;font-size:.86rem}th,td{border-bottom:1px solid rgba(255,255,255,.09);padding:9px;text-align:left;vertical-align:top}th{color:#bae6fd;background:rgba(8,47,73,.35)}
-progress{width:100%;height:14px;border-radius:999px;overflow:hidden}.drop{border:2px dashed rgba(56,189,248,.38);border-radius:18px;padding:18px;text-align:center;background:rgba(56,189,248,.06)}.drop.drag{background:rgba(52,211,153,.10);border-color:rgba(52,211,153,.6)}
-.casepill{cursor:pointer;display:block;text-align:left;width:100%;margin:7px 0}
-.chatbox{height:560px;overflow:auto;border:1px solid var(--line);border-radius:16px;padding:12px;background:rgba(0,0,0,.12)}
-.msg{max-width:92%;padding:12px;border-radius:16px;margin:10px 0;white-space:pre-wrap;line-height:1.48}
-.msg.user{margin-left:auto;background:rgba(56,189,248,.14);border:1px solid rgba(56,189,248,.28)}
-.msg.assistant{margin-right:auto;background:rgba(255,255,255,.07);border:1px solid var(--line)}
-.msgmeta{font-size:.72rem;color:var(--muted);margin-bottom:6px}
-.srcitem{cursor:pointer}.srcitem:hover{background:rgba(255,255,255,.06)}
-
-.step{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:16px;padding:12px;background:rgba(255,255,255,.045);margin:10px 0}
-.stepnum{flex:0 0 34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:950;background:linear-gradient(135deg,var(--accent),var(--violet));color:#06101f}
-.step.done .stepnum{background:rgba(52,211,153,.95)}
-.step.warn .stepnum{background:rgba(251,191,36,.95)}
-.step.bad .stepnum{background:rgba(251,113,133,.95)}
-.healthbar{height:13px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;border:1px solid var(--line)}
-.healthbar span{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--yellow),var(--green));width:0%}
-.docgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
-.badgeblock{border:1px solid var(--line);border-radius:13px;padding:10px;background:rgba(255,255,255,.035)}
-
-
-.viewerFrame{width:100%;min-height:460px;border:1px solid var(--line);border-radius:14px;background:#0b1220}
-.imgPreview{max-width:100%;max-height:620px;border-radius:12px;border:1px solid var(--line)}
-.locked{filter:blur(2px);opacity:.72}
-.exportBtns button{margin:3px}
-
-@media(max-width:900px){.two,.three,.cards{grid-template-columns:1fr}.chatbox{height:460px}}
+* { box-sizing: border-box; }
+body {
+  margin: 0; color: var(--ink);
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 14px; line-height: 1.6;
+  background: var(--bg);
+  height: 100vh; overflow: hidden;
+  display: flex;
+}
+/* ── App Layout ─────────────────────────────────────────────────── */
+.app-layout {
+  display: flex;
+  width: 100%; height: 100%;
+}
+.sidebar {
+  width: 260px; background: var(--sidebar);
+  border-right: 1px solid var(--sidebar-border);
+  display: flex; flex-direction: column;
+  padding: 20px 0; z-index: 50;
+}
+.main-area {
+  flex: 1; display: flex; flex-direction: column;
+  background: var(--bg);
+  position: relative;
+  overflow-x: hidden;
+}
+/* ── Sidebar ────────────────────────────────────────────────────── */
+.hdr-brand {
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 20px 24px;
+}
+.brand-badge {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), #b48600);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; color: #000;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+}
+.brand-name { font-family: "Lora", serif; font-size: 1.1rem; font-weight: 700; margin: 0; color: #fff; }
+.brand-sub { font-size: 0.7rem; color: var(--muted); margin: 0; }
+.active-case-selector {
+  margin: 0 20px 20px; padding: 12px;
+  background: var(--panel); border: 1px solid var(--panel-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+.active-case-selector:hover { border-color: var(--accent); }
+.acs-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 4px; font-weight: 700; }
+.acs-name { font-size: 0.9rem; font-weight: 600; color: var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nav-group-title {
+  font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--muted); font-weight: 700; padding: 16px 24px 8px;
+}
+nav {
+  display: flex; flex-direction: column; flex: 1;
+  overflow-y: auto; scrollbar-width: none;
+}
+nav::-webkit-scrollbar { display: none; }
+.tab {
+  cursor: pointer; background: transparent; border: none;
+  color: #a1a1aa; padding: 10px 24px;
+  font-family: "Inter", sans-serif; font-weight: 500; font-size: 0.85rem;
+  text-align: left; transition: all 0.2s;
+  display: flex; align-items: center; gap: 10px;
+}
+.tab:hover { color: #fff; background: rgba(255,255,255,0.03); }
+.tab.active {
+  color: #fff; font-weight: 600;
+  background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), transparent);
+  border-left: 3px solid var(--accent);
+}
+/* ── Topbar ─────────────────────────────────────────────────────── */
+.topbar {
+  display: flex; align-items: center; justify-content: flex-end;
+  padding: 16px 32px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--panel-border);
+  position: sticky; top: 0; z-index: 40;
+}
+.hdr-actions { display: flex; align-items: center; gap: 12px; }
+.user-chip {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--panel); border: 1px solid var(--panel-border);
+  border-radius: 999px; padding: 4px 14px 4px 6px;
+}
+.user-avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #b48600);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 800; color: #000;
+}
+.hdr-btn {
+  border: 1px solid var(--panel-border); background: var(--panel); color: var(--ink);
+  border-radius: 999px; padding: 6px 16px; font-size: 0.75rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+.hdr-btn:hover { border-color: var(--accent); color: var(--accent); }
+.sdot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.sdot.on { background: var(--success); box-shadow: 0 0 8px var(--success); }
+.sdot.off { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
+/* ── Main Content ───────────────────────────────────────────────── */
+main { flex: 1; overflow-y: auto; padding: 32px; }
+section { display: none; animation: fadeIn 0.3s ease; }
+section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+.grid { display: grid; gap: 20px; }
+.two { grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); }
+.three { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.cards { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+/* ── Cards ──────────────────────────────────────────────────────── */
+.card {
+  background: var(--panel); border: 1px solid var(--panel-border);
+  border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  padding: 24px; transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover { box-shadow: var(--shadow); }
+.card-gold { border-top: 3px solid var(--accent); }
+.mcard {
+  background: var(--panel); border: 1px solid var(--panel-border);
+  border-radius: var(--radius); padding: 20px; position: relative; overflow: hidden;
+}
+.mcard::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--accent), #b48600); opacity: 0; transition: opacity 0.3s;
+}
+.mcard:hover::after { opacity: 1; }
+.mcard-lbl { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+.mcard-val { font-size: 2.2rem; font-weight: 800; margin: 8px 0 4px; color: #fff; }
+.mcard-sub { font-size: 0.75rem; color: var(--muted); }
+/* ── Case List Items ────────────────────────────────────────────── */
+.casepill {
+  display: block; text-align: left; width: 100%; margin: 8px 0;
+  padding: 16px; background: var(--panel); border: 1px solid var(--panel-border);
+  border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s;
+}
+.casepill:hover { border-color: var(--accent); background: rgba(212, 175, 55, 0.05); transform: translateY(-1px); }
+.casepill.ok { border-color: var(--accent); background: rgba(212, 175, 55, 0.1); box-shadow: 0 0 10px rgba(212, 175, 55, 0.1); }
+/* ── Typography ─────────────────────────────────────────────────── */
+h2 { font-family: "Lora", serif; font-size: 1.25rem; font-weight: 600; margin: 0 0 16px; color: #fff; }
+h3 { font-size: 0.8rem; font-weight: 700; margin: 0 0 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.small { font-size: 0.85rem; } .tiny { font-size: 0.75rem; } .muted { color: var(--muted); }
+.mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+/* ── Forms ──────────────────────────────────────────────────────── */
+label { display: block; margin: 16px 0 6px; color: #d4d4d8; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+input, select, textarea {
+  width: 100%; border: 1px solid var(--panel-border); background: #000;
+  color: #fff; border-radius: var(--radius-sm); padding: 10px 14px;
+  font: inherit; font-size: 0.9rem; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+textarea { min-height: 120px; resize: vertical; line-height: 1.6; }
+/* ── Buttons ────────────────────────────────────────────────────── */
+button, .btn {
+  border: 0; border-radius: var(--radius-sm); padding: 10px 20px;
+  font-family: "Inter", sans-serif; font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; background: var(--primary); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; transition: all 0.2s;
+}
+button:hover, .btn:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+button:active { transform: translateY(0); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+button.secondary, .btn.secondary { background: var(--panel); color: var(--ink); border: 1px solid var(--panel-border); box-shadow: none; }
+button.secondary:hover { border-color: var(--muted); background: #27272a; }
+button.danger { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+button.danger:hover { background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.5); }
+button.ok { background: rgba(16, 185, 129, 0.1); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+button.warn { background: rgba(245, 158, 11, 0.1); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+/* ── Toolbar & Rows ─────────────────────────────────────────────── */
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
+.row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
+.row > * { flex: 1; min-width: 200px; }
+/* ── Alerts ─────────────────────────────────────────────────────── */
+.box { border: 1px solid var(--panel-border); border-radius: var(--radius-sm); padding: 14px 16px; background: rgba(255,255,255,0.02); margin: 12px 0; font-size: 0.85rem; }
+.info { border-left: 3px solid var(--primary); background: rgba(59, 130, 246, 0.05); }
+.success { border-left: 3px solid var(--success); background: rgba(16, 185, 129, 0.05); }
+.notice { border-left: 3px solid var(--warning); background: rgba(245, 158, 11, 0.05); }
+.dangerbox { border-left: 3px solid var(--danger); background: rgba(239, 68, 68, 0.05); }
+/* ── Tags ───────────────────────────────────────────────────────── */
+.tag { display: inline-block; border-radius: 6px; padding: 3px 8px; margin: 2px; font-size: 0.7rem; font-weight: 600; background: rgba(255,255,255,0.1); color: #fff; }
+.tag.violet { background: rgba(139, 92, 246, 0.15); color: #c4b5fd; }
+.tag.yellow { background: rgba(245, 158, 11, 0.15); color: #fcd34d; }
+.tag.green { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
+.tag.red { background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
+/* ── Paper ──────────────────────────────────────────────────────── */
+.paper { background: #fff; color: #111827; border-radius: var(--radius-sm); padding: 32px; white-space: pre-wrap; line-height: 1.8; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); min-height: 400px; overflow: auto; font-family: "Lora", serif; font-size: 0.95rem; }
+/* ── Table ──────────────────────────────────────────────────────── */
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+th, td { border-bottom: 1px solid var(--panel-border); padding: 12px; text-align: left; vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+/* ── Dropzone ───────────────────────────────────────────────────── */
+progress { width: 100%; height: 8px; border-radius: 999px; appearance: none; }
+progress::-webkit-progress-bar { background: var(--panel-border); border-radius: 999px; }
+progress::-webkit-progress-value { background: linear-gradient(90deg, var(--primary), #60a5fa); border-radius: 999px; }
+.drop { border: 2px dashed var(--panel-border); border-radius: var(--radius); padding: 40px 20px; text-align: center; background: rgba(255,255,255,0.01); transition: all 0.2s; }
+.drop.drag { background: rgba(59, 130, 246, 0.05); border-color: var(--primary); }
+/* ── Chat ───────────────────────────────────────────────────────── */
+.chatbox { height: 500px; overflow-y: auto; border: 1px solid var(--panel-border); border-radius: var(--radius-sm); padding: 16px; background: #000; }
+.msg { max-width: 85%; padding: 14px 18px; border-radius: var(--radius-sm); margin: 12px 0; white-space: pre-wrap; font-size: 0.9rem; box-shadow: var(--shadow-sm); }
+.msg.user { margin-left: auto; background: var(--primary); color: #fff; border-bottom-right-radius: 4px; }
+.msg.assistant { margin-right: auto; background: var(--panel); border: 1px solid var(--panel-border); border-bottom-left-radius: 4px; }
+.msgmeta { font-size: 0.7rem; color: rgba(255,255,255,0.6); margin-bottom: 6px; }
+.srcitem { cursor: pointer; transition: background 0.2s; }
+.srcitem:hover { background: rgba(255,255,255,0.05); }
+/* ── Misc ───────────────────────────────────────────────────────── */
+.step { display: flex; gap: 16px; align-items: flex-start; border: 1px solid var(--panel-border); border-radius: var(--radius-sm); padding: 16px; background: rgba(255,255,255,0.01); margin: 12px 0; transition: border-color 0.2s; }
+.step:hover { border-color: var(--muted); }
+.stepnum { flex: 0 0 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; background: var(--panel); border: 2px solid var(--panel-border); color: var(--muted); }
+.step.done .stepnum { background: var(--success); border-color: var(--success); color: #fff; }
+.step.warn .stepnum { background: var(--warning); border-color: var(--warning); color: #fff; }
+.step.bad .stepnum { background: var(--danger); border-color: var(--danger); color: #fff; }
+.healthbar { height: 8px; border-radius: 999px; background: var(--panel-border); overflow: hidden; margin: 12px 0; }
+.healthbar span { display: block; height: 100%; background: linear-gradient(90deg, var(--danger), var(--warning) 50%, var(--success)); transition: width 0.5s ease; }
+.docgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin: 16px 0; }
+.badgeblock { border: 1px solid var(--panel-border); border-radius: var(--radius-sm); padding: 12px; background: rgba(255,255,255,0.02); text-align: center; }
+.viewerFrame { width: 100%; min-height: 600px; border: none; border-radius: var(--radius-sm); background: #fff; }
+.imgPreview { max-width: 100%; border-radius: var(--radius-sm); }
 </style>
 </head>
 <body>
@@ -77,41 +259,82 @@ progress{width:100%;height:14px;border-radius:999px;overflow:hidden}.drop{border
   </div>
 </div>
 
-<div id="main-app" style="display:none">
-<header>
-  <h1>DefensaIPN.ai v7.1 <span class="muted">— chat RAG auditado y robustecido</span></h1>
-  <p class="subtitle">Experiencia tipo chat sobre tus casos: OCR local, PDF texto/OCR, carpetas completas, RAG con fallback, citas internas, validador de fuentes, backups completos, borradores versionados y bajo ruido institucional.</p>
-  <nav id="tabs"></nav>
-  <div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap">
-    <span id="userBadge" class="tiny muted"></span>
-    <button class="secondary" onclick="doLogout()" style="padding:4px 12px;font-size:.75rem;border-radius:999px">Cerrar sesión</button>
-    <button class="secondary" onclick="configServerUrl()" style="padding:4px 12px;font-size:.75rem;border-radius:999px" title="URL del servidor Express para funciones IA">Servidor: <span id="serverUrlBadge">local</span></button>
-  </div>
-</header>
-
-<main>
+<div id="main-app" style="display:none" class="app-layout">
+  <aside class="sidebar">
+    <div class="hdr-brand">
+      <div class="brand-badge">⚖</div>
+      <div>
+        <p class="brand-name">DefensaIPN.ai</p>
+        <p class="brand-sub">Sistema Jurídico Inteligente</p>
+      </div>
+    </div>
+    <div class="active-case-selector" onclick="goTab('cases')">
+      <div class="acs-label">Expediente Activo</div>
+      <div class="acs-name" id="acsName">Ningún caso seleccionado</div>
+    </div>
+    <nav id="tabs"></nav>
+  </aside>
+  <div class="main-area">
+    <header class="topbar">
+      <div class="hdr-actions">
+        <div class="user-chip">
+          <div class="user-avatar" id="userInitial">U</div>
+          <span id="userBadge" class="tiny"></span>
+        </div>
+        <button class="hdr-btn hdr-server" onclick="configServerUrl()" title="Configura la URL del servidor Express">
+          <span class="sdot" id="serverDot"></span>
+          Servidor: <span id="serverUrlBadge">local</span>
+        </button>
+        <button class="hdr-btn" onclick="doLogout()">Cerrar sesión</button>
+      </div>
+    </header>
+    <main>
 <section id="panel" class="active">
-  <div class="grid cards">
-    <div class="card"><h3>Caso activo</h3><div class="metric" id="mCase">—</div><p class="small muted">La IA solo recibe este caso.</p></div>
-    <div class="card"><h3>Casos</h3><div class="metric" id="mCases">0</div><p class="small muted">Expedientes separados.</p></div>
-    <div class="card"><h3>Documentos</h3><div class="metric" id="mDocs">0</div><p class="small muted">Del caso activo.</p></div>
-    <div class="card"><h3>Fragmentos RAG</h3><div class="metric" id="mChunks">0</div><p class="small muted">Citas recuperables.</p></div>
-    <div class="card"><h3>Mensajes chat</h3><div class="metric" id="mMsgs">0</div><p class="small muted">Historial del caso.</p></div><div class="card"><h3>Madurez documental</h3><div class="metric" id="mHealth">0%</div><p class="small muted">Orden, metadatos, OCR y pendientes.</p></div>
-  </div>
-  <div class="grid two" style="margin-top:16px">
-    <div class="card">
-      <h2>Estado IA / servidor</h2>
-      <div id="healthBox" class="box info">Sin verificar.</div>
-      <div id="modelBox" class="box info">Modelo sin resolver.</div>
-      <div class="toolbar"><button onclick="checkHealth()">Verificar servidor</button><button class="secondary" onclick="resolveModel()">Resolver modelo</button></div>
+  <!-- Spotlight caso activo -->
+  <div id="caseSpotlight" class="case-spotlight" style="display:none">
+    <div class="case-icon">📁</div>
+    <div class="case-spotlight-info">
+      <div class="case-spotlight-lbl">Expediente activo</div>
+      <div class="case-spotlight-name" id="spotName">—</div>
+      <div class="case-spotlight-meta" id="spotMeta"></div>
     </div>
-    <div class="card">
-      <h2>Qué hace la v7</h2>
-      <div class="box success"><b>Chat por expediente:</b> conserva historial por caso y recupera fragmentos relevantes antes de responder.</div>
-      <div class="box info"><b>RAG local:</b> genera citas internas tipo <span class="mono">[src:doc:p2:c1]</span>.</div>
-      <div class="box notice"><b>Protección:</b> OCR no revisado se marca como débil; las hipótesis no se convierten en hechos.</div><div class="box success"><b>Nuevo v7:</b> paquete profesional offline-first: vendor local, visor documental, cifrado local opcional, exportaciones DOCX/PDF y diagnóstico del entorno.</div><div id="caseHealthBox" class="box info small">Semáforo documental pendiente.</div><div id="storageBox" class="box info small">Almacenamiento local: pendiente.</div><div id="doctorBox" class="box info small">Diagnóstico offline pendiente.</div><button class="secondary" onclick="runDoctor()">Diagnóstico v7</button>
+    <div class="case-spotlight-acts">
+      <button class="secondary" style="font-size:.76rem" onclick="goTab('import')">+ Importar documentos</button>
+      <button class="secondary" style="font-size:.76rem" onclick="goTab('inbox')">Clasificar</button>
+      <button style="font-size:.76rem" onclick="goTab('chat')">Chat RAG</button>
+      <button class="secondary" style="font-size:.76rem" onclick="goTab('cases')">Cambiar expediente</button>
     </div>
   </div>
+  <div id="noCase" class="box notice" style="display:none">No hay expediente activo. <button onclick="goTab('cases')" style="font-size:.76rem;margin-left:8px">Crear o seleccionar expediente</button></div>
+  <!-- Métricas -->
+  <div class="grid cards" style="margin-bottom:16px">
+    <div class="mcard"><div class="mcard-lbl">Documentos</div><div class="mcard-val" id="mDocs">0</div><div class="mcard-sub">En el expediente activo</div></div>
+    <div class="mcard"><div class="mcard-lbl">Fragmentos RAG</div><div class="mcard-val" id="mChunks">0</div><div class="mcard-sub">Citas recuperables para IA</div></div>
+    <div class="mcard"><div class="mcard-lbl">Mensajes de chat</div><div class="mcard-val" id="mMsgs">0</div><div class="mcard-sub">Historial del expediente</div></div>
+    <div class="mcard"><div class="mcard-lbl">Expedientes</div><div class="mcard-val" id="mCases">0</div><div class="mcard-sub">Total en el sistema</div></div>
+    <div class="mcard"><div class="mcard-lbl">Madurez documental</div><div class="mcard-val" id="mHealth">0%</div><div class="mcard-sub">OCR, metadatos y orden</div></div>
+  </div>
+  <!-- Estado servidor + Diagnóstico -->
+  <div class="grid two">
+    <div class="card">
+      <h2>Estado del servidor IA</h2>
+      <div id="healthBox" class="box notice">Sin verificar. Configura la URL del servidor Express para usar funciones de IA.</div>
+      <div id="modelBox" class="box info" style="display:none">Modelo sin resolver.</div>
+      <div class="toolbar">
+        <button onclick="checkHealth()">Verificar servidor</button>
+        <button class="secondary" onclick="resolveModel()">Resolver modelo</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Diagnóstico y almacenamiento</h2>
+      <div id="caseHealthBox" class="box info">Semáforo documental: pendiente.</div>
+      <div id="storageBox" class="box info">Almacenamiento: pendiente.</div>
+      <div id="doctorBox" class="box info">Diagnóstico offline: pendiente.</div>
+      <div class="toolbar"><button class="secondary" onclick="runDoctor()">Diagnóstico v7</button></div>
+    </div>
+  </div>
+  <!-- mCase oculto para compatibilidad JS -->
+  
 </section>
 
 <section id="workflow">
@@ -191,7 +414,8 @@ progress{width:100%;height:14px;border-radius:999px;overflow:hidden}.drop{border
       <button onclick="createCase()">Crear caso</button>
     </div>
     <div class="card">
-      <h2>Casos existentes</h2>
+      <h2>Expedientes existentes</h2>
+      <div id="caseFilter" style="margin-bottom:8px"><input id="caseSearch" placeholder="Buscar expediente..." oninput="filterCases()" style="font-size:.82rem"></div>
       <div id="caseList"></div>
     </div>
   </div>
@@ -617,7 +841,7 @@ function renderServerBadge() {
 
 function initTabs(){
  const nav=$("tabs");nav.innerHTML="";
- tabs.forEach(([id,label])=>{const b=document.createElement("button");b.className="tab"+(id==="panel"?" active":"");b.textContent=label;b.onclick=()=>{document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));$(id).classList.add("active");b.classList.add("active");renderAll()};nav.appendChild(b)})
+ tabs.forEach(([id,label])=>{const b=document.createElement("button");b.className="tab"+(id==="panel"?" active":"");b.innerHTML=`<span style="display:inline-block;width:16px">${id==='cases'?'📁':id==='chat'?'💬':'•'}</span> ${label}`;b.id="tabbtn_"+id;b.onclick=()=>{if(!state.activeCaseId && id!=="cases"){alert("Selecciona un caso primero.");goTab('cases');return;}document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));$(id).classList.add("active");b.classList.add("active");renderAll()};nav.appendChild(b)})
 }
 async function ensureDefaultCase(){
  const cases=await all("cases");
@@ -691,6 +915,7 @@ function caseHealth(docs){
  return {score,label,issues:[...new Set(issues)]};
 }
 function goTab(id){
+ if(!state.activeCaseId && id !== 'cases') { id = 'cases'; }
  document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
  if($(id))$(id).classList.add("active");
@@ -806,7 +1031,7 @@ async function renderAll(){await renderPanel();await renderWorkflow();await rend
 async function renderPanel(){
  const cases=await all("cases");const docs=await docsOfActive();const c=await activeCase();const msgs=await messagesOfActive();const chunks=buildChunks(docs,{filter:"done",chunkChars:1200}).length;
  const health=caseHealth(docs);
- $("mCase").textContent=c?c.name.slice(0,16):"—";$("mCases").textContent=cases.length;$("mDocs").textContent=docs.length;$("mChunks").textContent=chunks;$("mMsgs").textContent=msgs.length;$("mHealth").textContent=health.score+"%";
+ if($("acsName")) $("acsName").textContent = c ? c.name : "Ningún caso seleccionado";$("mCases").textContent=cases.length;$("mDocs").textContent=docs.length;$("mChunks").textContent=chunks;$("mMsgs").textContent=msgs.length;$("mHealth").textContent=health.score+"%";
  if($("caseHealthBox")) $("caseHealthBox").innerHTML=`<b>Semáforo documental:</b> ${health.label}<div class="healthbar"><span style="width:${health.score}%"></span></div>${health.issues.slice(0,6).map(x=>"• "+esc(x)).join("<br>")||"• Expediente razonablemente ordenado."}`;
 }
 async function renderCases(){
@@ -1131,7 +1356,7 @@ VALIDACIÓN LOCAL DE CITAS: ${citationAudit.message}`;
  }catch(e){await del("messages",loading.id);const err={id:uid("msg"),caseId:state.activeCaseId,role:"assistant",content:"Error al llamar IA: "+e.message,createdAt:new Date().toISOString(),meta:{error:true}};await put("messages",err);await renderChat();}
 }
 async function clearCaseChat(){if(!confirm("¿Limpiar chat de este caso?"))return;const msgs=await messagesOfActive();for(const m of msgs)await del("messages",m.id);renderAll()}
-async function api(path,opts={}){const url=getServerUrl()+path;const res=await fetch(url,{headers:{"Content-Type":"application/json"},...opts});const data=await res.json().catch(()=>({}));if(!res.ok||data.ok===false)throw new Error(data.error||"Error del servidor");return data}
+async function api(path,opts={}){const url=getServerUrl()+path;const res=await fetch(url,{headers:{"Content-Type":"application/json"},...opts});const text=await res.text();let data;try{data=JSON.parse(text)}catch(e){throw new Error("La respuesta no es JSON válido (Revisa el servidor Express).");}if(!res.ok||!data.ok)throw new Error(data?.error||"Error del servidor");return data;}
 async function checkHealth(){try{const d=await api("/api/health");$("healthBox").className=d.api_key_configured?"box success":"box notice";$("healthBox").innerHTML=`<b>Servidor:</b> activo<br>API key: ${d.api_key_configured?"configurada":"NO configurada"}<br>Web search: ${d.allow_web_search?"habilitado":"deshabilitado"}<br>Razonamiento: ${esc(d.reasoning_effort)}<br>Policy: ${esc(d.policy_version)}`;}catch(e){$("healthBox").className="box dangerbox";$("healthBox").textContent=e.message}}
 async function resolveModel(){try{const d=await api("/api/models/resolve");$("modelBox").className="box success";$("modelBox").innerHTML=`<b>Modelo:</b> <span class="tag green">${esc(d.selected)}</span><br><b>Razón:</b> ${esc(d.reason)}<br><b>Verificado:</b> ${esc(d.checked_at)}`;}catch(e){$("modelBox").className="box dangerbox";$("modelBox").textContent=e.message}}
 
