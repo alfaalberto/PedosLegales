@@ -615,7 +615,7 @@ const FIREBASE_CONFIG_FALLBACK = {
   apiKey: "AIzaSyB9T9Uado1Q-O3P8D-MZl-b7v3GCkNfCCA",
   authDomain: "pedoslegales.firebaseapp.com",
   projectId: "pedoslegales",
-  storageBucket: "pedoslegales.firebasestorage.app",
+  storageBucket: "pedoslegales.appspot.com",
   messagingSenderId: "638020457588",
   appId: "1:638020457588:web:9c947c0363f94e2e33ad21"
 };
@@ -745,7 +745,7 @@ async function initFirebase() {
     fbApp = initializeApp(cfg);
     fbAuth = getAuth(fbApp);
     fbDb = getFirestore(fbApp);
-    fbStorage = getStorage(fbApp, "gs://pedoslegales.firebasestorage.app");
+    fbStorage = getStorage(fbApp, "gs://pedoslegales.appspot.com");
     fbMod = { doc, getDoc, setDoc, deleteDoc, collection, getDocs, query, where, signOut, signInWithEmailAndPassword, storageRef, uploadBytes, getBlob };
     if (notice) notice.textContent = "";
     btn.disabled = false;
