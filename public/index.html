@@ -345,6 +345,7 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--blue),#a
       <div class="page-body">
         <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
           <input id="docSearch" placeholder="🔍 Buscar documento..." oninput="renderDocuments()" style="flex:1;min-width:200px;background:#000;border:1px solid var(--brd);border-radius:var(--r2);padding:8px 14px;color:var(--ink);font:inherit;outline:none">
+          <button class="btn btn-danger btn-sm" onclick="deleteDuplicates()" style="display:flex;align-items:center;gap:6px;" title="Busca y borra archivos repetidos idénticos">🗑️ Limpiar Duplicados</button>
           <select id="docRoleFilter" onchange="renderDocuments()" style="background:#000;border:1px solid var(--brd);border-radius:var(--r2);padding:8px 12px;color:var(--ink);font:inherit;outline:none">
             <option value="">Todos los tipos</option>
             <option>Sin clasificar</option><option>Citatorio</option><option>Acta administrativa</option>
@@ -419,7 +420,10 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--blue),#a
                 <input id="storeBlob" type="hidden" value="yes">
                 <input id="ocrLang" type="hidden" value="spa">
                 <input id="selectedTags" type="hidden" value="">
-                <button class="btn btn-gold" onclick="saveSelectedMeta()" style="width:100%; margin-top:16px; font-weight:700; font-size:0.95rem;">💾 Guardar Metadatos</button>
+                <div style="display:flex; gap:10px; margin-top:16px;">
+                  <button class="btn btn-gold" onclick="saveSelectedMeta()" style="flex:2; font-weight:700; font-size:0.95rem;">💾 Guardar Metadatos</button>
+                  <button class="btn btn-danger" onclick="deleteCurrentDoc()" style="flex:1; font-weight:700; font-size:0.95rem;" title="Eliminar este documento">🗑️ Borrar</button>
+                </div>
               </div>
 
             </div>
@@ -1303,6 +1307,59 @@ async function saveSelectedMeta(){const d=await get("documents",state.selectedDo
  d.docRole=$("selectedRole").value;d.stage=$("selectedStage").value;d.docStatus=$("selectedStatus").value;d.priority=$("selectedPriority").value;d.confidentiality=$("selectedConf").value;d.actionNeeded=$("selectedAction").value.trim();d.dueDate=$("selectedDue").value;d.tags=$("selectedTags").value.trim();
  d.governedAt=new Date().toISOString();
  await put("documents",d);renderAll();alert("Metadatos y gobierno documental guardados.");
+}
+
+
+async function deleteCurrentDoc() {
+  if (!state.selectedDocId) return;
+  if (!confirm("¿Eliminar PERMANENTEMENTE este documento del expediente?")) return;
+  const id = state.selectedDocId;
+  await del("documents", id);
+  try { await delBlobLocal(id); } catch(e){}
+  state.selectedDocId = null;
+  const card = document.getElementById("docVisorCard");
+  if(card) card.style.display = "none";
+  await saveState();
+  await renderAll();
+  alert("Documento eliminado.");
+}
+
+async function deleteDuplicates() {
+  const docs = await docsOfActive();
+  const seen = new Set();
+  const duplicates = [];
+  
+  // Identificamos duplicados basados en sha256
+  for (const d of docs) {
+    if (!d.sha256) continue;
+    if (seen.has(d.sha256)) {
+      duplicates.push(d);
+    } else {
+      seen.add(d.sha256);
+    }
+  }
+  
+  if (duplicates.length === 0) {
+    alert("No se encontraron documentos duplicados exactos (basado en hash SHA-256) en este expediente.");
+    return;
+  }
+  
+  if (!confirm(`Se encontraron ${duplicates.length} documentos duplicados.\n\n¿Deseas ELIMINARLOS automáticamente para mantener tu expediente limpio?`)) return;
+  
+  for (const d of duplicates) {
+    await del("documents", d.id);
+    try { await delBlobLocal(d.id); } catch(e){}
+  }
+  
+  if (duplicates.some(d => d.id === state.selectedDocId)) {
+    state.selectedDocId = null;
+    const card = document.getElementById("docVisorCard");
+    if(card) card.style.display = "none";
+  }
+  
+  await saveState();
+  await renderAll();
+  alert(`${duplicates.length} documento(s) duplicado(s) eliminado(s) exitosamente.`);
 }
 
 async function deleteDoc(id){
