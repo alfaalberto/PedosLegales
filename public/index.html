@@ -12,6 +12,13 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230a0a0f'/><text x='16' y='22' font-size='20' text-anchor='middle' fill='%23d4af37'>%E2%9A%96</text></svg>">
 <style>
 
+:root{--bg:#05050A;--s:rgba(20,20,30,0.65);--b:rgba(30,30,45,0.7);--brd:rgba(255,255,255,0.08);--ink:#f8fafc;--mut:#94a3b8;--gold:#eab308;--blue:#3b82f6;--green:#10b981;--red:#ef4444;--warn:#f59e0b;--r:16px;--r2:10px}
+body{background:radial-gradient(circle at top right,#131326,#05050A);color:var(--ink);}
+.sidebar{backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(15,15,22,0.75);}
+.card, .case-card, .draft-item, .login-card, .metric-box {backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,0.3);border:1px solid var(--brd);}
+.btn-primary{background:linear-gradient(135deg,var(--blue),#60a5fa);box-shadow:0 4px 14px rgba(59,130,246,0.3);border:none;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#fde047);box-shadow:0 4px 14px rgba(234,179,8,0.25);border:none;}
+.page-header{background:linear-gradient(180deg, rgba(20,20,30,0.8) 0%, transparent 100%); border-bottom: none;}
 :root{--bg:#0a0a0f;--s:#111118;--b:#1c1c28;--brd:#2a2a3a;--ink:#f0f0f8;--mut:#7070a0;--gold:#d4af37;--blue:#4f8ef7;--green:#22c55e;--red:#ef4444;--warn:#f59e0b;--r:12px;--r2:8px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',system-ui,sans-serif;font-size:14px;line-height:1.6;background:var(--bg);color:var(--ink);height:100vh;overflow:hidden;display:flex;flex-direction:column}
@@ -37,9 +44,12 @@ body{font-family:'Inter',system-ui,sans-serif;font-size:14px;line-height:1.6;bac
 .acb-meta{font-size:.7rem;color:var(--mut);margin-top:2px}
 .sb-nav{flex:1;overflow-y:auto;padding:8px 0;scrollbar-width:none}
 .sb-nav::-webkit-scrollbar{display:none}
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;color:var(--mut);font-size:.85rem;font-weight:500;transition:all .15s;border:none;background:transparent;width:100%;text-align:left;border-left:3px solid transparent}
-.nav-item:hover{color:var(--ink);background:rgba(255,255,255,.03)}
-.nav-item.active{color:#fff;font-weight:600;background:rgba(212,175,55,.08);border-left-color:var(--gold)}
+.nav-item{display:flex;align-items:center;gap:10px;padding:12px 20px;margin:2px 10px;border-radius:8px;cursor:pointer;color:var(--mut);font-size:.88rem;font-weight:500;transition:all .2s ease;border:none;background:transparent;width:calc(100% - 20px);text-align:left;}
+.nav-item:hover{color:var(--ink);background:rgba(255,255,255,.05);transform:translateX(2px);}
+.nav-item.active{color:#fff;font-weight:600;background:linear-gradient(90deg, rgba(59,130,246,0.15), transparent);border-left:3px solid var(--blue);}
+
+
+
 .nav-icon{font-size:1.1rem;width:22px;text-align:center;flex-shrink:0}
 .sb-footer{padding:12px 18px;border-top:1px solid var(--brd)}
 .server-badge{display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--mut)}
@@ -184,7 +194,7 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--blue),#a
 
 
 /* ── NATIVE DOC VIEWER ── */
-.doc-viewer-wrap{margin-top:20px;border:1px solid var(--brd);border-radius:var(--r);overflow:hidden;background:#000}
+.doc-viewer-wrap{margin-top:20px;border:1px solid var(--brd);border-radius:var(--r);overflow:hidden;background:rgba(0,0,0,0.6);box-shadow:inset 0 0 20px rgba(0,0,0,0.8);}
 .doc-viewer-toolbar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--s);border-bottom:1px solid var(--brd);flex-wrap:wrap}
 .doc-viewer-toolbar .vt-title{font-size:.8rem;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mut)}
 .doc-viewer-toolbar .vt-badge{font-size:.68rem;padding:2px 8px;border-radius:4px;background:rgba(79,142,247,.15);color:#7eb3ff;white-space:nowrap}
@@ -267,6 +277,7 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--blue),#a
       <button class="nav-item" id="nav-chat" onclick="showPage('chat')"><span class="nav-icon">💬</span><span>Consultar a la IA</span></button>
       <button class="nav-item" id="nav-drafts" onclick="showPage('drafts')"><span class="nav-icon">📝</span><span>Borradores</span></button>
       <button class="nav-item" id="nav-indice" onclick="showPage('indice')"><span class="nav-icon">📊</span><span>Índice del Expediente</span></button>
+      <button class="nav-item" id="nav-progreso" onclick="showPage('progreso')"><span class="nav-icon">📈</span><span>Monitoreo y Avance</span></button>
       <button class="nav-item" id="nav-ajustes" onclick="showPage('ajustes')"><span class="nav-icon">⚙️</span><span>Configuración</span></button>
     </nav>
     <div class="sb-footer">
@@ -468,6 +479,32 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--blue),#a
               <button class="btn btn-ghost btn-sm" onclick="downloadDraftTxt()">⬇ Descargar TXT</button>
               <button class="btn btn-ghost btn-sm" onclick="copyDraftToExporter()">📤 Exportar</button>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <!-- ══ PROGRESO ══ -->
+    <div class="page" id="page-progreso">
+      <div class="page-header">
+        <div class="page-title">📈 Monitoreo y Avance del Expediente</div>
+        <div class="page-sub" id="progresoCaseSub">Tablero Kanban y Línea de Tiempo del caso activo</div>
+      </div>
+      <div class="page-body">
+        <div id="dashboardStats" class="metrics-row"></div>
+        
+        <div class="card" style="margin-bottom:20px; background:transparent; border:none; box-shadow:none; padding:0;">
+          <div class="card-title" style="font-size:1.1rem; padding-left:10px;">🚥 Etapas del Proceso (Tablero)</div>
+          <div id="kanbanBoard" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;overflow-x:auto;padding:10px;">
+            <!-- Kanban columns -->
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+          <div class="card-title">⏳ Línea de Tiempo de Eventos</div>
+          <div id="timelineView" style="position:relative;padding-left:24px;border-left:2px solid var(--brd);margin-left:12px;margin-top:20px;">
+            <!-- Timeline items -->
           </div>
         </div>
       </div>
@@ -1100,6 +1137,13 @@ async function ensureTesseract(){
  try { return await loadScriptOnce("/vendor/tesseract/tesseract.min.js","Tesseract"); }
  catch(e){ console.warn("Fallback CDN Tesseract",e); return await loadScriptOnce("https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js","Tesseract"); }
 }
+async function ensureDocxPreview(){
+  if(window.docx) return window.docx;
+  await loadScriptOnce("https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js","JSZip");
+  await loadScriptOnce("https://cdn.jsdelivr.net/npm/docx-preview@0.3.3/dist/docx-preview.min.js","docx");
+  return window.docx;
+}
+
 async function ensureMammoth(){
  if(window.mammoth) return window.mammoth;
  return await loadScriptOnce("https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js","mammoth");
@@ -1534,72 +1578,63 @@ async function renderBlobPreview(d){
     _attachBlobBtns(d,_currentBlobUrl); return;
   }
 
-  // PDF — render with PDF.js page by page
+  // PDF — render native iframe para ver sellos y formato original
   if(/pdf/i.test(mime)||/\.pdf$/i.test(fname)){
-    try{
-      const pdfjs=await loadPdfJs();
-      const buf=await d.blob.arrayBuffer();
-      const pdf=await pdfjs.getDocument({data:buf}).promise;
-      const total=pdf.numPages;
-      let curPage=1;
-
-      async function _renderPdfPage(n){
-        const inner=document.getElementById('docViewerInner'); if(!inner)return;
-        inner.innerHTML='<div class="viewer-loading">⏳ Página '+n+' / '+total+'...</div>';
-        const page=await pdf.getPage(n);
-        const vp=page.getViewport({scale:1.8});
-        const canvas=document.createElement('canvas');
-        canvas.width=vp.width; canvas.height=vp.height;
-        canvas.style.maxWidth='100%'; canvas.style.borderRadius='4px';
-        canvas.style.boxShadow='0 4px 20px rgba(0,0,0,.5)';
-        await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
-        const wrap=document.createElement('div'); wrap.className='pdf-page-wrap';
-        const badge=document.createElement('span'); badge.className='pdf-page-num';
-        badge.textContent='Pág. '+n+' / '+total;
-        wrap.appendChild(canvas); wrap.appendChild(badge);
-        inner.innerHTML=''; inner.appendChild(wrap);
-        const prev=document.getElementById('pdfPrev');
-        const next=document.getElementById('pdfNext');
-        const info=document.getElementById('pdfPageInfo');
-        if(prev)prev.disabled=n<=1;
-        if(next)next.disabled=n>=total;
-        if(info)info.textContent=n+' / '+total;
-      }
-
-      const nav=`<button class="btn btn-ghost btn-sm" id="pdfPrev" onclick="window._pdfPrev()" disabled>◀ Anterior</button>
-        <span id="pdfPageInfo" style="font-size:.82rem;color:var(--mut)">1 / ${total}</span>
-        <button class="btn btn-ghost btn-sm" id="pdfNext" onclick="window._pdfNext()">Siguiente ▶</button>
-        <span style="font-size:.72rem;color:var(--mut)">${total} páginas</span>`;
-
-      el.innerHTML=_viewerWrap(fname,'PDF · '+total+' págs','<div class="viewer-loading">⏳ Cargando...</div>',nav);
-      _attachBlobBtns(d,_currentBlobUrl);
-      window._pdfPrev=()=>{if(curPage>1){curPage--;_renderPdfPage(curPage);}};
-      window._pdfNext=()=>{if(curPage<total){curPage++;_renderPdfPage(curPage);}};
-      await _renderPdfPage(1);
-    }catch(e){
-      el.innerHTML=_viewerWrap(fname,'PDF',`<div style="color:var(--red);padding:20px">Error: ${esc(e.message)}<br><a href="${_currentBlobUrl}" target="_blank" class="btn btn-ghost btn-sm" style="margin-top:10px">🔗 Abrir en nueva pestaña</a></div>`,'');
-    }
+    el.innerHTML=_viewerWrap(fname,'PDF Original',`<iframe src="${_currentBlobUrl}" style="width:100%; height:65vh; border:none; border-radius:4px; background:#fff; box-shadow:0 4px 24px rgba(0,0,0,0.5);"></iframe>`,'');
+    _attachBlobBtns(d,_currentBlobUrl);
     return;
   }
 
-  // DOCX / DOC — render with mammoth.js
-  if(/docx?/i.test(mime)||/\.docx?$/i.test(fname)){
-    try{
-      const mammoth=await ensureMammoth();
-      const buf=await d.blob.arrayBuffer();
-      let result;
-      try{result=await mammoth.convertToHtml({arrayBuffer:buf});}
-      catch(e2){result={value:'<p>Error al convertir: '+esc(e2.message)+'</p>'};}
-      const html=result.value||'<p style="color:var(--mut)">Sin contenido visible.</p>';
-      el.innerHTML=_viewerWrap(fname,fname.toLowerCase().endsWith('.docx')?'Word DOCX':'Word DOC',`<div class="docx-render">${html}</div>`,'');
+  // DOCX / DOC — render con docx-preview para ver formato, sellos y encabezados
+  if(/docx?/i.test(mime)||/\.docx?$/.test(fname)){
+    const isDoc = /\.doc$/i.test(fname) && !/\.docx$/i.test(fname);
+    if(isDoc) {
+      el.innerHTML=_viewerWrap(fname,'Word antiguo (.doc)',`<div class="viewer-no-blob"><div class="nb-icon">⚠️</div><p>El formato .doc antiguo no soporta vista previa completa de sellos y encabezados en el navegador.<br><a href="${_currentBlobUrl}" download="${fname}" class="btn btn-primary btn-sm" style="margin-top:12px">⬇ Descargar original</a></p></div>`,'');
       _attachBlobBtns(d,_currentBlobUrl);
-    }catch(e){
-      el.innerHTML=_viewerWrap(fname,'Word',`<div style="color:var(--red);padding:20px">No se pudo renderizar: ${esc(e.message)}</div>`,'');
+      return;
     }
+    
+    el.innerHTML=_viewerWrap(fname,'Word (docx-preview)',`<div class="viewer-loading">⏳ Cargando visor avanzado de Word (sellos y formato)...</div><div id="docxContainer" style="background:#d1d5db; width:100%; height:65vh; overflow:auto; border-radius:4px; padding:10px; box-sizing:border-box; color:#000;"></div>`,'');
+    _attachBlobBtns(d,_currentBlobUrl);
+    
+    setTimeout(async () => {
+      try{
+        const docx = await ensureDocxPreview();
+        const container = document.getElementById("docxContainer");
+        if(container) {
+          container.innerHTML = "";
+          await docx.renderAsync(d.blob, container, null, {
+            className: "docx-render",
+            inWrapper: true,
+            ignoreWidth: false,
+            ignoreHeight: false,
+            ignoreFonts: false,
+            breakPages: true,
+            useBase64URL: true
+          });
+        }
+      }catch(e){
+        console.warn("docx-preview falló, intentando mammoth...", e);
+        try {
+          const mammoth=await ensureMammoth();
+          const buf=await d.blob.arrayBuffer();
+          const result=await mammoth.convertToHtml({arrayBuffer:buf});
+          const html=result.value||'<p style="color:var(--mut)">Sin contenido visible.</p>';
+          const container = document.getElementById("docxContainer");
+          if(container) {
+             container.style.background = "#fff";
+             container.innerHTML = `<div class="docx-render" style="max-width:800px; margin:0 auto; padding:40px;">${html}</div>`;
+          }
+        }catch(e2){
+          el.innerHTML=_viewerWrap(fname,'Word',`<div style="color:var(--red);padding:20px">No se pudo renderizar: ${esc(e2.message)}</div>`,'');
+        }
+      }
+    }, 100);
     return;
   }
 
   // FALLBACK
+
   const ext=(fname.split('.').pop()||'').toUpperCase();
   el.innerHTML=_viewerWrap(fname,ext||'Archivo',
     `<div class="viewer-no-blob"><div class="nb-icon">📎</div><p>Vista previa no disponible para este formato.<br><a href="${_currentBlobUrl}" target="_blank" class="btn btn-primary btn-sm" style="margin-top:12px">🔗 Abrir archivo</a></p></div>`,'');
@@ -1705,8 +1740,93 @@ function renderServerBadge(){
 }
 
 // Page navigation
+
+async function renderProgreso(){
+  const docs = await docsOfActive();
+  
+  // 1. Stats
+  const statsEl = document.getElementById("dashboardStats");
+  if(statsEl){
+    const total = docs.length;
+    const reviewed = docs.filter(d=>d.reviewed||d.ocrStatus==="reviewed").length;
+    const pending = docs.filter(d=>docPendingReasons(d).length>0).length;
+    const health = caseHealth(docs);
+    
+    statsEl.innerHTML = `
+      <div class="metric-box" style="background:rgba(234,179,8,0.1);border-color:rgba(234,179,8,0.3)"><div class="metric-val" style="color:var(--gold)">${health.score}%</div><div class="metric-lbl">Salud (${esc(health.label)})</div></div>
+      <div class="metric-box"><div class="metric-val">${total}</div><div class="metric-lbl">Documentos</div></div>
+      <div class="metric-box"><div class="metric-val" style="color:var(--green)">${reviewed}</div><div class="metric-lbl">Cotejados (OCR)</div></div>
+      <div class="metric-box"><div class="metric-val" style="color:var(--warn)">${pending}</div><div class="metric-lbl">Acción Pendiente</div></div>
+    `;
+  }
+
+  // 2. Kanban (Etapas)
+  const kbEl = document.getElementById("kanbanBoard");
+  if(kbEl){
+    const stages = ["Ingreso", "Integración", "Resolución", "Cerrado"];
+    const byStage = { "Ingreso": [], "Integración": [], "Resolución": [], "Cerrado": [], "Otro": [] };
+    
+    docs.forEach(d => {
+      const s = d.stage || "Ingreso";
+      if(byStage[s]) byStage[s].push(d);
+      else byStage["Otro"].push(d);
+    });
+
+    let kbHtml = "";
+    stages.forEach(st => {
+      const items = byStage[st]||[];
+      kbHtml += `<div style="background:var(--s);border:1px solid var(--brd);border-radius:var(--r2);padding:14px;min-height:200px;backdrop-filter:blur(10px);">
+        <div style="font-weight:700;margin-bottom:14px;color:var(--ink);display:flex;align-items:center;justify-content:space-between;">
+          <span>${st}</span>
+          <span style="background:var(--brd);padding:2px 8px;border-radius:12px;font-size:0.7rem;">${items.length}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          ${items.map(d=>`
+            <div style="background:rgba(255,255,255,0.03);padding:10px 12px;border-radius:8px;font-size:.8rem;cursor:pointer;border:1px solid var(--brd);transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,0.2);" onclick="selectDoc('${d.id}')" onmouseover="this.style.borderColor='var(--blue)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--brd)';this.style.transform='none'">
+              <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff;">${esc(d.fileName)}</div>
+              <div style="color:var(--mut);margin-top:4px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;font-size:0.65rem;">${esc(d.docRole||"Sin clasificar")}</span>
+                ${d.priority==="Urgente"||d.priority==="Alta"?'<span style="color:var(--red);font-weight:bold" title="Prioridad Alta">!</span>':''}
+              </div>
+            </div>
+          `).join("")}
+          ${items.length===0?'<div style="color:var(--mut);font-size:.75rem;text-align:center;font-style:italic;padding:20px 0;">Vacío</div>':''}
+        </div>
+      </div>`;
+    });
+    kbEl.innerHTML = kbHtml;
+  }
+
+  // 3. Timeline
+  const tlEl = document.getElementById("timelineView");
+  if(tlEl){
+    const datedDocs = docs.filter(d=>d.docDate).sort((a,b)=>a.docDate.localeCompare(b.docDate));
+    if(datedDocs.length===0){
+      tlEl.innerHTML = `<div style="color:var(--mut);padding:10px 0;">No hay documentos con fecha asignada para armar la línea de tiempo. Ve a "Documentos" y captura la 'Fecha del documento' en sus metadatos.</div>`;
+    } else {
+      let tlHtml = "";
+      datedDocs.forEach((d, i) => {
+        tlHtml += `
+          <div style="position:relative;margin-bottom:24px;">
+            <div style="position:absolute;left:-31px;top:4px;width:14px;height:14px;background:linear-gradient(135deg, var(--blue), #60a5fa);border-radius:50%;box-shadow:0 0 10px rgba(59,130,246,0.6);border:2px solid #05050A;"></div>
+            <div style="font-weight:800;color:var(--blue);font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;">${esc(d.docDate)}</div>
+            <div style="background:var(--s);border:1px solid var(--brd);border-radius:var(--r2);padding:14px 18px;margin-top:8px;display:inline-block;cursor:pointer;transition:all .2s;min-width:300px;backdrop-filter:blur(8px);" onclick="selectDoc('${d.id}')" onmouseover="this.style.borderColor='var(--gold)';this.style.boxShadow='0 4px 16px rgba(0,0,0,0.4)'" onmouseout="this.style.borderColor='var(--brd)';this.style.boxShadow='none'">
+              <div style="font-weight:700;color:#fff;font-size:0.95rem;margin-bottom:4px;">${esc(d.fileName)}</div>
+              <div style="font-size:.8rem;color:var(--mut);">
+                <span style="color:var(--gold)">${esc(d.docRole||"Sin clasificar")}</span> · 
+                ${esc(d.authority||"Sin autoridad")} · Folio: ${esc(d.folio||"N/A")}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      tlEl.innerHTML = tlHtml;
+    }
+  }
+}
+
 function showPage(name){
-  const NEEDS_CASE=["import","documents","chat","drafts"];
+  const NEEDS_CASE=["import","documents","chat","drafts","progreso"];
   if(NEEDS_CASE.includes(name)&&!state.activeCaseId){openNewCaseModal();return;}
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
@@ -1721,6 +1841,7 @@ function showPage(name){
   if(name==="import"){renderQueue();const sub=document.getElementById("importCaseSub");if(sub)sub.textContent=currentCaseName();}
   if(name==="ajustes"){renderStorage();checkHealth().catch(()=>{});resolveModel().catch(()=>{});}
   if(name==="indice")renderIndice();
+  if(name==="progreso")renderProgreso();
 }
 function currentCaseName(){return state._activeCase?state._activeCase.name:"Sin expediente";}
 
@@ -1877,6 +1998,7 @@ async function renderAll(){
   if(id==="drafts")await renderDrafts();
   if(id==="ajustes"){renderStorage();renderAudit();}
   if(id==="indice")renderIndice();
+  if(id==="progreso")renderProgreso();
   renderServerBadge();
 }
 
