@@ -357,51 +357,73 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--blue),#a
             <th>Documento</th><th>Tipo</th><th>Estado</th><th>Acciones</th>
           </tr></thead><tbody id="docTable"></tbody></table>
         </div>
-        <!-- Visor integrado -->
-        <div id="docVisorCard" class="card" style="margin-top:20px;display:none">
-          <div class="card-title">📋 Documento seleccionado</div>
-          <div id="selectedDocBox" class="alert alert-info" style="margin-bottom:12px"></div>
-          <!-- Native document viewer hero -->
-          <div id="blobPreview"></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;flex-wrap:wrap;margin-top:20px">
-            <div>
-              <div class="field">
-              <label>Vista del documento (OCR)</label>
-              <div id="ocrRichView" class="ocr-viewer" style="min-height:160px">Sin texto OCR disponible.</div>
-              <details style="margin-top:8px">
-                <summary style="cursor:pointer;font-size:.72rem;color:var(--mut);user-select:none">✏️ Editar/corregir texto OCR</summary>
-                <textarea id="selectedText" style="min-height:160px;margin-top:8px;width:100%;background:#000;border:1px solid var(--brd);border-radius:var(--r2);padding:10px;color:var(--ink);font:inherit;font-size:.85rem;resize:vertical;outline:none"></textarea>
-              </details>
+        <!-- Visor integrado (Side-by-Side) -->
+        <div id="docVisorCard" class="card" style="margin-top:20px;display:none;padding:24px;border-top:4px solid var(--blue);">
+          <div class="card-title" style="margin-bottom:16px;">📋 Cotejo de Documento</div>
+          <div id="selectedDocBox" class="alert alert-info" style="margin-bottom:20px"></div>
+          
+          <!-- CONTENEDOR PRINCIPAL SIDE-BY-SIDE -->
+          <div style="display:flex; gap:24px; align-items: stretch; flex-wrap:wrap;">
+            
+            <!-- PANEL IZQUIERDO: VISOR ORIGINAL -->
+            <div style="flex:1; min-width:400px; display:flex; flex-direction:column; background:var(--s); border:1px solid var(--brd); border-radius:var(--r2); box-shadow:0 10px 30px rgba(0,0,0,0.4); overflow:hidden;">
+               <div style="background:rgba(255,255,255,0.05); padding:12px 18px; border-bottom:1px solid var(--brd); display:flex; justify-content:space-between; align-items:center;">
+                 <span style="font-weight:700; color:#fff;">📄 Documento Original</span>
+                 <div id="sourcePreview" style="font-size:0.75rem; color:var(--mut);"></div>
+               </div>
+               <div id="blobPreview" style="background:#f0f0f5; flex:1; min-height:65vh; display:flex; flex-direction:column;">
+                  <!-- Aquí se inyecta iframe o canvas -->
+               </div>
             </div>
-              <div class="btn-row">
-                <button class="btn btn-primary btn-sm" onclick="saveSelectedText()">💾 Guardar corrección</button>
-                <button class="btn btn-ghost btn-sm" onclick="markReviewed()">✅ Marcar cotejado</button>
+
+            <!-- PANEL DERECHO: OCR Y METADATOS -->
+            <div style="flex:1; min-width:400px; display:flex; flex-direction:column; gap:20px;">
+              
+              <!-- SECCIÓN OCR -->
+              <div class="field" style="margin:0; display:flex; flex-direction:column; flex:1;">
+                <label style="color:var(--blue); font-weight:700; font-size:0.95rem;">⌨️ Texto extraído (OCR) para cotejo</label>
+                <div id="ocrRichView" class="ocr-viewer" style="flex:1; height:45vh; resize:vertical; margin-top:8px; border-radius:8px;">Sin texto OCR disponible.</div>
+                
+                <details style="margin-top:12px">
+                  <summary style="cursor:pointer;font-size:.8rem;color:var(--gold);user-select:none;font-weight:600;">✏️ Editar / corregir texto extraído manualmente</summary>
+                  <textarea id="selectedText" style="min-height:250px;margin-top:12px;width:100%;background:#000;border:1px solid var(--brd);border-radius:var(--r2);padding:14px;color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:.85rem;resize:vertical;outline:none;box-shadow:inset 0 0 10px rgba(0,0,0,0.5);"></textarea>
+                </details>
+
+                <div class="btn-row" style="margin-top:14px;">
+                  <button class="btn btn-primary" onclick="saveSelectedText()" style="flex:1;">💾 Guardar corrección</button>
+                  <button class="btn btn-ghost" onclick="markReviewed()" style="border-color:var(--green); color:var(--green); flex:1;">✅ Marcar cotejado</button>
+                </div>
               </div>
-            </div>
-            <div>
-              <div class="field"><label>Folio / Número de oficio</label><input id="selectedFolio" placeholder="Ej: OFICIO/2024/001"></div>
-              <div class="field"><label>Autoridad o remitente</label><input id="selectedAuthority" placeholder="Ej: Dirección de Capital Humano IPN"></div>
-              <div class="field"><label>Fecha del documento</label><input id="selectedDocDate" type="date"></div>
-              <div class="field"><label>Tipo de documento</label>
-                <select id="selectedRole"><option>Sin clasificar</option><option>Citatorio</option><option>Acta administrativa</option><option>Notificación</option><option>Opinión jurídica / dictamen</option><option>Respuesta ARCO</option><option>Acuerdo</option><option>Queja / denuncia</option><option>Oficio</option><option>Correo</option><option>Acuse</option><option>Prueba / anexo</option><option>Borrador propio</option><option>Otro</option></select>
+
+              <!-- SECCIÓN METADATOS -->
+              <div style="background:rgba(255,255,255,0.02); padding:18px; border-radius:var(--r2); border:1px solid var(--brd); margin-top:auto;">
+                <div style="font-weight:700; margin-bottom:16px; color:#fff; font-size:0.95rem;">🏷️ Clasificación y Metadatos</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+                  <div class="field" style="margin:0;"><label>Folio / Oficio</label><input id="selectedFolio" placeholder="Ej: OFICIO/2024"></div>
+                  <div class="field" style="margin:0;"><label>Remitente</label><input id="selectedAuthority" placeholder="Autoridad"></div>
+                  <div class="field" style="margin:0;"><label>Fecha</label><input id="selectedDocDate" type="date"></div>
+                  <div class="field" style="margin:0;"><label>Clasificación</label>
+                    <select id="selectedRole"><option>Sin clasificar</option><option>Citatorio</option><option>Acta administrativa</option><option>Notificación</option><option>Opinión jurídica / dictamen</option><option>Respuesta ARCO</option><option>Acuerdo</option><option>Queja / denuncia</option><option>Oficio</option><option>Correo</option><option>Acuse</option><option>Prueba / anexo</option><option>Borrador propio</option><option>Otro</option></select>
+                  </div>
+                  <div class="field" style="grid-column: span 2; margin:0;"><label>Estado procesal</label>
+                    <select id="selectedStatus"><option>Pendiente de clasificación</option><option>Pendiente de cotejo</option><option>Metadatos incompletos</option><option>Listo para RAG</option><option>Listo para escrito</option><option>Solo referencia interna</option><option>No usar</option></select>
+                  </div>
+                  <div class="field" style="grid-column: span 2; margin:0;"><label>Notas / Relevancia</label><textarea id="selectedNotes" style="min-height:60px"></textarea></div>
+                </div>
+                <!-- Campos ocultos -->
+                <input id="selectedStage" type="hidden" value="Ingreso">
+                <input id="selectedPriority" type="hidden" value="Media">
+                <input id="selectedConf" type="hidden" value="Interno">
+                <input id="selectedAction" type="hidden" value="">
+                <input id="selectedDue" type="hidden" value="">
+                <input id="storeBlob" type="hidden" value="yes">
+                <input id="ocrLang" type="hidden" value="spa">
+                <input id="selectedTags" type="hidden" value="">
+                <button class="btn btn-gold" onclick="saveSelectedMeta()" style="width:100%; margin-top:16px; font-weight:700; font-size:0.95rem;">💾 Guardar Metadatos</button>
               </div>
-              <div class="field"><label>Estado</label>
-                <select id="selectedStatus"><option>Pendiente de clasificación</option><option>Pendiente de cotejo</option><option>Metadatos incompletos</option><option>Listo para RAG</option><option>Listo para escrito</option><option>Solo referencia interna</option><option>No usar</option></select>
-              </div>
-              <div class="field"><label>Notas</label><textarea id="selectedNotes" style="min-height:70px"></textarea></div>
-              <!-- Hidden fields needed by JS -->
-              <input id="selectedStage" type="hidden" value="Ingreso">
-              <input id="selectedPriority" type="hidden" value="Media">
-              <input id="selectedConf" type="hidden" value="Interno">
-              <input id="selectedAction" type="hidden" value="">
-              <input id="selectedDue" type="hidden" value="">
-      <input id="storeBlob" type="hidden" value="yes">
-      <input id="ocrLang" type="hidden" value="spa">
-              <input id="selectedTags" type="hidden" value="">
-              <button class="btn btn-primary" onclick="saveSelectedMeta()" style="width:100%">💾 Guardar metadatos</button>
+
             </div>
           </div>
-          <div id="sourcePreview" style="margin-top:4px"></div>
         </div>
       </div>
     </div>
@@ -1248,7 +1270,9 @@ async function renderSelectedDoc(){
  if(!d){$("selectedDocBox").innerHTML="Ning??n documento seleccionado.";["selectedText","selectedFolio","selectedAuthority","selectedDocDate","selectedNotes","selectedAction","selectedDue","selectedTags"].forEach(id=>{$(id).value=""});["selectedRole","selectedStage","selectedStatus","selectedPriority","selectedConf"].forEach(id=>{if($(id))$(id).selectedIndex=0});$("sourcePreview").innerHTML="Vista del original disponible solo si se guard?? blob local.";return}
  $("selectedDocBox").innerHTML=`<b>${esc(d.fileName)}</b><br><span class="small">${esc(d.folderPath)}</span><br><span class="tag violet">${esc(d.caseName)}</span><span class="tag ${d.reviewed?"green":"yellow"}">${d.reviewed?"OCR revisado":"OCR no cotejado"}</span><br><span class="mono tiny">${esc(d.sha256)}</span>`;
  $("selectedText").value=d.ocrText||"";$("selectedFolio").value=d.folio||"";$("selectedAuthority").value=d.authority||"";$("selectedDocDate").value=d.docDate||"";$("selectedNotes").value=d.notes||"";$("selectedRole").value=d.docRole||"Sin clasificar";$("selectedStage").value=d.stage||"Ingreso";$("selectedStatus").value=d.docStatus||"Pendiente de clasificaci??n";$("selectedPriority").value=d.priority||"Media";$("selectedConf").value=d.confidentiality||"Interno";$("selectedAction").value=d.actionNeeded||"";$("selectedDue").value=d.dueDate||"";$("selectedTags").value=d.tags||"";
- $("sourcePreview").innerHTML=(d.blob || d.blobOmitted)?`<b>Original disponible.</b> <span class="small">Tipo: ${esc(d.mimeType)}.</span><div id="blobPreview" style="margin-top:10px"></div><p class='tiny muted' style='margin-top:6px'>Cargando visor original...</p>`:"<p class='tiny muted'>No hay archivo original para visualizar.</p>"; if(d.blob || d.blobOmitted) renderBlobPreview(d);
+ $("sourcePreview").innerHTML=(d.blob || d.blobOmitted)?`✅ Disponible (${esc(d.mimeType)})`:`❌ Sin archivo local`; 
+  if(d.blob || d.blobOmitted) renderBlobPreview(d);
+  else { const bp = document.getElementById("blobPreview"); if(bp) bp.innerHTML = "<div style='color:#888; padding:30px; text-align:center;'>No se adjuntó archivo original a este documento.</div>"; } if(d.blob || d.blobOmitted) renderBlobPreview(d);
   // Populate OCR rich viewer
   const _ocrV=document.getElementById("ocrRichView");
   if(_ocrV){
