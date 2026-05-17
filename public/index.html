@@ -1083,7 +1083,7 @@ async function ocrFile(file,path){
 }
 async function ocrImage(file,path){
  const Tesseract=await ensureTesseract();
- const lang=$("ocrLang").value;$("ocrProgress").innerHTML=`OCR imagen: ${esc(path)}`;
+ const lang=$("ocrLang")?.value||"spa";$("ocrProgress").innerHTML=`OCR imagen: ${esc(path)}`;
  const {data}=await Tesseract.recognize(file,lang,{langPath:"/vendor/tessdata",workerPath:"/vendor/tesseract/worker.min.js",corePath:"/vendor/tesseract/tesseract-core.wasm.js",logger:m=>{if(m.status)$("ocrProgress").innerHTML=`${esc(path)} ?? ${esc(m.status)} ${m.progress?Math.round(m.progress*100)+"%":""}`}});
  return {status:"done",text:data.text||"",pageCount:1,pageRange:"1",warnings:[],sourceKind:"image_ocr"};
 }
@@ -1167,11 +1167,11 @@ async function ocrPdf(file,path){
  const pdfjs=await loadPdfJs();
  const buf=await file.arrayBuffer();
  const pdf=await pdfjs.getDocument({data:buf}).promise;
- const maxPages=Math.min(Number($("maxPdfPages").value||30),pdf.numPages);
- const scale=Number($("pdfScale").value||2);
- const lang=$("ocrLang").value;
+ const maxPages=Math.min(Number($("maxPdfPages")?.value||30),pdf.numPages);
+ const scale=Number($("pdfScale")?.value||2);
+ const lang=$("ocrLang")?.value||"spa";
  const warnings=[];
- if(pdf.numPages>maxPages)warnings.push(`PDF ten??a ${pdf.numPages} p??ginas; se procesaron solo ${maxPages}.`);
+ if(pdf.numPages>maxPages)warnings.push(`PDF tenía ${pdf.numPages} páginas; se procesaron solo ${maxPages}.`);
  $("ocrProgress").innerHTML=`Extrayendo texto nativo PDF: ${esc(path)}`;
  const nativeText=await extractPdfNativeText(pdf,maxPages);
  if(nativeText && nativeText.replace(/\s+/g," ").length>300){
