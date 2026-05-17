@@ -693,7 +693,7 @@ async function ensureDefaultCase(){
  else if(!state.activeCaseId){state.activeCaseId=cases[0].id;await saveState()}
 }
 async function activeCase(){return state.activeCaseId?await get("cases",state.activeCaseId):null}
-async async function docsOfActive(){return state.activeCaseId?await byIndex("documents","caseId",state.activeCaseId):[]}
+async function docsOfActive(){return state.activeCaseId?await byIndex("documents","caseId",state.activeCaseId):[]}
 async function messagesOfActive(){return state.activeCaseId?await byIndex("messages","caseId",state.activeCaseId):[]}
 async function draftsOfActive(){return state.activeCaseId?await byIndex("drafts","caseId",state.activeCaseId):[]}
 
