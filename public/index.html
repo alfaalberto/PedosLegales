@@ -182,6 +182,28 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--blue),#a
 .msg.assistant .md-body strong { color:#fff; }
 .msg.assistant .md-body code { background:rgba(255,255,255,.1); }
 
+
+/* ── NATIVE DOC VIEWER ── */
+.doc-viewer-wrap{margin-top:20px;border:1px solid var(--brd);border-radius:var(--r);overflow:hidden;background:#000}
+.doc-viewer-toolbar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--s);border-bottom:1px solid var(--brd);flex-wrap:wrap}
+.doc-viewer-toolbar .vt-title{font-size:.8rem;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mut)}
+.doc-viewer-toolbar .vt-badge{font-size:.68rem;padding:2px 8px;border-radius:4px;background:rgba(79,142,247,.15);color:#7eb3ff;white-space:nowrap}
+.doc-viewer-inner{min-height:400px;max-height:75vh;overflow:auto;position:relative;background:#1a1a1a;display:flex;flex-direction:column;align-items:center;padding:20px}
+.doc-viewer-inner img{max-width:100%;border-radius:4px;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.doc-viewer-inner iframe{width:100%;min-height:65vh;border:none;background:#fff;border-radius:4px}
+.pdf-page-wrap{margin-bottom:16px;position:relative}
+.pdf-page-wrap canvas{display:block;max-width:100%;border-radius:4px;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.pdf-page-num{position:absolute;top:6px;right:8px;background:rgba(0,0,0,.7);color:#fff;font-size:.65rem;padding:2px 7px;border-radius:4px}
+.docx-render{background:#fff;color:#111;font-family:Georgia,serif;font-size:1rem;line-height:1.8;padding:40px 48px;border-radius:4px;box-shadow:0 4px 20px rgba(0,0,0,.5);max-width:800px;width:100%;text-align:left}
+.docx-render h1,.docx-render h2,.docx-render h3{font-weight:700;margin:1em 0 .4em}
+.docx-render p{margin:.6em 0}
+.docx-render table{border-collapse:collapse;width:100%;margin:1em 0}
+.docx-render td,.docx-render th{border:1px solid #ccc;padding:6px 10px}
+.viewer-no-blob{text-align:center;padding:48px 24px;color:var(--mut)}
+.viewer-no-blob .nb-icon{font-size:3rem;margin-bottom:12px}
+.viewer-loading{text-align:center;padding:48px;color:var(--mut)}
+.pdf-nav{display:flex;align-items:center;gap:10px;padding:8px 14px;border-top:1px solid var(--brd);background:var(--s);justify-content:center}
+
 </style>
 </head>
 <body>
@@ -301,7 +323,9 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--blue),#a
         <div id="docVisorCard" class="card" style="margin-top:20px;display:none">
           <div class="card-title">📋 Documento seleccionado</div>
           <div id="selectedDocBox" class="alert alert-info" style="margin-bottom:12px"></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;flex-wrap:wrap">
+          <!-- Native document viewer hero -->
+          <div id="blobPreview"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;flex-wrap:wrap;margin-top:20px">
             <div>
               <div class="field">
               <label>Vista del documento (OCR)</label>
@@ -333,13 +357,13 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--blue),#a
               <input id="selectedConf" type="hidden" value="Interno">
               <input id="selectedAction" type="hidden" value="">
               <input id="selectedDue" type="hidden" value="">
-      <input id="storeBlob" type="hidden" value="no">
+      <input id="storeBlob" type="hidden" value="yes">
       <input id="ocrLang" type="hidden" value="spa">
               <input id="selectedTags" type="hidden" value="">
               <button class="btn btn-primary" onclick="saveSelectedMeta()" style="width:100%">💾 Guardar metadatos</button>
             </div>
           </div>
-          <div id="sourcePreview" style="margin-top:12px"></div>
+          <div id="sourcePreview" style="margin-top:4px"></div>
         </div>
       </div>
     </div>
@@ -1362,18 +1386,119 @@ async function runSelfAudit(){
 }
 
 
+// ── NATIVE DOCUMENT VIEWER ──────────────────────────────────────────────────
+let _currentBlobUrl = null;
+function _revokeBlob(){if(_currentBlobUrl){URL.revokeObjectURL(_currentBlobUrl);_currentBlobUrl=null;}}
+
+function _viewerWrap(title, badge, innerHtml, navHtml){
+  return `<div class="doc-viewer-wrap">
+    <div class="doc-viewer-toolbar">
+      <span class="vt-title">📄 ${esc(title)}</span>
+      <span class="vt-badge">${esc(badge)}</span>
+      <button class="btn btn-ghost btn-sm" id="btnDownloadBlob">⬇ Descargar</button>
+      <button class="btn btn-ghost btn-sm" id="btnOpenBlob">🔗 Abrir</button>
+    </div>
+    <div class="doc-viewer-inner" id="docViewerInner">${innerHtml}</div>
+    ${navHtml?`<div class="pdf-nav">${navHtml}</div>`:''}
+  </div>`;
+}
+function _attachBlobBtns(d, url){
+  setTimeout(()=>{
+    const dl=document.getElementById('btnDownloadBlob');
+    const op=document.getElementById('btnOpenBlob');
+    if(dl)dl.onclick=()=>{const a=document.createElement('a');a.href=url;a.download=d.fileName||'documento';a.click();};
+    if(op)op.onclick=()=>window.open(url,'_blank');
+  },50);
+}
+
 async function renderBlobPreview(d){
- const el=$("blobPreview");if(!el)return;
- try{
-  const url=URL.createObjectURL(d.blob);
-  if(/^image\//.test(d.mimeType||"") || /\.(png|jpe?g|webp|bmp|tiff?)$/i.test(d.fileName||"")){
-    el.innerHTML=`<img class="imgPreview" src="${url}" alt="vista original">`;
-  }else if(/pdf/i.test(d.mimeType||"") || /\.pdf$/i.test(d.fileName||"")){
-    el.innerHTML=`<iframe class="viewerFrame" src="${url}"></iframe>`;
-  }else{
-    el.innerHTML=`<a class="btn secondary" href="${url}" target="_blank">Abrir original</a>`;
+  const el=$("blobPreview"); if(!el)return;
+  _revokeBlob();
+  if(!d || !d.blob){
+    el.innerHTML='<div class="viewer-no-blob"><div class="nb-icon">📂</div><p>El archivo original no está guardado.<br><small style="color:var(--mut)">Los documentos nuevos se guardarán automáticamente.</small></p></div>';
+    return;
   }
- }catch(e){el.textContent="No se pudo previsualizar original: "+e.message}
+  el.innerHTML='<div class="viewer-loading">⏳ Cargando vista previa...</div>';
+  const mime=d.mimeType||guessMime(d.fileName||'');
+  const fname=d.fileName||'documento';
+  _currentBlobUrl=URL.createObjectURL(d.blob);
+
+  // IMAGES
+  if(/^image\//.test(mime)||/\.(png|jpe?g|webp|bmp|gif|tiff?)$/i.test(fname)){
+    el.innerHTML=_viewerWrap(fname,'Imagen',`<img src="${_currentBlobUrl}" alt="${esc(fname)}" style="max-width:100%;border-radius:4px;box-shadow:0 4px 20px rgba(0,0,0,.5)">`)
+    _attachBlobBtns(d,_currentBlobUrl); return;
+  }
+
+  // PDF — render with PDF.js page by page
+  if(/pdf/i.test(mime)||/\.pdf$/i.test(fname)){
+    try{
+      const pdfjs=await loadPdfJs();
+      const buf=await d.blob.arrayBuffer();
+      const pdf=await pdfjs.getDocument({data:buf}).promise;
+      const total=pdf.numPages;
+      let curPage=1;
+
+      async function _renderPdfPage(n){
+        const inner=document.getElementById('docViewerInner'); if(!inner)return;
+        inner.innerHTML='<div class="viewer-loading">⏳ Página '+n+' / '+total+'...</div>';
+        const page=await pdf.getPage(n);
+        const vp=page.getViewport({scale:1.8});
+        const canvas=document.createElement('canvas');
+        canvas.width=vp.width; canvas.height=vp.height;
+        canvas.style.maxWidth='100%'; canvas.style.borderRadius='4px';
+        canvas.style.boxShadow='0 4px 20px rgba(0,0,0,.5)';
+        await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
+        const wrap=document.createElement('div'); wrap.className='pdf-page-wrap';
+        const badge=document.createElement('span'); badge.className='pdf-page-num';
+        badge.textContent='Pág. '+n+' / '+total;
+        wrap.appendChild(canvas); wrap.appendChild(badge);
+        inner.innerHTML=''; inner.appendChild(wrap);
+        const prev=document.getElementById('pdfPrev');
+        const next=document.getElementById('pdfNext');
+        const info=document.getElementById('pdfPageInfo');
+        if(prev)prev.disabled=n<=1;
+        if(next)next.disabled=n>=total;
+        if(info)info.textContent=n+' / '+total;
+      }
+
+      const nav=`<button class="btn btn-ghost btn-sm" id="pdfPrev" onclick="window._pdfPrev()" disabled>◀ Anterior</button>
+        <span id="pdfPageInfo" style="font-size:.82rem;color:var(--mut)">1 / ${total}</span>
+        <button class="btn btn-ghost btn-sm" id="pdfNext" onclick="window._pdfNext()">Siguiente ▶</button>
+        <span style="font-size:.72rem;color:var(--mut)">${total} páginas</span>`;
+
+      el.innerHTML=_viewerWrap(fname,'PDF · '+total+' págs','<div class="viewer-loading">⏳ Cargando...</div>',nav);
+      _attachBlobBtns(d,_currentBlobUrl);
+      window._pdfPrev=()=>{if(curPage>1){curPage--;_renderPdfPage(curPage);}};
+      window._pdfNext=()=>{if(curPage<total){curPage++;_renderPdfPage(curPage);}};
+      await _renderPdfPage(1);
+    }catch(e){
+      el.innerHTML=_viewerWrap(fname,'PDF',`<div style="color:var(--red);padding:20px">Error: ${esc(e.message)}<br><a href="${_currentBlobUrl}" target="_blank" class="btn btn-ghost btn-sm" style="margin-top:10px">🔗 Abrir en nueva pestaña</a></div>`,'');
+    }
+    return;
+  }
+
+  // DOCX / DOC — render with mammoth.js
+  if(/docx?/i.test(mime)||/\.docx?$/i.test(fname)){
+    try{
+      const mammoth=await ensureMammoth();
+      const buf=await d.blob.arrayBuffer();
+      let result;
+      try{result=await mammoth.convertToHtml({arrayBuffer:buf});}
+      catch(e2){result={value:'<p>Error al convertir: '+esc(e2.message)+'</p>'};}
+      const html=result.value||'<p style="color:var(--mut)">Sin contenido visible.</p>';
+      el.innerHTML=_viewerWrap(fname,fname.toLowerCase().endsWith('.docx')?'Word DOCX':'Word DOC',`<div class="docx-render">${html}</div>`,'');
+      _attachBlobBtns(d,_currentBlobUrl);
+    }catch(e){
+      el.innerHTML=_viewerWrap(fname,'Word',`<div style="color:var(--red);padding:20px">No se pudo renderizar: ${esc(e.message)}</div>`,'');
+    }
+    return;
+  }
+
+  // FALLBACK
+  const ext=(fname.split('.').pop()||'').toUpperCase();
+  el.innerHTML=_viewerWrap(fname,ext||'Archivo',
+    `<div class="viewer-no-blob"><div class="nb-icon">📎</div><p>Vista previa no disponible para este formato.<br><a href="${_currentBlobUrl}" target="_blank" class="btn btn-primary btn-sm" style="margin-top:12px">🔗 Abrir archivo</a></p></div>`,'');
+  _attachBlobBtns(d,_currentBlobUrl);
 }
 async function deriveKey(password,salt){
  const enc=new TextEncoder();
