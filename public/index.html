@@ -308,7 +308,7 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--blue),#a
         <div class="page-sub" id="importCaseSub">Selecciona un expediente primero</div>
       </div>
       <div class="page-body">
-        <div id="dropZone" class="drop-zone" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="this.classList.remove('drag');handleFiles(event.dataTransfer.files)">
+        <div id="dropZone" class="drop-zone" onclick="document.getElementById('fileInput').click()">
           <div class="drop-icon">📂</div>
           <div style="font-weight:700;font-size:1rem;margin-bottom:6px">Arrastra tus archivos aquí</div>
           <div style="color:var(--mut);font-size:.83rem">PDF, Word (.docx) o imágenes · También puedes hacer clic para seleccionar</div>
@@ -319,7 +319,7 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--blue),#a
           <label class="btn btn-ghost" for="folderInput">📁 Cargar carpeta completa</label>
           <button class="btn btn-primary" onclick="processQueue()">▶ Iniciar procesamiento</button>
         </div>
-        <div id="ocrProgress" class="alert alert-info" style="margin-top:14px;display:none"></div>
+        <div id="ocrProgress" class="alert alert-info" style="margin-top:14px"></div>
         <progress id="ocrBar" value="0" max="100" style="margin-top:10px;display:none"></progress>
         <div id="queueList" style="margin-top:14px"></div>
       </div>
@@ -616,6 +616,8 @@ const FIREBASE_CONFIG_FALLBACK = {
   apiKey: "AIzaSyB9T9Uado1Q-O3P8D-MZl-b7v3GCkNfCCA",
   authDomain: "pedoslegales.firebaseapp.com",
   projectId: "pedoslegales",
+  storageBucket: "pedoslegales.firebasestorage.app",
+  messagingSenderId: "638020457588",
   appId: "1:638020457588:web:9c947c0363f94e2e33ad21"
 };
 </script>
@@ -744,7 +746,7 @@ async function initFirebase() {
     fbApp = initializeApp(cfg);
     fbAuth = getAuth(fbApp);
     fbDb = getFirestore(fbApp);
-    fbStorage = getStorage(fbApp);
+    fbStorage = getStorage(fbApp, "gs://pedoslegales.firebasestorage.app");
     fbMod = { doc, getDoc, setDoc, deleteDoc, collection, getDocs, query, where, signOut, signInWithEmailAndPassword, storageRef, uploadBytes, getBlob };
     if (notice) notice.textContent = "";
     btn.disabled = false;
@@ -1002,17 +1004,31 @@ async function selectCase(id){state.activeCaseId=id;state.selectedDocId=null;sta
 
 function renderQueue(){ $("queueList").innerHTML=state.queue.map(q=>`<div class="box"><b>${esc(q.file.name)}</b><br><span class="small muted">${esc(q.path||q.file.name)} ?? ${(q.file.size/1024).toFixed(1)} KB</span><br><span class="tag yellow">${esc(q.status||"pendiente")}</span></div>`).join("")||"<p class='muted'>Cola vac??a.</p>"}
 function setupDrop(){const dz=$("dropZone");["dragenter","dragover"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add("drag")}));["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("drag")}));dz.addEventListener("drop",e=>handleFiles(e.dataTransfer.files))}
-function handleFiles(fileList){if(!state.activeCaseId){alert("Crea o selecciona un caso primero.");return}const files=[...fileList];const allowed=files.filter(f=>isSupported(f));const rejected=files.length-allowed.length;  allowed.forEach(f=>state.queue.push({file:f,path:f.webkitRelativePath||f.name,status:"pendiente"}));
+function handleFiles(fileList){
+  if(!state.activeCaseId){alert("Crea o selecciona un caso primero. Ve a 'Expedientes' y abre uno.");return;}
+  const files=[...fileList];
+  const allowed=files.filter(f=>isSupported(f));
+  const rejected=files.length-allowed.length;
+  allowed.forEach(f=>state.queue.push({file:f,path:f.webkitRelativePath||f.name,status:"pendiente"}));
   const parts=[];
-  if(allowed.length)parts.push(`${allowed.length} archivo(s) agregados a la cola.`);
-  if(rejected)parts.push(`${rejected} ignorado(s) ??? solo se admiten PDF, im??genes y Word (.docx/.doc).`);
-  if(parts.length)$("ocrProgress").innerHTML=parts.join(" ");
-  renderQueue()}
+  if(allowed.length) parts.push("✅ "+allowed.length+" archivo(s) en cola. Haz clic en 'Iniciar procesamiento'.");
+  if(rejected) parts.push("⚠️ "+rejected+" ignorado(s) — solo PDF, imágenes y Word (.docx/.doc).");
+  const prog=$("ocrProgress");
+  if(prog){prog.innerHTML=parts.join(" ")||"Cola vacía.";prog.style.display="";}
+  const bar=$("ocrBar");
+  if(bar){bar.style.display="";bar.value=0;}
+  renderQueue();
+}
 function isSupported(f){return /pdf$/i.test(f.name)||/^image\//.test(f.type)||/\.(png|jpe?g|webp|tiff?|bmp)$/i.test(f.name)||/\.(docx?)$/i.test(f.name)||/msword|wordprocessingml/.test(f.type||"")}
 async function sha256(file){const buf=await file.arrayBuffer();const hash=await crypto.subtle.digest("SHA-256",buf);return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,"0")).join("")}
 async function processQueue(){
- if(!state.queue.length){alert("Cola vac??a.");return}const c=await activeCase();if(!c){alert("Selecciona caso.");return}
- $("ocrBar").value=0;let done=0;
+ if(!state.queue.length){alert("Cola vacía. Arrastra archivos primero.");return;}
+ const c=await activeCase();
+ if(!c){alert("Selecciona o crea un expediente primero.");return;}
+ const bar=$("ocrBar");const prog=$("ocrProgress");
+ if(bar){bar.style.display="";bar.value=0;}
+ if(prog){prog.style.display="";prog.innerHTML="⏳ Iniciando procesamiento...";}
+ let done=0;
  for(const item of state.queue){
   item.status="procesando";renderQueue();
   try{
@@ -1020,9 +1036,16 @@ async function processQueue(){
    const doc={id:uid("doc"),caseId:state.activeCaseId,caseName:c.name,fileName:item.file.name,folderPath:item.path,mimeType:item.file.type||guessMime(item.file.name),size:item.file.size,lastModified:item.file.lastModified,sha256:hash,blob:$("storeBlob").value==="yes"?item.file:null,importedAt:new Date().toISOString(),ocrStatus:result.status,ocrLang:$("ocrLang").value,ocrText:result.text,pageCount:result.pageCount||null,pageRange:result.pageRange||null,ocrWarnings:result.warnings||[],reviewed:false,folio:"",authority:"",docDate:"",notes:"",sourceKind:result.sourceKind,docRole:"Sin clasificar",stage:"Ingreso",docStatus:"Pendiente de clasificaci??n",priority:"Media",confidentiality:"Interno",actionNeeded:"Clasificar, cotejar OCR y capturar metadatos",dueDate:"",tags:"",relationIds:[]};
    await put("documents",doc);item.status="ok";
   }catch(err){item.status="error: "+err.message}
-  done++;$("ocrBar").value=Math.round(done/state.queue.length*100);$("ocrProgress").innerHTML=`Procesados ${done}/${state.queue.length}`;renderQueue();renderPanel();
+  done++;
+  if(bar){bar.value=Math.round(done/state.queue.length*100);}
+  if(prog){prog.innerHTML=`✅ Procesados ${done} / ${state.queue.length}`;}
+  renderQueue();renderPanel();
  }
- state.queue=state.queue.filter(x=>!String(x.status).startsWith("ok"));renderAll();
+ state.queue=[];
+ await saveState();
+ await renderAll();
+ if(prog){prog.innerHTML="✅ Procesamiento completo. Ve a 'Documentos' para ver los archivos cargados.";}
+ if(bar){bar.value=100;}
 }
 function guessMime(name){return /\.pdf$/i.test(name)?"application/pdf":/\.docx$/i.test(name)?"application/vnd.openxmlformats-officedocument.wordprocessingml.document":/\.doc$/i.test(name)?"application/msword":"image/*"}
 async function ocrFile(file,path){
@@ -1836,16 +1859,21 @@ async function boot(){
   resolveModel().catch(()=>{});
 }
 
-// queueList render
-const _origRenderQueue=window.renderQueue;
+// renderQueue — show queue items with status
 function renderQueue(){
   const el=document.getElementById("queueList");
-  const bar=document.getElementById("ocrBar");
-  const prog=document.getElementById("ocrProgress");
   if(!el)return;
-  if(!state.queue.length){el.innerHTML="";if(bar)bar.style.display="none";if(prog)prog.style.display="none";return;}
-  if(bar)bar.style.display="";
-  el.innerHTML=state.queue.map(q=>`<div class="alert ${q.status==="ok"?"alert-ok":q.status.startsWith("error")?"alert-err":"alert-info"}" style="margin:6px 0"><b>${esc(q.file.name)}</b> <span style="float:right">${esc(q.status)}</span></div>`).join("");
+  if(!state.queue.length){el.innerHTML="<p style='color:var(--mut);font-size:.82rem;padding:8px 0'>Cola vacía.</p>";return;}
+  el.innerHTML=state.queue.map(q=>{
+    const cls=q.status==="ok"?"alert-ok":q.status.startsWith("error")?"alert-err":q.status==="procesando"?"alert-warn":"alert-info";
+    const icon=q.status==="ok"?"✅":q.status.startsWith("error")?"❌":q.status==="procesando"?"⏳":"📄";
+    const kb=q.file?.size?((q.file.size/1024).toFixed(0)+" KB"):"";
+    return `<div class="alert ${cls}" style="margin:5px 0;display:flex;align-items:center;gap:8px">
+      <span style="font-size:1.1rem">${icon}</span>
+      <span style="flex:1"><b>${esc(q.file?.name||"")}</b> <span style="font-size:.72rem;opacity:.7">${kb}</span></span>
+      <span style="font-size:.72rem">${esc(q.status)}</span>
+    </div>`;
+  }).join("");
 }
 
 // handleFiles — uses native implementation from JS2 core
