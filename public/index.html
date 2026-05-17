@@ -645,14 +645,12 @@ async function openBlobDB() {
 async function putBlobLocal(id, blob) {
   if (!blob) return;
   const sid = String(id);
-  // 1. Guarda en IndexedDB local (acceso r??pido)
+  // 1. Guarda en IndexedDB local (acceso rápido)
   if (blobDb) await new Promise(res => { const tx = blobDb.transaction("blobs","readwrite"); tx.objectStore("blobs").put({id:sid,blob}); tx.oncomplete=()=>res(); tx.onerror=()=>res(); });
-  // 2. Sube a Firebase Storage (acceso desde cualquier PC)
+  // 2. Sube a Firebase Storage en segundo plano para no bloquear (útil si hay error CORS)
   if (fbStorage && currentUser && fbMod.storageRef) {
-    try {
-      const r = fbMod.storageRef(fbStorage, `users/${currentUser.uid}/blobs/${sid}`);
-      await fbMod.uploadBytes(r, blob);
-    } catch(e) { console.warn("Storage upload:", e.message); }
+    const r = fbMod.storageRef(fbStorage, `users/${currentUser.uid}/blobs/${sid}`);
+    fbMod.uploadBytes(r, blob).catch(e => console.warn("Storage upload en segundo plano:", e.message));
   }
 }
 async function getBlobLocal(id) {
