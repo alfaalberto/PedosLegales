@@ -1003,13 +1003,44 @@ async function createCase(){const name=$("caseName").value.trim();if(!name){aler
 async function selectCase(id){state.activeCaseId=id;state.selectedDocId=null;state.selectedDraftId=null;state.lastSources=[];await saveState();renderAll()}
 
 function renderQueue(){ $("queueList").innerHTML=state.queue.map(q=>`<div class="box"><b>${esc(q.file.name)}</b><br><span class="small muted">${esc(q.path||q.file.name)} ?? ${(q.file.size/1024).toFixed(1)} KB</span><br><span class="tag yellow">${esc(q.status||"pendiente")}</span></div>`).join("")||"<p class='muted'>Cola vac??a.</p>"}
-function setupDrop(){const dz=$("dropZone");["dragenter","dragover"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add("drag")}));["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("drag")}));dz.addEventListener("drop",e=>handleFiles(e.dataTransfer.files))}
+function setupDrop(){
+ const dz=$("dropZone");
+ ["dragenter","dragover"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add("drag")}));
+ ["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("drag")}));
+ dz.addEventListener("drop",async e=>{
+   if(!state.activeCaseId){alert("Crea o selecciona un caso primero. Ve a 'Expedientes' y abre uno.");return;}
+   const items=e.dataTransfer.items;
+   if(!items) return handleFiles(e.dataTransfer.files);
+   const files=[];
+   async function readEntry(entry, path){
+     if(entry.isFile){
+       const file = await new Promise(r=>entry.file(r));
+       // Override file.name with path if necessary, but webkitRelativePath is readonly.
+       // We'll store path separately in handleFiles array
+       file.customPath = path + file.name;
+       files.push(file);
+     }else if(entry.isDirectory){
+       const reader=entry.createReader();
+       const entries=await new Promise(r=>reader.readEntries(r));
+       for(const e of entries) await readEntry(e, path+entry.name+"/");
+     }
+   }
+   for(let i=0;i<items.length;i++){
+     const item=items[i];
+     if(item.webkitGetAsEntry){
+       const entry=item.webkitGetAsEntry();
+       if(entry) await readEntry(entry, "");
+     }
+   }
+   handleFiles(files);
+ });
+}
 function handleFiles(fileList){
   if(!state.activeCaseId){alert("Crea o selecciona un caso primero. Ve a 'Expedientes' y abre uno.");return;}
   const files=[...fileList];
   const allowed=files.filter(f=>isSupported(f));
   const rejected=files.length-allowed.length;
-  allowed.forEach(f=>state.queue.push({file:f,path:f.webkitRelativePath||f.name,status:"pendiente"}));
+  allowed.forEach(f=>state.queue.push({file:f,path:f.customPath||f.webkitRelativePath||f.name,status:"pendiente"}));
   const parts=[];
   if(allowed.length) parts.push("✅ "+allowed.length+" archivo(s) en cola. Haz clic en 'Iniciar procesamiento'.");
   if(rejected) parts.push("⚠️ "+rejected+" ignorado(s) — solo PDF, imágenes y Word (.docx/.doc).");
