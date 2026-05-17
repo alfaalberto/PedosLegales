@@ -297,6 +297,8 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--blue),#a
               <input id="selectedConf" type="hidden" value="Interno">
               <input id="selectedAction" type="hidden" value="">
               <input id="selectedDue" type="hidden" value="">
+      <input id="storeBlob" type="hidden" value="no">
+      <input id="ocrLang" type="hidden" value="spa">
               <input id="selectedTags" type="hidden" value="">
               <button class="btn btn-primary" onclick="saveSelectedMeta()" style="width:100%">💾 Guardar metadatos</button>
             </div>
@@ -343,6 +345,7 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--blue),#a
             <input id="chunkChars" type="hidden" value="1800">
             <input id="modelOverride" type="hidden" value="">
             <input id="allowWeb" type="hidden" value="no">
+    <input id="docStatusFilter" type="hidden" value="">
           </div>
           <div class="chat-input-row">
             <textarea id="chatInput" placeholder="Escribe tu pregunta aquí... Ej: ¿Qué puntos débiles tiene el acta administrativa en mi contra?" rows="2"></textarea>
@@ -690,7 +693,7 @@ async function ensureDefaultCase(){
  else if(!state.activeCaseId){state.activeCaseId=cases[0].id;await saveState()}
 }
 async function activeCase(){return state.activeCaseId?await get("cases",state.activeCaseId):null}
-async function docsOfActive(){return state.activeCaseId?await byIndex("documents","caseId",state.activeCaseId):[]}
+async async function docsOfActive(){return state.activeCaseId?await byIndex("documents","caseId",state.activeCaseId):[]}
 async function messagesOfActive(){return state.activeCaseId?await byIndex("messages","caseId",state.activeCaseId):[]}
 async function draftsOfActive(){return state.activeCaseId?await byIndex("drafts","caseId",state.activeCaseId):[]}
 
@@ -1491,8 +1494,7 @@ async function updateSidebarCase(){
   const sub3=document.getElementById("chatCaseSub");if(sub3&&c)sub3.textContent="Consultando sobre: "+c.name;
 }
 
-// Override selectDoc to show visor inside documents page
-const _origSelectDoc=window.selectDoc;
+// selectDoc — shows visor inside documents page
 async function selectDoc(id){
   state.selectedDocId=id;await saveState();await renderSelectedDoc();
   const card=document.getElementById("docVisorCard");if(card)card.style.display="";
@@ -1505,14 +1507,38 @@ function goTab(id){
   showPage(map[id]||"casos");
 }
 
-// Override renderDocuments to render table in new UI
-const _origRenderDocuments=window.renderDocuments;
+// renderDocuments — direct implementation using docsOfActive
 async function renderDocuments(){
-  if(typeof _origRenderDocuments==="function")await _origRenderDocuments();
+  const docs = await docsOfActive();
+  const f = (document.getElementById("docSearch")?.value||"").toLowerCase();
+  const roleF = document.getElementById("docRoleFilter")?.value||"";
+  const list = docs.filter(d=>{
+    if(roleF && (d.docRole||"Sin clasificar")!==roleF) return false;
+    return !f||JSON.stringify({...d,blob:null}).toLowerCase().includes(f);
+  }).sort((a,b)=>(a.fileName||"").localeCompare(b.fileName||""));
+  const tbody = document.getElementById("docTable");
+  if(!tbody) return;
+  if(!list.length){
+    tbody.innerHTML=`<tr><td colspan="4" style="text-align:center;color:var(--mut);padding:24px">Sin documentos en este expediente. Ve a "Agregar documentos" para cargar archivos.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(d=>{
+    const ocrOk = d.ocrStatus==="done";
+    const reviewed = d.reviewed;
+    const stTag = reviewed?"<span class='tag tag-green'>✓ Cotejado</span>":ocrOk?"<span class='tag tag-blue'>OCR listo</span>":"<span class='tag tag-gray'>"+esc(d.ocrStatus||"pendiente")+"</span>";
+    const roleTag = `<span class="tag tag-gold">${esc(d.docRole||"Sin clasificar")}</span>`;
+    const name = esc(d.fileName||"");
+    const kb = d.size?((d.size/1024).toFixed(0)+" KB"):"";
+    return `<tr>
+      <td><b>${name}</b><br><span style="font-size:.72rem;color:var(--mut)">${kb}</span></td>
+      <td>${roleTag}</td>
+      <td>${stTag}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="selectDoc('${d.id}')">📂 Abrir</button></td>
+    </tr>`;
+  }).join("");
 }
 
-// Override renderDrafts for new UI
-const _origRenderDrafts=window.renderDrafts;
+// renderDrafts for new UI
 async function renderDrafts(){
   const drafts=(await draftsOfActive()).sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt));
   const list=document.getElementById("draftList");
@@ -1524,8 +1550,7 @@ async function renderDrafts(){
   if(ed)ed.value=sel?.content||"";
 }
 
-// Chat render override (remove citation audit noise from display)
-const _origRenderChat=window.renderChat;
+// renderChat for new UI
 async function renderChat(){
   const msgs=(await messagesOfActive()).sort((a,b)=>a.createdAt.localeCompare(b.createdAt));
   const box=document.getElementById("chatBox");if(!box)return;
@@ -1545,7 +1570,7 @@ async function renderAll(){
   const active=document.querySelector(".page.active");
   const id=active?.id?.replace("page-","");
   if(id==="casos")await renderCaseGrid();
-  if(id==="documents")if(typeof _origRenderDocuments==="function")await _origRenderDocuments();
+  if(id==="documents")await renderDocuments();
   if(id==="chat")await renderChat();
   if(id==="drafts")await renderDrafts();
   if(id==="ajustes"){renderStorage();renderAudit();}
@@ -1576,13 +1601,7 @@ function renderQueue(){
   el.innerHTML=state.queue.map(q=>`<div class="alert ${q.status==="ok"?"alert-ok":q.status.startsWith("error")?"alert-err":"alert-info"}" style="margin:6px 0"><b>${esc(q.file.name)}</b> <span style="float:right">${esc(q.status)}</span></div>`).join("");
 }
 
-// handleFiles - show bar
-const _origHandleFiles=window.handleFiles;
-function handleFiles(fl){
-  if(_origHandleFiles)_origHandleFiles(fl);
-  const prog=document.getElementById("ocrProgress");
-  if(prog&&state.queue.length){prog.style.display="";prog.textContent=state.queue.length+" archivo(s) en cola. Haz clic en 'Iniciar procesamiento'.";}
-}
+// handleFiles — uses native implementation from JS2 core
 
 // configServerUrl
 function configServerUrl(){
