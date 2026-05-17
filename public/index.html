@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230a0a0f'/><text x='16' y='22' font-size='20' text-anchor='middle' fill='%23d4af37'>%E2%9A%96</text></svg>">
 <style>
 
@@ -153,6 +154,34 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--blue),#a
 /* ── RESPONSIVE ── */
 @media(max-width:700px){.sidebar{width:56px}.sb-brand,.acb-name,.acb-meta,.acb-label,.nav-item span,.sb-footer .user-row span,.server-badge span{display:none}.page-body{padding:16px}}
 
+
+/* ── MARKDOWN VIEWER ── */
+.md-body { font-size:.93rem; line-height:1.75; color:var(--ink); }
+.md-body h1,.md-body h2 { font-size:1.05rem; font-weight:700; margin:18px 0 8px; color:#fff; border-bottom:1px solid var(--brd); padding-bottom:6px; }
+.md-body h3 { font-size:.95rem; font-weight:700; margin:14px 0 6px; color:#e2e2f0; }
+.md-body p { margin:0 0 10px; }
+.md-body ul,.md-body ol { padding-left:22px; margin:0 0 10px; }
+.md-body li { margin:4px 0; }
+.md-body strong { color:#fff; font-weight:700; }
+.md-body em { color:#c4b5fd; font-style:italic; }
+.md-body code { font-family:'JetBrains Mono',ui-monospace,monospace; font-size:.82rem; background:rgba(255,255,255,.07); padding:2px 6px; border-radius:4px; color:#a5f3fc; }
+.md-body pre { background:#000; border:1px solid var(--brd); border-radius:var(--r2); padding:14px; overflow-x:auto; margin:10px 0; }
+.md-body pre code { background:transparent; padding:0; color:#a5f3fc; }
+.md-body blockquote { border-left:3px solid var(--gold); margin:10px 0; padding:8px 14px; background:rgba(212,175,55,.06); border-radius:0 var(--r2) var(--r2) 0; color:#d4d4d8; }
+.md-body hr { border:none; border-top:1px solid var(--brd); margin:16px 0; }
+.md-body table { width:100%; border-collapse:collapse; margin:10px 0; font-size:.84rem; }
+.md-body th,.md-body td { padding:8px 12px; border:1px solid var(--brd); }
+.md-body th { background:rgba(255,255,255,.05); color:var(--mut); font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; }
+/* ── OCR VIEWER ── */
+.ocr-viewer { font-family:'Lora',Georgia,serif; font-size:.94rem; line-height:1.85; color:#e8e8f0; background:#000; border:1px solid var(--brd); border-radius:var(--r2); padding:24px 28px; max-height:400px; overflow-y:auto; white-space:pre-wrap; word-break:break-word; }
+.ocr-viewer .page-break { border-top:2px dashed var(--brd); margin:16px 0; padding-top:14px; color:var(--mut); font-size:.72rem; font-family:'Inter',sans-serif; text-transform:uppercase; letter-spacing:.08em; }
+/* ── DRAFT VIEWER ── */
+.draft-view { font-family:'Lora',Georgia,serif; font-size:.95rem; line-height:1.9; background:#000; border:1px solid var(--brd); border-radius:var(--r2); padding:32px; min-height:500px; white-space:pre-wrap; color:#e8e8f0; }
+/* ── CHAT MSG overrides ── */
+.msg.assistant .md-body { color:var(--ink); }
+.msg.assistant .md-body strong { color:#fff; }
+.msg.assistant .md-body code { background:rgba(255,255,255,.1); }
+
 </style>
 </head>
 <body>
@@ -274,7 +303,14 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--blue),#a
           <div id="selectedDocBox" class="alert alert-info" style="margin-bottom:12px"></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;flex-wrap:wrap">
             <div>
-              <div class="field"><label>Texto extraído (OCR)</label><textarea id="selectedText" style="min-height:200px"></textarea></div>
+              <div class="field">
+              <label>Vista del documento (OCR)</label>
+              <div id="ocrRichView" class="ocr-viewer" style="min-height:160px">Sin texto OCR disponible.</div>
+              <details style="margin-top:8px">
+                <summary style="cursor:pointer;font-size:.72rem;color:var(--mut);user-select:none">✏️ Editar/corregir texto OCR</summary>
+                <textarea id="selectedText" style="min-height:160px;margin-top:8px;width:100%;background:#000;border:1px solid var(--brd);border-radius:var(--r2);padding:10px;color:var(--ink);font:inherit;font-size:.85rem;resize:vertical;outline:none"></textarea>
+              </details>
+            </div>
               <div class="btn-row">
                 <button class="btn btn-primary btn-sm" onclick="saveSelectedText()">💾 Guardar corrección</button>
                 <button class="btn btn-ghost btn-sm" onclick="markReviewed()">✅ Marcar cotejado</button>
@@ -369,7 +405,14 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--blue),#a
           </div>
           <div>
             <div id="draftMeta" class="alert alert-info">Selecciona un borrador de la lista</div>
-            <textarea id="draftEditor" style="width:100%;min-height:400px;background:#000;border:1px solid var(--brd);border-radius:var(--r2);padding:14px;color:var(--ink);font:inherit;font-size:.88rem;line-height:1.7;outline:none;resize:vertical;margin-top:10px"></textarea>
+            <div style="margin-top:10px">
+              <div style="display:flex;gap:8px;margin-bottom:8px">
+                <button class="btn btn-ghost btn-sm" onclick="toggleDraftEdit(false)" id="btnDraftView" style="border-color:var(--gold);color:var(--gold)">👁 Vista</button>
+                <button class="btn btn-ghost btn-sm" onclick="toggleDraftEdit(true)" id="btnDraftEdit">✏️ Editar</button>
+              </div>
+              <div id="draftRichView" class="draft-view md-body" style="display:block"></div>
+              <textarea id="draftEditor" style="display:none;width:100%;min-height:400px;background:#000;border:1px solid var(--brd);border-radius:var(--r2);padding:14px;color:var(--ink);font:inherit;font-size:.88rem;line-height:1.7;outline:none;resize:vertical"></textarea>
+            </div>
             <div class="btn-row">
               <button class="btn btn-primary btn-sm" onclick="saveDraftVersion()">💾 Guardar versión</button>
               <button class="btn btn-ghost btn-sm" onclick="downloadDraftTxt()">⬇ Descargar TXT</button>
@@ -1036,7 +1079,19 @@ async function renderSelectedDoc(){
  if(!d){$("selectedDocBox").innerHTML="Ning??n documento seleccionado.";["selectedText","selectedFolio","selectedAuthority","selectedDocDate","selectedNotes","selectedAction","selectedDue","selectedTags"].forEach(id=>{$(id).value=""});["selectedRole","selectedStage","selectedStatus","selectedPriority","selectedConf"].forEach(id=>{if($(id))$(id).selectedIndex=0});$("sourcePreview").innerHTML="Vista del original disponible solo si se guard?? blob local.";return}
  $("selectedDocBox").innerHTML=`<b>${esc(d.fileName)}</b><br><span class="small">${esc(d.folderPath)}</span><br><span class="tag violet">${esc(d.caseName)}</span><span class="tag ${d.reviewed?"green":"yellow"}">${d.reviewed?"OCR revisado":"OCR no cotejado"}</span><br><span class="mono tiny">${esc(d.sha256)}</span>`;
  $("selectedText").value=d.ocrText||"";$("selectedFolio").value=d.folio||"";$("selectedAuthority").value=d.authority||"";$("selectedDocDate").value=d.docDate||"";$("selectedNotes").value=d.notes||"";$("selectedRole").value=d.docRole||"Sin clasificar";$("selectedStage").value=d.stage||"Ingreso";$("selectedStatus").value=d.docStatus||"Pendiente de clasificaci??n";$("selectedPriority").value=d.priority||"Media";$("selectedConf").value=d.confidentiality||"Interno";$("selectedAction").value=d.actionNeeded||"";$("selectedDue").value=d.dueDate||"";$("selectedTags").value=d.tags||"";
- $("sourcePreview").innerHTML=d.blob?`<b>Original guardado localmente.</b><br><span class="small">Tipo: ${esc(d.mimeType)}.</span><div id="blobPreview"></div>`:"No se guard?? archivo original local; solo texto/metadatos."; if(d.blob) renderBlobPreview(d);
+ $("sourcePreview").innerHTML=d.blob?`<b>Original guardado.</b> <span class="small">Tipo: ${esc(d.mimeType)}.</span><div id="blobPreview" style="margin-top:10px"></div>`+"<p class='tiny muted' style='margin-top:6px'>El archivo original está guardado localmente.</p>":"<p class='tiny muted'>No se guardó blob local.</p>"; if(d.blob) renderBlobPreview(d);
+  // Populate OCR rich viewer
+  const _ocrV=document.getElementById("ocrRichView");
+  if(_ocrV){
+    const _ocrT=d.ocrText||""; 
+    const _parts=_ocrT.split(/---\s*P[\u00c1A]GINA\s+\d+\s*---/i);
+    if(_parts.length>1){
+      _ocrV.innerHTML=_parts.map((p,i)=>(i>0?`<div class="page-break">&mdash; P\u00e1gina ${i+1} &mdash;</div>`:"")+"<span>"+esc(p.trim()).replace(/\n/g,"<br>")+"</span>").join("");
+    } else {
+      _ocrV.innerHTML="<span>"+esc(_ocrT.trim()).replace(/\n/g,"<br>")+"</span>";
+    }
+    if(!_ocrT.trim()) _ocrV.innerHTML="<span style='color:var(--mut)'>Sin texto OCR disponible para este documento.</span>";
+  }
 }
 async function saveSelectedText(){const d=await get("documents",state.selectedDocId);if(!d)return;d.ocrText=$("selectedText").value;d.ocrStatus="done";d.reviewed=false;d.correctedAt=new Date().toISOString();await put("documents",d);renderAll();alert("Texto guardado. Qued?? como no cotejado.")}
 async function markReviewed(){const d=await get("documents",state.selectedDocId);if(!d)return;d.reviewed=true;d.ocrStatus="reviewed";d.reviewedAt=new Date().toISOString();await put("documents",d);renderAll()}
@@ -1143,11 +1198,8 @@ function validateCitations(output, sources){
  if(!hasSources){level="warn";message="No se enviaron fuentes RAG; la respuesta no debe tratarse como sustentada en expediente.";}
  return {level,message,cited,valid,invalid,expected};
 }
-async function renderChat(){
- const msgs=(await messagesOfActive()).sort((a,b)=>a.createdAt.localeCompare(b.createdAt));
- $("chatBox").innerHTML=msgs.map(m=>`<div class="msg ${m.role}"><div class="msgmeta">${esc(m.role)} ?? ${esc(new Date(m.createdAt).toLocaleString())}${m.meta?.model?` ?? ${esc(m.meta.model)}`:""}</div>${esc(m.content)}</div>`).join("")||"<p class='muted'>Sin mensajes. Haz una pregunta sobre el caso activo.</p>";
- $("chatBox").scrollTop=$("chatBox").scrollHeight;
-}
+// renderChat — overridden by glue version at end of script
+async function renderChat(){ /* stub — implementación real en el glue */ }
 
 function analysisContract(mode){
  const m=String(mode||"").toLowerCase();
@@ -1546,20 +1598,34 @@ async function renderDrafts(){
   const sel=state.selectedDraftId?await get("drafts",state.selectedDraftId):null;
   const meta=document.getElementById("draftMeta");
   const ed=document.getElementById("draftEditor");
+  const rv=document.getElementById("draftRichView");
   if(meta)meta.textContent=sel?sel.title:"Selecciona un borrador de la lista";
   if(ed)ed.value=sel?.content||"";
+  if(rv)rv.innerHTML=sel?.content?mdRender(sel.content):"<p style='color:var(--mut)'>Selecciona un borrador.</p>";
 }
 
-// renderChat for new UI
+// renderChat for new UI — with Markdown rendering for AI responses
+function mdRender(text){
+  if(typeof marked==="undefined") return "<pre>"+esc(text)+"</pre>";
+  try{
+    marked.setOptions({breaks:true,gfm:true});
+    return marked.parse(text);
+  }catch(e){return "<pre>"+esc(text)+"</pre>";}
+}
 async function renderChat(){
   const msgs=(await messagesOfActive()).sort((a,b)=>a.createdAt.localeCompare(b.createdAt));
   const box=document.getElementById("chatBox");if(!box)return;
-  if(!msgs.length){box.innerHTML="<div style='color:var(--mut);text-align:center;margin-top:40px;font-size:.9rem'>No hay mensajes. Escribe tu primera pregunta arriba.</div>";return;}
+  if(!msgs.length){
+    box.innerHTML="<div style='color:var(--mut);text-align:center;margin-top:60px'><div style=\'font-size:2rem;margin-bottom:12px\'>💬</div>Escribe tu primera pregunta sobre el expediente</div>";
+    return;
+  }
   box.innerHTML=msgs.map(m=>{
-    const text=(m.content||"").replace(/\n---\nVALIDACIÓN LOCAL.*$/s,"").trim();
+    let text=(m.content||"").replace(/\n---\nVALIDACIÓN LOCAL[\s\S]*$/,"").trim();
     const isUser=m.role==="user";
     const time=new Date(m.createdAt).toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"});
-    return `<div class="msg ${m.role}"><div class="msg-meta">${isUser?"Tú":("IA"+(m.meta?.model?" · "+esc(m.meta.model):""))} · ${time}</div>${esc(text)}</div>`;
+    const meta=isUser?"Tú":("IA"+(m.meta?.model?" · <span style=\'font-size:.65rem;opacity:.7\'>"+esc(m.meta.model)+"</span>":""));
+    const body=isUser?"<p style=\'margin:0\'>"+esc(text)+"</p>":("<div class=\'md-body\'>"+mdRender(text)+"</div>");
+    return `<div class="msg ${m.role}"><div class="msg-meta">${meta} · ${time}</div>${body}</div>`;
   }).join("");
   box.scrollTop=box.scrollHeight;
 }
@@ -1618,6 +1684,25 @@ function configServerUrl(){
 // Expose tab buttons as expected by JS internals
 function initTabs(){}  // no-op, we init manually above
 
+
+// Draft view/edit toggle
+function toggleDraftEdit(edit){
+  const ed=document.getElementById("draftEditor");
+  const rv=document.getElementById("draftRichView");
+  const btnV=document.getElementById("btnDraftView");
+  const btnE=document.getElementById("btnDraftEdit");
+  if(!ed||!rv)return;
+  if(edit){
+    rv.style.display="none";ed.style.display="";
+    if(btnV){btnV.style.borderColor="";btnV.style.color="";}
+    if(btnE){btnE.style.borderColor="var(--gold)";btnE.style.color="var(--gold)";}
+  } else {
+    ed.style.display="none";rv.style.display="";
+    rv.innerHTML=ed.value?mdRender(ed.value):"<p style='color:var(--mut)'>Borrador vacío.</p>";
+    if(btnV){btnV.style.borderColor="var(--gold)";btnV.style.color="var(--gold)";}
+    if(btnE){btnE.style.borderColor="";btnE.style.color="";}
+  }
+}
 initFirebase();
 </script>
 </body>
